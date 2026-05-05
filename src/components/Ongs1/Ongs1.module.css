@@ -142,7 +142,26 @@ span {
 .vazio {
     text-align: center;
     padding: 60px 20px;
+
+
     color: #999;
+}
+
+.cardWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+}
+
+.cardWrapper .card {
+    box-shadow: none;
+    padding: 0;
+    flex: 1;
 }
 
 

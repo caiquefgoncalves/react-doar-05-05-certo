@@ -5,7 +5,7 @@ import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import Titulo from "../Titulo/Titulo.jsx";
 import css from './Ongs1.module.css'
 import Curtida from "../Curtida/Curtida.jsx";
-import Botao from "../Botao/Botao.jsx";
+import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx"; // Alterado aqui
 
 export default function Ongs({api}) {
     const api_url = api
@@ -59,8 +59,6 @@ export default function Ongs({api}) {
             <MenuLateral/>
             <div className={css.conteudo}>
 
-
-
                 <div className={css.barraTopo}>
                     <div className={css.buscaInput}>
                         <input type="text" placeholder="Buscar por ONG..." value={busca} onChange={(e) => setBusca(e.target.value)} className={css.inputBusca} />
@@ -84,23 +82,29 @@ export default function Ongs({api}) {
                         <p className={css.vazio}>Nenhuma ONG encontrada.</p>
                     ) : (
                         ongs.map(ong => (
-                            <Link to={`/ong/${ong.id}`} key={ong.id} className={css.card}>
-                                <img
-                                    src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
-                                    alt={ong.nome}
-                                    className={css.cardImagem}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.currentTarget.src = '/sem_imagem.webp';
-                                    }}
+                            <div key={ong.id} className={css.cardWrapper}>
+                                <Link to={`/ong/${ong.id}`} className={css.card}>
+                                    <img
+                                        src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
+                                        alt={ong.nome}
+                                        className={css.cardImagem}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.currentTarget.src = '/sem_imagem.webp';
+                                        }}
+                                    />
+                                    <div className={css.cardInfo}>
+                                        <h3 className={css.cardNome}>{ong.nome}</h3>
+                                        <p className={css.cardDesc}>{ong.descricao_breve?.substring(0, 80) || 'Sem descrição'}...</p>
+                                        <span className={css.cardCategoria}>{ong.categoria || 'ONG'}</span>
+                                    </div>
+                                </Link>
+                                <BotaoSeguir
+                                    idOng={ong.id}
+                                    apiUrl={api_url}
+                                    onStatusChange={(status) => console.log(`Status alterado para ONG ${ong.id}:`, status)}
                                 />
-                                <div className={css.cardInfo}>
-                                    <h3 className={css.cardNome}>{ong.nome}</h3>
-                                    <p className={css.cardDesc}>{ong.descricao_breve?.substring(0, 80) || 'Sem descrição'}...</p>
-                                    <span className={css.cardCategoria}>{ong.categoria || 'ONG'}</span>
-                                </div>
-                                <Botao texto={'Seguir'} cor={'seguir'}/>
-                            </Link>
+                            </div>
                         ))
                     )}
                 </div>

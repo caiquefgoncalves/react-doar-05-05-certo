@@ -12,14 +12,23 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
 
     async function verificarStatus() {
         try {
+            const token = localStorage.getItem('token');
+
             const response = await fetch(`${apiUrl}/verificar_seguindo/${idOng}`, {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token || ''}`,
+                    'Content-Type': 'application/json'
+                }
             });
 
             if (response.ok) {
                 const data = await response.json();
+                console.log('Status verificado:', data); // Debug
                 setSeguindo(data.seguindo);
+            } else {
+                console.error('Erro na resposta:', response.status);
             }
         } catch (error) {
             console.error('Erro ao verificar status:', error);
@@ -35,20 +44,35 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Você precisa estar logado para seguir uma ONG');
+                setLoading(false);
+                return;
+            }
+
+            console.log('Token encontrado:', token.substring(0, 20) + '...'); // Debug
+            console.log('Ação:', seguindo ? 'desseguir' : 'seguir'); // Debug
+
             const endpoint = seguindo ? 'desseguir' : 'seguir';
             const response = await fetch(`${apiUrl}/${endpoint}/${idOng}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
             const data = await response.json();
+            console.log('Resposta do servidor:', data); // Debug
 
             if (response.ok) {
                 const novoStatus = !seguindo;
                 setSeguindo(novoStatus);
+
+                console.log('Novo status:', novoStatus); // Debug
 
                 if (onStatusChange) {
                     onStatusChange(novoStatus);
@@ -63,10 +87,17 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
                     }, 200);
                 }
             } else {
-                alert(data.error || 'Erro ao processar solicitação');
+                console.error('Erro do servidor:', data); // Debug
+                if (response.status === 401) {
+                    alert('Sessão expirada. Por favor, faça login novamente.');
+                } else if (response.status === 403) {
+                    alert('Apenas doadores podem seguir ONGs.');
+                } else {
+                    alert(data.error || 'Erro ao processar solicitação');
+                }
             }
         } catch (error) {
-            console.error('Erro:', error);
+            console.error('Erro na requisição:', error);
             alert('Erro ao conectar com o servidor');
         } finally {
             setLoading(false);
