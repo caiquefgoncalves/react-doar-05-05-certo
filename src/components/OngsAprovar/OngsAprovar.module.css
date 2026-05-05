@@ -1,0 +1,32 @@
+.texto{
+    margin-left: 5rem;
+}
+
+.data{
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.card{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #D9D9D9;
+    width: 60rem;
+    height: 5rem;
+    border-radius: 1.4rem;
+}
+
+h2{
+    font-size: 1rem;
+    font-weight: 500;
+
+}
+
+.botao{
+    display: flex;
+    margin-right: 2rem;
+}
+

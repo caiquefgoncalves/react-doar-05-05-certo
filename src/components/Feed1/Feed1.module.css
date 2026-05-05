@@ -1,0 +1,246 @@
+.secao {
+    display: flex;
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+.conteudo {
+    flex: 1;
+    padding: 30px;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.barraTopo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.buscaInput {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 25px;
+    padding: 8px 15px;
+    flex: 1;
+    max-width: 400px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.inputBusca {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    padding: 5px;
+    background: transparent;
+}
+
+.btnBuscar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.filtro {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+    border: 1px solid #e5e5e5;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #fff;
+}
+
+.selectFiltro {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.cardAtualizacao {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.fotoOng {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.headerInfo {
+    flex: 1;
+}
+
+.nomeOng {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 2px 0;
+}
+
+.data {
+    font-size: 12px;
+    color: #999;
+}
+
+.corpo {
+    padding: 0 20px 18px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.tituloAtualizacao {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 10px 0;
+
+}
+
+.textoAtualizacao {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.fotoAtualizacao {
+    width: 220px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.linkProjeto {
+    display: block;
+    padding: 12px 20px;
+    background-color: #f8f8f8;
+    text-decoration: none;
+    color: #167cbf;
+    font-size: 14px;
+    font-weight: 600;
+    border-top: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.linkProjeto:hover {
+    background-color: #f0f0f0;
+}
+
+.vazio {
+    text-align: center;
+    padding: 80px 20px;
+    color: #999;
+}
+
+.vazio p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+/* Cards para ONGs e Projetos */
+.cardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 280px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+
+
+.cardImagem {
+    max-width: 30rem;
+    max-height: 30rem;
+}
+
+.cardInfo {
+    padding: 15px;
+}
+
+.cardNome {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.cardDesc {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.cardOng, .cardCategoria {
+    font-size: 12px;
+    color: #167cbf;
+    font-weight: 600;
+}
+
+span{
+    color: #4B4D4A;
+}
+
+.textoContainer {
+    flex: 1;
+}
+
+
+@media (max-width: 768px) {
+    .secao { flex-direction: column; }
+    .conteudo { padding: 15px; }
+    .barraTopo { flex-direction: column; align-items: stretch; }
+    .buscaInput { max-width: 100%; }
+    .card { width: 100%; }
+
+    .corpo {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .corpo img {
+        width: 15rem;
+        height: auto;
+    }
+}

@@ -1,0 +1,131 @@
+
+.azul-claro {
+    color: #167CBF;
+    font-weight: 800;
+    font-size: 3rem;
+    text-align: center;
+}
+
+.azul-claro-span {
+    color: #167CBF;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.laranja{
+    color: #F69B2F;
+    font-weight: 800;
+    font-size: 3rem;
+    text-align: center;
+}
+
+.laranja-span {
+    color: #F69B2F;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.rosa{
+    color: #F77CA8;
+    font-weight: 800;
+    font-size: 3rem;
+    text-align: center;
+}
+
+.rosa-span {
+    color: #F77CA8;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.texto {
+    color: #9A9A9A;
+    font-weight: 800;
+    font-size: 1.25rem;
+    max-width: 37.5rem;
+    /*margin-bottom: 4rem;*/
+    text-align: center;
+}
+
+.preto{
+    color: black;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.preto-subtitulo{
+    color: black;
+    font-weight: 800;
+    font-size: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 321px) {
+    .azul-claro, .laranja, .rosa  {
+        color: #ffffff;
+        font-size: 2.5rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .azul-claro-span, .laranja-span, .rosa-span {
+        font-size: 2rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .texto{
+        margin-top: 1rem;
+        color: #FFFFFF;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+}
+
+
+@media (max-width: 426px) {
+    .azul-claro, .laranja, .rosa {
+        color: #ffffff;
+        font-size: 2rem;
+        margin-top: 1rem;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        text-align: center;
+    }
+
+    .azul-claro-span, .laranja-span, .rosa-span {
+        font-size: 2rem;
+        margin-top: 1rem;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        text-align: center;
+    }
+
+    .texto {
+        margin-top: 1rem;
+        color: #FFFFFF !important;
+        font-size: 1rem;
+        font-weight: 500;
+
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 1rem;
+    }
+}
+@media (max-width: 769px) {
+    .azul-claro, .laranja, .rosa {
+        font-size: 2.2rem;
+        text-align: center;
+
+    }
+    .texto{
+        margin-top: 1rem;
+        color: #9A9A9A ;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+}
