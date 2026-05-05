@@ -1,0 +1,47 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+US+Trad:wght@100..400&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Inter', Arial;
+}
+
+.div {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 50px;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.btnong {
+    border: none;
+    border-radius: 50px;
+    padding: 10px 30px;
+    font-weight: bold;
+    transition: 0.3s;
+    background-color: transparent;
+    color: #6c757d;
+}
+.btndoador{
+    border: none;
+    border-radius: 50px;
+    padding: 10px 30px;
+    font-weight: bold;
+    transition: 0.3s;
+    background-color: transparent;
+    color: #6c757d;
+}
+
+
+.btnong.ativo {
+    background: #FCE5C9;
+    color: #F69B2F;
+}
+
+.btndoador.ativo {
+    background-color: #FCECEF;
+    color: #F77CA8;
+}
