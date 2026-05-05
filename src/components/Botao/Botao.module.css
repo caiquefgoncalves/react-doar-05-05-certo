@@ -1,0 +1,146 @@
+.amarelo {
+    background-color: #F69B2F;
+    border: 2px solid #F69B2F;
+    border-radius: 2rem;
+    width: 15rem;
+    padding: 0.7rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.amarelo-menor {
+    background-color: #F69B2F;
+    border: 2px solid #F69B2F;
+    border-radius: 2rem;
+    width: 10rem;
+    padding: 0.7rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.amarelo:hover {
+    background-color: #e0851a;
+    transform: scale(1.02);
+}
+
+.vazado {
+    background-color: #0C598B;
+    border: 2px solid white;
+    border-radius: 2rem;
+    padding: 0.7rem;
+    width: 15rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vazado:hover {
+    background-color: #0a4a73;
+    transform: scale(1.02);
+}
+
+.vermelho {
+    background-color: red;
+    border: 2px solid darkred;
+    border-radius: 2rem;
+    width: 15rem;
+    padding: 0.7rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.vazadoamarelo {
+    background-color: transparent;
+    border: 2px solid #F69B2F;
+    border-radius: 2rem;
+    padding: 0.7rem 3.8rem;
+    color: #F69B2F;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vazadoamarelo:hover {
+    background-color: #F69B2F;
+    color: white;
+}
+
+.rosa {
+    background-color: #F65682;
+    border: none;
+    border-radius: 2rem;
+    width: 15rem;
+    padding: 0.7rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.rosa:hover {
+    background-color: #d8456a;
+    transform: scale(1.02);
+}
+
+.azul{
+    background-color: #0C598B;
+    border: none;
+    border-radius: 2rem;
+    width: 15rem;
+    padding: 0.7rem;
+    color: white;
+    font-family: 'Inter', Arial;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.azul:hover {
+    background-color: #0C598B;
+    transform: scale(1.02);
+}
+
+.seguir{
+    background-color: transparent;
+    border: 1px solid  #0f5e94;
+    border-radius: 2rem;
+    padding: 0.3rem 1rem;
+    color: #1a7bb7;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+@media (max-width: 480px) {
+    .amarelo, .vazado, .rosa {
+        width: 100%;
+        max-width: 280px;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    .vazadoamarelo {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        background-color: white;
+        width: 12rem;
+    }
+}

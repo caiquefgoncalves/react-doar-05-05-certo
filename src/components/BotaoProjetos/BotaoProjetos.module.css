@@ -1,0 +1,28 @@
+.doacao {
+    background-color: transparent;
+    border: 1px solid #F69B2F;
+    border-radius: 2rem;
+    padding: 0.7rem 3.8rem;
+    color: #F69B2F;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.doacao:hover {
+    background-color: #F69B2F;
+    color: white;
+}
+
+.voluntario{
+    background-color: transparent;
+    border: 1px solid #F65682;
+    border-radius: 2rem;
+    padding: 0.7rem 3.8rem;
+    color: #F65682;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
