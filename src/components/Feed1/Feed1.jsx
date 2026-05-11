@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import css from "./Feed1.module.css";
 import Curtida from "../Curtida/Curtida.jsx";
+import Mensagem from "../Mensagem/Mensagem.jsx";
 
 export default function Feed({ api }) {
     const navigate = useNavigate();
@@ -11,7 +12,8 @@ export default function Feed({ api }) {
     const [todasAtualizacoes, setTodasAtualizacoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [busca, setBusca] = useState('');
-    const [filtro, setFiltro] = useState('recentes'); // 'recentes', 'antigos', 'seguindo'
+    const [filtro, setFiltro] = useState('recentes');
+    const [tipoFeed, setTipoFeed] = useState('todas');
 
     const [pagina, setPagina] = useState(0);
     const [temMais, setTemMais] = useState(true);
@@ -22,6 +24,13 @@ export default function Feed({ api }) {
     const [mostrarComentarios, setMostrarComentarios] = useState({});
     const [usuarioTipo, setUsuarioTipo] = useState(null);
     const [usuarioId, setUsuarioId] = useState(null);
+
+    // Estado para mensagem
+    const [msgTexto, setMsgTexto] = useState('');
+    const [msgTipo, setMsgTipo] = useState('');
+
+    // Estado para modal de postagem
+    const [modalPostagem, setModalPostagem] = useState(null);
 
     const api_url = api;
 
@@ -66,7 +75,6 @@ export default function Feed({ api }) {
     }
 
     useEffect(() => {
-        // Verificar autenticação
         const token = localStorage.getItem('token');
         if (token && tokenExpirado(token)) {
             localStorage.removeItem('token');
@@ -80,7 +88,7 @@ export default function Feed({ api }) {
         setPagina(0);
         setTemMais(true);
         buscarAtualizacoes(0, false);
-    }, []);
+    }, [tipoFeed]);
 
     async function buscarAtualizacoes(novaPagina = 0, append = false) {
         try {
@@ -88,18 +96,17 @@ export default function Feed({ api }) {
 
             const token = localStorage.getItem('token');
 
-            // Escolher a URL baseada no filtro
             let url;
-            if (filtro === 'seguindo') {
-                // Verificar se está logado como doador
+            if (tipoFeed === 'seguindo') {
                 if (!token || usuarioTipo !== 1) {
-                    alert('Faça login como doador para ver postagens das ONGs que você segue.');
-                    setFiltro('recentes');
+                    setMsgTexto('Faça login como doador para ver postagens das ONGs que você segue.');
+                    setMsgTipo('erro');
+                    setTipoFeed('todas');
+                    setLoading(false);
                     return;
                 }
-                url = `${api_url}/feed_favoritas?pagina=${novaPagina}&limite=4`;
+                url = `${api_url}/feed_favoritas?filtro=${filtro}&pagina=${novaPagina}&limite=4`;
             } else {
-                // 'recentes' ou 'antigos'
                 url = `${api_url}/feed_atualizacoes?filtro=${filtro}&pagina=${novaPagina}&limite=4&token=${token || ''}`;
             }
 
@@ -110,7 +117,6 @@ export default function Feed({ api }) {
                 }
             });
 
-            // Verificar se o token expirou
             if (response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('nome');
@@ -119,10 +125,11 @@ export default function Feed({ api }) {
                 return;
             }
 
-            // Verificar permissão
             if (response.status === 403) {
-                alert('Apenas doadores podem acessar este feed.');
-                setFiltro('recentes');
+                setMsgTexto('Apenas doadores podem acessar este feed.');
+                setMsgTipo('erro');
+                setTipoFeed('todas');
+                setLoading(false);
                 return;
             }
 
@@ -138,6 +145,8 @@ export default function Feed({ api }) {
                 if (data.atualizacoes.length < 4) {
                     setTemMais(false);
                 }
+
+                carregarComentariosAutomaticos(data.atualizacoes);
             } else {
                 if (!append) setTodasAtualizacoes([]);
                 setTemMais(false);
@@ -147,6 +156,36 @@ export default function Feed({ api }) {
             setTemMais(false);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function carregarComentariosAutomaticos(atualizacoesLista) {
+        const token = localStorage.getItem('token');
+
+        for (const item of atualizacoesLista) {
+            try {
+                const response = await fetch(`${api_url}/comentarios/${item.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token || ''}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const qtd = data.total || data.comentarios?.length || 0;
+
+                    setTodasAtualizacoes(prev =>
+                        prev.map(att => {
+                            if (att.id === item.id) {
+                                return { ...att, qtd_comentarios: qtd };
+                            }
+                            return att;
+                        })
+                    );
+                }
+            } catch (error) {
+                console.error(`Erro ao carregar comentários da atualização ${item.id}:`, error);
+            }
         }
     }
 
@@ -165,7 +204,6 @@ export default function Feed({ api }) {
         setAtualizacoes(filtradas);
     }, [busca, todasAtualizacoes]);
 
-    // Quando mudar o filtro, recarregar
     useEffect(() => {
         setPagina(0);
         setTemMais(true);
@@ -174,8 +212,6 @@ export default function Feed({ api }) {
 
     // Funções para comentários
     async function carregarComentarios(idAtualizacao) {
-        if (comentarios[idAtualizacao]) return;
-
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`${api_url}/comentarios/${idAtualizacao}`, {
@@ -191,14 +227,12 @@ export default function Feed({ api }) {
                     [idAtualizacao]: data.comentarios || []
                 }));
 
-                // Atualizar contador
+                const qtd = data.total || data.comentarios?.length || 0;
+
                 setTodasAtualizacoes(prev =>
                     prev.map(item => {
                         if (item.id === idAtualizacao) {
-                            return {
-                                ...item,
-                                qtd_comentarios: data.total || data.comentarios?.length || 0
-                            };
+                            return { ...item, qtd_comentarios: qtd };
                         }
                         return item;
                     })
@@ -207,10 +241,7 @@ export default function Feed({ api }) {
                 setAtualizacoes(prev =>
                     prev.map(item => {
                         if (item.id === idAtualizacao) {
-                            return {
-                                ...item,
-                                qtd_comentarios: data.total || data.comentarios?.length || 0
-                            };
+                            return { ...item, qtd_comentarios: qtd };
                         }
                         return item;
                     })
@@ -228,7 +259,8 @@ export default function Feed({ api }) {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Você precisa estar logado para comentar');
+                setMsgTexto('Faça login como doador para comentar.');
+                setMsgTipo('erro');
                 return;
             }
 
@@ -263,14 +295,11 @@ export default function Feed({ api }) {
                     [idAtualizacao]: [...(prev[idAtualizacao] || []), data.comentario]
                 }));
 
-                // Atualizar contador
+                // Atualizar contador no feed
                 setTodasAtualizacoes(prev =>
                     prev.map(item => {
                         if (item.id === idAtualizacao) {
-                            return {
-                                ...item,
-                                qtd_comentarios: (item.qtd_comentarios || 0) + 1
-                            };
+                            return { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 };
                         }
                         return item;
                     })
@@ -279,26 +308,68 @@ export default function Feed({ api }) {
                 setAtualizacoes(prev =>
                     prev.map(item => {
                         if (item.id === idAtualizacao) {
-                            return {
-                                ...item,
-                                qtd_comentarios: (item.qtd_comentarios || 0) + 1
-                            };
+                            return { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 };
                         }
                         return item;
                     })
                 );
 
-                setNovoComentario(prev => ({
-                    ...prev,
-                    [idAtualizacao]: ''
-                }));
+                // Atualizar contador no modal
+                if (modalPostagem && modalPostagem.id === idAtualizacao) {
+                    setModalPostagem(prev => ({
+                        ...prev,
+                        qtd_comentarios: (prev.qtd_comentarios || 0) + 1
+                    }));
+                }
+
+                setNovoComentario(prev => ({ ...prev, [idAtualizacao]: '' }));
+
+                setMsgTexto('Comentário enviado com sucesso!');
+                setMsgTipo('sucesso');
             } else {
                 const error = await response.json();
-                alert(error.error || 'Erro ao comentar');
+                setMsgTexto(error.error || 'Erro ao comentar');
+                setMsgTipo('erro');
             }
         } catch (error) {
             console.error('Erro ao enviar comentário:', error);
-            alert('Erro ao conectar com o servidor');
+            setMsgTexto('Erro ao conectar com o servidor');
+            setMsgTipo('erro');
+        }
+    }
+
+    // Função de callback para quando curtir/descurtir
+    function handleCurtidaChange(idAtualizacao, novoStatus) {
+        setTodasAtualizacoes(prev =>
+            prev.map(item => {
+                if (item.id === idAtualizacao) {
+                    return {
+                        ...item,
+                        qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
+                    };
+                }
+                return item;
+            })
+        );
+
+        setAtualizacoes(prev =>
+            prev.map(item => {
+                if (item.id === idAtualizacao) {
+                    return {
+                        ...item,
+                        qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
+                    };
+                }
+                return item;
+            })
+        );
+
+        // Atualizar contador no modal
+        if (modalPostagem && modalPostagem.id === idAtualizacao) {
+            setModalPostagem(prev => ({
+                ...prev,
+                qtd_curtidas: (prev.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
+            }));
         }
     }
 
@@ -316,24 +387,34 @@ export default function Feed({ api }) {
         if (e.key === 'Enter') {}
     }
 
-    // Função para mudar o filtro
-    function handleMudarFiltro(novoFiltro) {
-        if (novoFiltro === 'seguindo') {
+    function handleMudarTipoFeed(novoTipo) {
+        if (novoTipo === 'seguindo') {
             const token = localStorage.getItem('token');
             if (!token || tokenExpirado(token)) {
-                alert('Faça login como doador para acessar este feed.');
-                navigate('/login');
+                setMsgTexto('Faça login como doador para acessar este feed.');
+                setMsgTipo('erro');
                 return;
             }
 
             const payload = decodificarToken(token);
             if (!payload || payload.tipo !== 1) {
-                alert('Apenas doadores podem acessar este feed.');
+                setMsgTexto('Apenas doadores podem acessar este feed.');
+                setMsgTipo('erro');
                 return;
             }
         }
 
-        setFiltro(novoFiltro);
+        setTipoFeed(novoTipo);
+    }
+
+    // Funções do modal
+    function abrirPostagem(item) {
+        setModalPostagem(item);
+        carregarComentarios(item.id);
+    }
+
+    function fecharPostagem() {
+        setModalPostagem(null);
     }
 
     if (loading && pagina === 0) {
@@ -349,44 +430,59 @@ export default function Feed({ api }) {
 
     return (
         <div>
+            {/* Mensagem */}
+            <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+
             <section className={css.secao}>
                 <MenuLateral />
                 <div className={css.conteudo}>
+
+                    {/* Tabs */}
+                    <div className={css.tabsFeed}>
+                        <button
+                            className={`${css.tabFeed} ${tipoFeed === 'todas' ? css.tabAtivo : ''}`}
+                            onClick={() => handleMudarTipoFeed('todas')}
+                        >
+                            Todas as ONGs
+                        </button>
+                        <button
+                            className={`${css.tabFeed} ${tipoFeed === 'seguindo' ? css.tabAtivo : ''}`}
+                            onClick={() => handleMudarTipoFeed('seguindo')}
+                        >
+                            Seguindo
+                        </button>
+                    </div>
 
                     {/* Barra topo */}
                     <div className={css.barraTopo}>
                         <div className={css.buscaInput}>
                             <input
                                 type="text"
-                                placeholder="Busque por Atualizações"
+                                placeholder="Busque por Atualizações..."
                                 value={busca}
                                 onChange={(e) => setBusca(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 className={css.inputBusca}
                             />
-                            <button className={css.btnBuscar}>🔍︎</button>
                         </div>
 
                         <div className={css.filtro}>
                             <span>Filtrar por:</span>
                             <select
                                 value={filtro}
-                                onChange={(e) => handleMudarFiltro(e.target.value)}
+                                onChange={(e) => setFiltro(e.target.value)}
                                 className={css.selectFiltro}
                             >
                                 <option value="recentes">Mais recentes</option>
                                 <option value="antigos">Mais antigos</option>
-                                <option value="seguindo">Seguindo</option>
                             </select>
                         </div>
                     </div>
 
-                   
-
                     {/* Lista */}
                     {atualizacoes.length === 0 ? (
                         <div className={css.vazio}>
-                            {filtro === 'seguindo' ? (
+                            {tipoFeed === 'seguindo' ? (
                                 <>
                                     <p>Nenhuma postagem das ONGs que você segue.</p>
                                     <p style={{ fontSize: '13px', color: '#999' }}>
@@ -404,7 +500,7 @@ export default function Feed({ api }) {
                         atualizacoes.map(item => (
                             <div key={`att-${item.id}`} className={css.cardAtualizacao}>
 
-                                <Link to={`/ong/${item.ong_id}`} className={css.header}>
+                                <Link to={`/ong/${item.ong_id}`} className={css.header} onClick={(e) => e.stopPropagation()}>
                                     <img
                                         src={item.ong_foto ? `${api_url}/uploads/Usuarios/${item.ong_foto}` : '/ong-icon.png'}
                                         alt={item.ong_nome}
@@ -417,10 +513,16 @@ export default function Feed({ api }) {
                                         <h3 className={css.nomeOng}>{item.ong_nome}</h3>
                                         <span className={css.data}>{item.data}</span>
                                     </div>
-                                    <Curtida idAtualizacao={item.id} apiUrl={api_url} />
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <Curtida
+                                            idAtualizacao={item.id}
+                                            apiUrl={api_url}
+                                            onStatusChange={(status) => handleCurtidaChange(item.id, status)}
+                                        />
+                                    </div>
                                 </Link>
 
-                                <div className={css.corpo}>
+                                <div className={css.corpo} onClick={() => abrirPostagem(item)} style={{ cursor: 'pointer' }}>
                                     {item.foto && (
                                         <img
                                             src={`${api_url}/uploads/Atualizacoes/${item.foto}`}
@@ -486,45 +588,29 @@ export default function Feed({ api }) {
                                                 </p>
                                             )}
 
-                                            {usuarioTipo === 1 && (
-                                                <div className={css.novoComentario}>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Escreva um comentário..."
-                                                        value={novoComentario[item.id] || ''}
-                                                        onChange={(e) => setNovoComentario(prev => ({
-                                                            ...prev,
-                                                            [item.id]: e.target.value
-                                                        }))}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                enviarComentario(item.id);
-                                                            }
-                                                        }}
-                                                        className={css.inputComentario}
-                                                    />
-                                                    <button
-                                                        onClick={() => enviarComentario(item.id)}
-                                                        className={css.btnEnviarComentario}
-                                                    >
-                                                        Enviar
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {usuarioTipo === 2 && (
-                                                <p className={css.msgDoador}>Apenas doadores podem comentar.</p>
-                                            )}
-
-                                            {usuarioTipo === 0 && (
-                                                <p className={css.msgDoador}>Administradores não podem comentar.</p>
-                                            )}
-
-                                            {!usuarioTipo && (
-                                                <p className={css.msgLogin}>
-                                                    <Link to="/login">Faça login</Link> como doador para comentar.
-                                                </p>
-                                            )}
+                                            <div className={css.novoComentario}>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Escreva um comentário..."
+                                                    value={novoComentario[item.id] || ''}
+                                                    onChange={(e) => setNovoComentario(prev => ({
+                                                        ...prev,
+                                                        [item.id]: e.target.value
+                                                    }))}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            enviarComentario(item.id);
+                                                        }
+                                                    }}
+                                                    className={css.inputComentario}
+                                                />
+                                                <button
+                                                    onClick={() => enviarComentario(item.id)}
+                                                    className={css.btnEnviarComentario}
+                                                >
+                                                    Enviar
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -550,6 +636,99 @@ export default function Feed({ api }) {
 
                 </div>
             </section>
+
+            {/* Modal da postagem */}
+            {modalPostagem && (
+                <div className={css.overlay} onClick={fecharPostagem}>
+                    <div className={css.modalPost} onClick={(e) => e.stopPropagation()}>
+                        <button className={css.modalFechar} onClick={fecharPostagem}>✕</button>
+
+                        <div className={css.modalEsquerda}>
+                            <img
+                                src={modalPostagem.foto ? `${api_url}/uploads/Atualizacoes/${modalPostagem.foto}` : '/sem_imagem.webp'}
+                                alt={modalPostagem.titulo}
+                                className={css.modalImagem}
+                                onError={(e) => {
+                                    e.currentTarget.src = '/sem_imagem.webp';
+                                }}
+                            />
+                        </div>
+
+                        <div className={css.modalDireita}>
+                            <div className={css.modalHeader}>
+                                <div className={css.cabecalho}>
+                                    <Link to={`/ong/${modalPostagem.ong_id}`} onClick={fecharPostagem}>
+                                        <img
+                                            src={modalPostagem.ong_foto ? `${api_url}/uploads/Usuarios/${modalPostagem.ong_foto}` : "/ong-icon.png"}
+                                            alt={modalPostagem.ong_nome}
+                                            className={css.modalFotoPerfil}
+                                        />
+                                    </Link>
+                                    <div className={css.infocabecalho}>
+                                        <Link to={`/ong/${modalPostagem.ong_id}`} onClick={fecharPostagem} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <h2>{modalPostagem.ong_nome}</h2>
+                                        </Link>
+                                        <p>{modalPostagem.data}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={css.modalConteudo}>
+                                <h1>{modalPostagem.titulo}</h1>
+                                <p>{modalPostagem.texto}</p>
+                                <div className={css.modalInfo}>
+                                    <span>{modalPostagem.qtd_curtidas || 0} curtidas</span>
+                                    <span> • </span>
+                                    <span>{modalPostagem.qtd_comentarios || 0} comentários</span>
+                                </div>
+                            </div>
+
+                            <div className={css.modalComentarios}>
+                                <h3>Comentários</h3>
+                                {comentarios[modalPostagem.id]?.length > 0 ? (
+                                    comentarios[modalPostagem.id].map(comentario => (
+                                        <div key={comentario.id} className={css.modalComentario}>
+                                            <img
+                                                src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : "/user-icon.png"}
+                                                alt=""
+                                                className={css.modalComentarioFoto}
+                                            />
+                                            <div>
+                                                <strong>{comentario.usuario_nome}</strong>
+                                                <p>{comentario.texto}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '20px' }}>
+                                        Nenhum comentário ainda. Seja o primeiro!
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className={css.modalInputArea}>
+                                <input
+                                    type="text"
+                                    placeholder="Adicione um comentário..."
+                                    className={css.modalInput}
+                                    value={novoComentario[modalPostagem.id] || ""}
+                                    onChange={(e) =>
+                                        setNovoComentario(prev => ({
+                                            ...prev,
+                                            [modalPostagem.id]: e.target.value
+                                        }))
+                                    }
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            enviarComentario(modalPostagem.id);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <button className={css.botaoVoltar} onClick={() => window.scrollTo(0, 0)}>
                 ↑
