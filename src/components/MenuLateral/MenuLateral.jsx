@@ -22,7 +22,7 @@ export default function MenuLateral() {
 
         if (tokenData.tipo === 0) navigate('/dashboardAdm');
         else if (tokenData.tipo === 2) navigate('/dashboardOng');
-        else if (tokenData.tipo === 1) navigate('/dashboard');
+        else if (tokenData.tipo === 1) navigate('/dashboardDoador');
         else navigate('/dashboard');
     }
 

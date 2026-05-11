@@ -226,6 +226,155 @@ span{
     flex: 1;
 }
 
+.botaoVoltar {
+    position: sticky;
+    bottom: 20px;
+    margin-left: 70rem;
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: #6c757d 1px solid;
+}
+
+/* Estilos para comentários */
+.comentariosSecao {
+    border-top: 1px solid #eee;
+    padding: 12px 20px;
+}
+
+.btnComentarios {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: color 0.2s;
+}
+
+.btnComentarios:hover {
+    color: #167cbf;
+}
+
+.comentariosContainer {
+    margin-top: 12px;
+}
+
+.comentario {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.comentario:last-child {
+    border-bottom: none;
+}
+
+.comentarioHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.comentarioFoto {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comentarioInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.comentarioNome {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.comentarioData {
+    font-size: 11px;
+    color: #999;
+}
+
+.comentarioTexto {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    padding-left: 40px;
+    line-height: 1.4;
+}
+
+.novoComentario {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.inputComentario {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.inputComentario:focus {
+    border-color: #167cbf;
+}
+
+.btnEnviarComentario {
+    padding: 8px 16px;
+    background-color: #167cbf;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btnEnviarComentario:hover {
+    background-color: #125d8f;
+}
+
+.msgDoador {
+    font-size: 13px;
+    color: #999;
+    text-align: center;
+    margin: 10px 0 0 0;
+}
+
+.msgLogin {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin: 10px 0 0 0;
+}
+
+.msgLogin a {
+    color: #167cbf;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.msgLogin a:hover {
+    text-decoration: underline;
+}
+
+.infoPost {
+    font-size: 13px;
+    color: #999;
+    margin: 5px 0;
+}
+
+
 
 @media (max-width: 768px) {
     .secao { flex-direction: column; }

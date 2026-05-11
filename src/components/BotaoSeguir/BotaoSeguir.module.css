@@ -32,22 +32,17 @@
     transform: scale(0.95);
 }
 
-.botaoSeguir span {
-    font-size: 14px;
-    font-weight: bold;
-}
-
-/* Estilo quando está seguindo */
+/* Estilo quando está seguindo - COR AZUL ATUALIZADA */
 .seguindo {
-    background-color: #2ecc71;
+    background-color: #167cbf;
     color: white;
-    border-color: #2ecc71;
+    border-color: #167cbf;
 }
 
 .seguindo:hover:not(:disabled) {
-    background-color: #27ae60;
-    border-color: #27ae60;
-    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+    background-color: #125d8f;
+    border-color: #125d8f;
+    box-shadow: 0 2px 8px rgba(22, 124, 191, 0.3);
 }
 
 /* Estado desabilitado */
@@ -69,23 +64,13 @@
 }
 
 .seguindo .loader {
-    border: 2px solid #fff;
-    border-top: 2px solid #2ecc71;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-/* Contador de seguidores */
-.contador {
-    font-size: 11px;
-    color: #666;
-    background-color: #f0f2f5;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-weight: 500;
 }
 
 /* Responsivo para mobile */
@@ -94,30 +79,4 @@
         padding: 6px 12px;
         font-size: 11px;
     }
-
-    .botaoSeguir span {
-        font-size: 12px;
-    }
-
-    .contador {
-        font-size: 10px;
-        padding: 2px 5px;
-    }
 }
-
-/* Versão pequena (para cards) */
-.botaoSeguir.pequeno {
-    padding: 4px 10px;
-    font-size: 11px;
-}
-
-/* Versão grande (para página da ONG) */
-.botaoSeguir.grande {
-    padding: 12px 24px;
-    font-size: 16px;
-}
-
-.botaoSeguir.grande span {
-    font-size: 18px;
-}
-

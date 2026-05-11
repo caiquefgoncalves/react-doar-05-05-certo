@@ -25,10 +25,7 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Status verificado:', data); // Debug
                 setSeguindo(data.seguindo);
-            } else {
-                console.error('Erro na resposta:', response.status);
             }
         } catch (error) {
             console.error('Erro ao verificar status:', error);
@@ -52,9 +49,6 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
                 return;
             }
 
-            console.log('Token encontrado:', token.substring(0, 20) + '...'); // Debug
-            console.log('Ação:', seguindo ? 'desseguir' : 'seguir'); // Debug
-
             const endpoint = seguindo ? 'desseguir' : 'seguir';
             const response = await fetch(`${apiUrl}/${endpoint}/${idOng}`, {
                 method: 'POST',
@@ -66,13 +60,10 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
             });
 
             const data = await response.json();
-            console.log('Resposta do servidor:', data); // Debug
 
             if (response.ok) {
                 const novoStatus = !seguindo;
                 setSeguindo(novoStatus);
-
-                console.log('Novo status:', novoStatus); // Debug
 
                 if (onStatusChange) {
                     onStatusChange(novoStatus);
@@ -87,7 +78,6 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
                     }, 200);
                 }
             } else {
-                console.error('Erro do servidor:', data); // Debug
                 if (response.status === 401) {
                     alert('Sessão expirada. Por favor, faça login novamente.');
                 } else if (response.status === 403) {
@@ -97,7 +87,7 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
                 }
             }
         } catch (error) {
-            console.error('Erro na requisição:', error);
+            console.error('Erro:', error);
             alert('Erro ao conectar com o servidor');
         } finally {
             setLoading(false);
@@ -115,17 +105,7 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange }) {
             {loading ? (
                 <span className={css.loader}></span>
             ) : (
-                <>
-                    {seguindo ? (
-                        <>
-                            <span>✓</span> Seguindo
-                        </>
-                    ) : (
-                        <>
-                            <span>+</span> Seguir
-                        </>
-                    )}
-                </>
+                seguindo ? 'Seguindo' : 'Seguir'
             )}
         </button>
     );
