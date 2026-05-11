@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import Titulo from "../Titulo/Titulo.jsx";
 import css from './Projetos1.module.css'
+import Botao from "../Botao/Botao.jsx";
+import BotaoProjetos from "../BotaoProjetos/BotaoProjetos.jsx";
 
 
 export default function Projetos({api}) {
@@ -87,7 +89,10 @@ export default function Projetos({api}) {
                                     e.currentTarget.src = '/sem_imagem.webp';
                                 }} />
                                 <div className={css.cardInfo}>
-                                    <h3 className={css.cardNome}>{projeto.titulo}</h3>
+                                    <div className={'d-flex justify-content-between align-items-center mb-3'}>
+                                        <h3 className={css.cardNome}>{projeto.titulo}</h3>
+                                        <BotaoProjetos status={projeto.tipo_ajuda} />
+                                    </div>
                                     <p className={css.cardDesc}>{projeto.descricao?.substring(0, 80)}...</p>
                                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                         <span className={css.cardCategoria}>{projeto.status}</span>

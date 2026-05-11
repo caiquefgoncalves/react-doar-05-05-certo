@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import css from "./PaginaOng1.module.css";
+import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
 
 export default function PaginaOng1({api}) {
     const api_url = api
@@ -46,7 +47,9 @@ export default function PaginaOng1({api}) {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Dados ONG:', data);
-                if (data.ong) setOng(data.ong);
+                if (data.ong) {
+                    setOng(data.ong);
+                }
                 if (data.projetos) setProjetos(data.projetos);
                 if (data.atualizacoes) setAtualizacoes(data.atualizacoes || []);
                 if (data.qtd_projetos) setQtdProjetos(data.qtd_projetos || []);
@@ -125,22 +128,37 @@ export default function PaginaOng1({api}) {
 
                     {/* Coluna Esquerda */}
                     <div className={css.colunaEsquerda}>
-                        <div className={css.headerONG}>
-                            {ong && (
-                                <img
-                                    className={css.imagem}
-                                    src={`${api_url}/uploads/Usuarios/${ong.id}.jpeg`}
-                                    alt={`Logo da ONG ${ong.nome}`}
-                                    onError={(e) => {
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = '/sem_imagem.webp';
-                                    }}
-                                />
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div className={css.headerONG}>
+                                {ong && (
+                                    <img
+                                        className={css.imagem}
+                                        src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
+                                        alt={`Logo da ONG ${ong.nome}`}
+                                        onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = '/sem_imagem.webp';
+                                        }}
+                                    />
 
-                            )}
-                            <div>
-                                <h1 className={css.nome}>{ong.nome}</h1>
-                                <p className={css.descBreve}>{ong.descricao_breve}</p>                    </div>
+                                )}
+                                <div>
+                                    <h1 className={css.nome}>{ong.nome}</h1>
+                                    <p className={css.descBreve}>{ong.descricao_breve}</p>
+                                    {ong.qtd_seguidores == 0 && (
+                                        <p className={css.texto}>Não há seguidores</p>
+                                    )}
+                                    {ong.qtd_seguidores == 1 && (
+                                        <p className={css.texto}>{ong.qtd_seguidores} seguidor</p>
+                                    )}
+                                    {ong.qtd_seguidores > 1 && (
+                                        <p className={css.texto}>{ong.qtd_seguidores} seguidores</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <BotaoSeguir/>
+
                         </div>
 
 
@@ -307,6 +325,15 @@ export default function PaginaOng1({api}) {
                     <div className={css.colunaDireita}>
                         <div className={css.cardApoie}>
                             <Titulo titulo={`Apoie o ${ong.nome} diretamente!`} cor={'preto'}/>
+
+                            <img
+                                className={css.pix}
+                                src={`${api_url}/uploads/Pix/${ong.pix}`}
+                                alt={`Pix ${ong.nome}`}
+                                onError={(e) => { e.target.onerror = null;
+                                    e.currentTarget.src = '/sem_imagem.webp';
+                                }}
+                            />
 
 
                             <div className={css.dadosBancarios}>

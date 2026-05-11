@@ -86,21 +86,22 @@ export default function EditarProjeto1({api}) {
 
     return (
         <section className={css.containerSection}>
-            <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            {msgTexto && (
+                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            )}
             <div className={css.titulo}><Titulo titulo={'Editar projeto'} cor={'laranja'}/></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={css.campos}>
-                        <Input label={'Título'} type={'text'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
-                        <Select label={'Categoria'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Animal', 'Escolar', 'Comida', 'Saúde', 'Outro']} />
-                        <Select label={'Tipo de ajuda'} input={tipoAjuda} alterarInput={(e) => setTipoAjuda(e.target.value)} options={['Dinheiro', 'Voluntariado', 'Outros']} />
-                        <Select label={'Status'} input={status} alterarInput={(e) => setStatus(e.target.value)} options={['Ativo', 'Inativo', 'Concluído']} />
+                        <Input label={'Título *'} type={'text'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
+                        <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Animal', 'Escolar', 'Comida', 'Saúde', 'Outro']} />
+                        <Select label={'Tipo de ajuda *'} input={tipoAjuda} alterarInput={(e) => setTipoAjuda(e.target.value)} options={['Dinheiro', 'Voluntariado', 'Outros']} />
+                        <Select label={'Status *'} input={status} alterarInput={(e) => setStatus(e.target.value)} options={['Ativo', 'Inativo', 'Concluído']} />
                     </div>
                     <div className={css.campos}>
-                        <Input label={'Descrição'} type={'text'} input={descricao} alterarInput={(e) => setDescricao(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
+                        <Input label={'Descrição *'} type={'text'} input={descricao} alterarInput={(e) => setDescricao(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
                         <Input label={'Localização'} type={'text'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
-                        <InputArquivo label={'Nova foto (deixe vazio para manter)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
-
+                        <InputArquivo tamanho={'big'} label={'Nova foto (opcional)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

@@ -34,7 +34,6 @@ export default function Feed({ api }) {
 
     const api_url = api;
 
-    // Funções auxiliares
     function decodificarToken(token) {
         try {
             const base64Url = token.split('.')[1];
@@ -43,9 +42,7 @@ export default function Feed({ api }) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
             return JSON.parse(jsonPayload);
-        } catch (error) {
-            return null;
-        }
+        } catch (error) { return null; }
     }
 
     function tokenExpirado(token) {
@@ -54,9 +51,7 @@ export default function Feed({ api }) {
             if (!tokenData || !tokenData.exp) return false;
             const agora = Math.floor(Date.now() / 1000);
             return agora >= tokenData.exp;
-        } catch (error) {
-            return true;
-        }
+        } catch (error) { return true; }
     }
 
     function verificarUsuario() {
@@ -68,9 +63,7 @@ export default function Feed({ api }) {
                     setUsuarioTipo(payload.tipo);
                     setUsuarioId(payload.id_usuarios);
                 }
-            } catch (error) {
-                console.error('Erro ao decodificar token:', error);
-            }
+            } catch (error) { console.error('Erro ao decodificar token:', error); }
         }
     }
 
@@ -83,7 +76,6 @@ export default function Feed({ api }) {
             navigate('/login');
             return;
         }
-
         verificarUsuario();
         setPagina(0);
         setTemMais(true);
@@ -93,9 +85,7 @@ export default function Feed({ api }) {
     async function buscarAtualizacoes(novaPagina = 0, append = false) {
         try {
             if (!append) setLoading(true);
-
             const token = localStorage.getItem('token');
-
             let url;
             if (tipoFeed === 'seguindo') {
                 if (!token || usuarioTipo !== 1) {
@@ -109,89 +99,43 @@ export default function Feed({ api }) {
             } else {
                 url = `${api_url}/feed_atualizacoes?filtro=${filtro}&pagina=${novaPagina}&limite=4&token=${token || ''}`;
             }
-
-            const response = await fetch(url, {
-                credentials: 'include',
-                headers: {
-                    'Authorization': `Bearer ${token || ''}`
-                }
-            });
-
+            const response = await fetch(url, { credentials: 'include', headers: { 'Authorization': `Bearer ${token || ''}` } });
             if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('nome');
+                localStorage.removeItem('token'); localStorage.removeItem('nome');
                 localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
-                navigate('/login');
-                return;
+                navigate('/login'); return;
             }
-
             if (response.status === 403) {
-                setMsgTexto('Apenas doadores podem acessar este feed.');
-                setMsgTipo('erro');
-                setTipoFeed('todas');
-                setLoading(false);
-                return;
+                setMsgTexto('Apenas doadores podem acessar este feed.'); setMsgTipo('erro');
+                setTipoFeed('todas'); setLoading(false); return;
             }
-
             const data = await response.json();
-
             if (data.atualizacoes) {
-                if (append) {
-                    setTodasAtualizacoes(prev => [...prev, ...data.atualizacoes]);
-                } else {
-                    setTodasAtualizacoes(data.atualizacoes);
-                }
-
-                if (data.atualizacoes.length < 4) {
-                    setTemMais(false);
-                }
-
+                if (append) { setTodasAtualizacoes(prev => [...prev, ...data.atualizacoes]); }
+                else { setTodasAtualizacoes(data.atualizacoes); }
+                if (data.atualizacoes.length < 4) { setTemMais(false); }
                 carregarComentariosAutomaticos(data.atualizacoes);
-            } else {
-                if (!append) setTodasAtualizacoes([]);
-                setTemMais(false);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar:', error);
-            setTemMais(false);
-        } finally {
-            setLoading(false);
-        }
+            } else { if (!append) setTodasAtualizacoes([]); setTemMais(false); }
+        } catch (error) { console.error('Erro ao buscar:', error); setTemMais(false); }
+        finally { setLoading(false); }
     }
 
     async function carregarComentariosAutomaticos(atualizacoesLista) {
         const token = localStorage.getItem('token');
-
         for (const item of atualizacoesLista) {
             try {
-                const response = await fetch(`${api_url}/comentarios/${item.id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token || ''}`
-                    }
-                });
-
+                const response = await fetch(`${api_url}/comentarios/${item.id}`, { headers: { 'Authorization': `Bearer ${token || ''}` } });
                 if (response.ok) {
                     const data = await response.json();
                     const qtd = data.total || data.comentarios?.length || 0;
-
-                    setTodasAtualizacoes(prev =>
-                        prev.map(att => {
-                            if (att.id === item.id) {
-                                return { ...att, qtd_comentarios: qtd };
-                            }
-                            return att;
-                        })
-                    );
+                    setTodasAtualizacoes(prev => prev.map(att => att.id === item.id ? { ...att, qtd_comentarios: qtd } : att));
                 }
-            } catch (error) {
-                console.error(`Erro ao carregar comentários da atualização ${item.id}:`, error);
-            }
+            } catch (error) { console.error(`Erro ao carregar comentários da atualização ${item.id}:`, error); }
         }
     }
 
     useEffect(() => {
         let filtradas = todasAtualizacoes;
-
         if (busca.trim()) {
             const termo = busca.toLowerCase();
             filtradas = filtradas.filter(item =>
@@ -200,539 +144,244 @@ export default function Feed({ api }) {
                 (item.ong_nome && item.ong_nome.toLowerCase().includes(termo))
             );
         }
-
         setAtualizacoes(filtradas);
     }, [busca, todasAtualizacoes]);
 
-    useEffect(() => {
-        setPagina(0);
-        setTemMais(true);
-        buscarAtualizacoes(0, false);
-    }, [filtro]);
+    useEffect(() => { setPagina(0); setTemMais(true); buscarAtualizacoes(0, false); }, [filtro]);
 
-    // Funções para comentários
     async function carregarComentarios(idAtualizacao) {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/comentarios/${idAtualizacao}`, {
-                headers: {
-                    'Authorization': `Bearer ${token || ''}`
-                }
-            });
-
+            const response = await fetch(`${api_url}/comentarios/${idAtualizacao}`, { headers: { 'Authorization': `Bearer ${token || ''}` } });
             if (response.ok) {
                 const data = await response.json();
-                setComentarios(prev => ({
-                    ...prev,
-                    [idAtualizacao]: data.comentarios || []
-                }));
-
+                setComentarios(prev => ({ ...prev, [idAtualizacao]: data.comentarios || [] }));
                 const qtd = data.total || data.comentarios?.length || 0;
-
-                setTodasAtualizacoes(prev =>
-                    prev.map(item => {
-                        if (item.id === idAtualizacao) {
-                            return { ...item, qtd_comentarios: qtd };
-                        }
-                        return item;
-                    })
-                );
-
-                setAtualizacoes(prev =>
-                    prev.map(item => {
-                        if (item.id === idAtualizacao) {
-                            return { ...item, qtd_comentarios: qtd };
-                        }
-                        return item;
-                    })
-                );
+                setTodasAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_comentarios: qtd } : item));
+                setAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_comentarios: qtd } : item));
             }
-        } catch (error) {
-            console.error('Erro ao carregar comentários:', error);
-        }
+        } catch (error) { console.error('Erro ao carregar comentários:', error); }
     }
 
     async function enviarComentario(idAtualizacao) {
         const texto = novoComentario[idAtualizacao]?.trim();
         if (!texto) return;
-
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                setMsgTexto('Faça login como doador para comentar.');
-                setMsgTipo('erro');
-                return;
-            }
-
+            if (!token) { setMsgTexto('Faça login como doador para comentar.'); setMsgTipo('erro'); return; }
             if (tokenExpirado(token)) {
-                localStorage.removeItem('token');
-                localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
-                navigate('/login');
-                return;
+                localStorage.removeItem('token'); localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
+                navigate('/login'); return;
             }
-
             const response = await fetch(`${api_url}/comentar/${idAtualizacao}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ texto })
             });
-
             if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
-                navigate('/login');
-                return;
+                localStorage.removeItem('token'); localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
+                navigate('/login'); return;
             }
-
             if (response.ok) {
                 const data = await response.json();
-
-                setComentarios(prev => ({
-                    ...prev,
-                    [idAtualizacao]: [...(prev[idAtualizacao] || []), data.comentario]
-                }));
-
-                // Atualizar contador no feed
-                setTodasAtualizacoes(prev =>
-                    prev.map(item => {
-                        if (item.id === idAtualizacao) {
-                            return { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 };
-                        }
-                        return item;
-                    })
-                );
-
-                setAtualizacoes(prev =>
-                    prev.map(item => {
-                        if (item.id === idAtualizacao) {
-                            return { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 };
-                        }
-                        return item;
-                    })
-                );
-
-                // Atualizar contador no modal
+                setComentarios(prev => ({ ...prev, [idAtualizacao]: [...(prev[idAtualizacao] || []), data.comentario] }));
+                setTodasAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 } : item));
+                setAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_comentarios: (item.qtd_comentarios || 0) + 1 } : item));
                 if (modalPostagem && modalPostagem.id === idAtualizacao) {
-                    setModalPostagem(prev => ({
-                        ...prev,
-                        qtd_comentarios: (prev.qtd_comentarios || 0) + 1
-                    }));
+                    setModalPostagem(prev => ({ ...prev, qtd_comentarios: (prev.qtd_comentarios || 0) + 1 }));
                 }
-
                 setNovoComentario(prev => ({ ...prev, [idAtualizacao]: '' }));
-
-                setMsgTexto('Comentário enviado com sucesso!');
-                setMsgTipo('sucesso');
+                setMsgTexto('Comentário enviado com sucesso!'); setMsgTipo('sucesso');
             } else {
                 const error = await response.json();
-                setMsgTexto(error.error || 'Erro ao comentar');
-                setMsgTipo('erro');
+                setMsgTexto(error.error || 'Erro ao comentar'); setMsgTipo('erro');
             }
-        } catch (error) {
-            console.error('Erro ao enviar comentário:', error);
-            setMsgTexto('Erro ao conectar com o servidor');
-            setMsgTipo('erro');
-        }
+        } catch (error) { console.error('Erro ao enviar comentário:', error); setMsgTexto('Erro ao conectar com o servidor'); setMsgTipo('erro'); }
     }
 
-    // Função de callback para quando curtir/descurtir
     function handleCurtidaChange(idAtualizacao, novoStatus) {
-        setTodasAtualizacoes(prev =>
-            prev.map(item => {
-                if (item.id === idAtualizacao) {
-                    return {
-                        ...item,
-                        qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
-                    };
-                }
-                return item;
-            })
-        );
-
-        setAtualizacoes(prev =>
-            prev.map(item => {
-                if (item.id === idAtualizacao) {
-                    return {
-                        ...item,
-                        qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
-                    };
-                }
-                return item;
-            })
-        );
-
-        // Atualizar contador no modal
+        setTodasAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1) } : item));
+        setAtualizacoes(prev => prev.map(item => item.id === idAtualizacao ? { ...item, qtd_curtidas: (item.qtd_curtidas || 0) + (novoStatus ? 1 : -1) } : item));
         if (modalPostagem && modalPostagem.id === idAtualizacao) {
-            setModalPostagem(prev => ({
-                ...prev,
-                qtd_curtidas: (prev.qtd_curtidas || 0) + (novoStatus ? 1 : -1)
-            }));
+            setModalPostagem(prev => ({ ...prev, qtd_curtidas: (prev.qtd_curtidas || 0) + (novoStatus ? 1 : -1) }));
         }
     }
 
     function toggleComentarios(idAtualizacao) {
-        if (!mostrarComentarios[idAtualizacao]) {
-            carregarComentarios(idAtualizacao);
-        }
-        setMostrarComentarios(prev => ({
-            ...prev,
-            [idAtualizacao]: !prev[idAtualizacao]
-        }));
-    }
-
-    function handleKeyDown(e) {
-        if (e.key === 'Enter') {}
+        if (!mostrarComentarios[idAtualizacao]) { carregarComentarios(idAtualizacao); }
+        setMostrarComentarios(prev => ({ ...prev, [idAtualizacao]: !prev[idAtualizacao] }));
     }
 
     function handleMudarTipoFeed(novoTipo) {
         if (novoTipo === 'seguindo') {
             const token = localStorage.getItem('token');
-            if (!token || tokenExpirado(token)) {
-                setMsgTexto('Faça login como doador para acessar este feed.');
-                setMsgTipo('erro');
-                return;
-            }
-
+            if (!token || tokenExpirado(token)) { setMsgTexto('Faça login como doador para acessar este feed.'); setMsgTipo('erro'); return; }
             const payload = decodificarToken(token);
-            if (!payload || payload.tipo !== 1) {
-                setMsgTexto('Apenas doadores podem acessar este feed.');
-                setMsgTipo('erro');
-                return;
-            }
+            if (!payload || payload.tipo !== 1) { setMsgTexto('Apenas doadores podem acessar este feed.'); setMsgTipo('erro'); return; }
         }
-
         setTipoFeed(novoTipo);
     }
 
-    // Funções do modal
-    function abrirPostagem(item) {
-        setModalPostagem(item);
-        carregarComentarios(item.id);
-    }
-
-    function fecharPostagem() {
-        setModalPostagem(null);
-    }
+    function abrirPostagem(item) { setModalPostagem(item); carregarComentarios(item.id); }
+    function fecharPostagem() { setModalPostagem(null); }
 
     if (loading && pagina === 0) {
-        return (
-            <section className={css.secao}>
-                <MenuLateral />
-                <div className={css.conteudo}>
-                    <p style={{ textAlign: 'center', padding: '50px' }}>Carregando...</p>
-                </div>
-            </section>
-        );
+        return <section className={css.secao}><MenuLateral /><div className={css.conteudo}><p style={{ textAlign: 'center', padding: '50px' }}>Carregando...</p></div></section>;
     }
 
     return (
         <div>
-            {/* Mensagem */}
             <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
-
             <section className={css.secao}>
                 <MenuLateral />
                 <div className={css.conteudo}>
-
-                    {/* Tabs */}
                     <div className={css.tabsFeed}>
-                        <button
-                            className={`${css.tabFeed} ${tipoFeed === 'todas' ? css.tabAtivo : ''}`}
-                            onClick={() => handleMudarTipoFeed('todas')}
-                        >
-                            Todas as ONGs
-                        </button>
-                        <button
-                            className={`${css.tabFeed} ${tipoFeed === 'seguindo' ? css.tabAtivo : ''}`}
-                            onClick={() => handleMudarTipoFeed('seguindo')}
-                        >
-                            Seguindo
-                        </button>
+                        <button className={`${css.tabFeed} ${tipoFeed === 'todas' ? css.tabAtivo : ''}`} onClick={() => handleMudarTipoFeed('todas')}>Todas as ONGs</button>
+                        <button className={`${css.tabFeed} ${tipoFeed === 'seguindo' ? css.tabAtivo : ''}`} onClick={() => handleMudarTipoFeed('seguindo')}>Seguindo</button>
                     </div>
-
-                    {/* Barra topo */}
                     <div className={css.barraTopo}>
                         <div className={css.buscaInput}>
-                            <input
-                                type="text"
-                                placeholder="Busque por Atualizações..."
-                                value={busca}
-                                onChange={(e) => setBusca(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className={css.inputBusca}
-                            />
+                            <input type="text" placeholder="Busque por Atualizações..." value={busca} onChange={(e) => setBusca(e.target.value)} className={css.inputBusca} />
                         </div>
-
                         <div className={css.filtro}>
                             <span>Filtrar por:</span>
-                            <select
-                                value={filtro}
-                                onChange={(e) => setFiltro(e.target.value)}
-                                className={css.selectFiltro}
-                            >
+                            <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className={css.selectFiltro}>
                                 <option value="recentes">Mais recentes</option>
                                 <option value="antigos">Mais antigos</option>
                             </select>
                         </div>
                     </div>
 
-                    {/* Lista */}
                     {atualizacoes.length === 0 ? (
                         <div className={css.vazio}>
                             {tipoFeed === 'seguindo' ? (
                                 <>
                                     <p>Nenhuma postagem das ONGs que você segue.</p>
-                                    <p style={{ fontSize: '13px', color: '#999' }}>
-                                        Siga ONGs para ver as novidades delas aqui!
-                                    </p>
-                                    <Link to="/ongs" style={{ color: '#167cbf', textDecoration: 'none', fontWeight: '600' }}>
-                                        Encontrar ONGs
-                                    </Link>
+                                    <p style={{ fontSize: '13px', color: '#999' }}>Siga ONGs para ver as novidades delas aqui!</p>
+                                    <Link to="/ongs" style={{ color: '#167cbf', textDecoration: 'none', fontWeight: '600' }}>Encontrar ONGs</Link>
                                 </>
-                            ) : (
-                                <p>Nenhuma atualização encontrada.</p>
-                            )}
+                            ) : <p>Nenhuma atualização encontrada.</p>}
                         </div>
                     ) : (
                         atualizacoes.map(item => (
                             <div key={`att-${item.id}`} className={css.cardAtualizacao}>
-
                                 <Link to={`/ong/${item.ong_id}`} className={css.header} onClick={(e) => e.stopPropagation()}>
-                                    <img
-                                        src={item.ong_foto ? `${api_url}/uploads/Usuarios/${item.ong_foto}` : '/ong-icon.png'}
-                                        alt={item.ong_nome}
-                                        className={css.fotoOng}
-                                        onError={(e) => {
-                                            e.currentTarget.src = '/sem_imagem.webp';
-                                        }}
-                                    />
+                                    <img src={item.ong_foto ? `${api_url}/uploads/Usuarios/${item.ong_foto}` : '/ong-icon.png'} alt={item.ong_nome} className={css.fotoOng} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
                                     <div className={css.headerInfo}>
                                         <h3 className={css.nomeOng}>{item.ong_nome}</h3>
                                         <span className={css.data}>{item.data}</span>
                                     </div>
                                     <div onClick={(e) => e.stopPropagation()}>
-                                        <Curtida
-                                            idAtualizacao={item.id}
-                                            apiUrl={api_url}
-                                            onStatusChange={(status) => handleCurtidaChange(item.id, status)}
-                                        />
+                                        <Curtida idAtualizacao={item.id} apiUrl={api_url} onStatusChange={(status) => handleCurtidaChange(item.id, status)} />
                                     </div>
                                 </Link>
-
                                 <div className={css.corpo} onClick={() => abrirPostagem(item)} style={{ cursor: 'pointer' }}>
-                                    {item.foto && (
-                                        <img
-                                            src={`${api_url}/uploads/Atualizacoes/${item.foto}`}
-                                            alt={item.titulo}
-                                            onError={(e) => {
-                                                e.currentTarget.src = '/sem_imagem.webp';
-                                            }}
-                                            className={css.fotoAtualizacao}
-                                        />
-                                    )}
-
+                                    {item.foto && <img src={`${api_url}/uploads/Atualizacoes/${item.foto}`} alt={item.titulo} className={css.fotoAtualizacao} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />}
                                     <div className={css.textoContainer}>
                                         <h2 className={css.tituloAtualizacao}>{item.titulo}</h2>
-                                        <p className={css.infoPost}>
-                                            {item.qtd_curtidas || 0} curtidas • {item.qtd_comentarios || 0} comentários
-                                        </p>
-                                        {item.texto && (
-                                            <p className={css.textoAtualizacao}>{item.texto}</p>
-                                        )}
+                                        <p className={css.infoPost}>{item.qtd_curtidas || 0} curtidas • {item.qtd_comentarios || 0} comentários</p>
+                                        {item.texto && <p className={css.textoAtualizacao}>{item.texto}</p>}
                                     </div>
                                 </div>
-
-                                {/* Seção de Comentários */}
                                 <div className={css.comentariosSecao}>
-                                    <button
-                                        className={css.btnComentarios}
-                                        onClick={() => toggleComentarios(item.id)}
-                                    >
-                                        💬 Comentários ({item.qtd_comentarios || 0})
-                                    </button>
-
+                                    <button className={css.btnComentarios} onClick={() => toggleComentarios(item.id)}>💬 Comentários ({item.qtd_comentarios || 0})</button>
                                     {mostrarComentarios[item.id] && (
                                         <div className={css.comentariosContainer}>
                                             {comentarios[item.id]?.length > 0 ? (
                                                 comentarios[item.id].map(comentario => (
                                                     <div key={comentario.id} className={css.comentario}>
                                                         <div className={css.comentarioHeader}>
-                                                            <img
-                                                                src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : '/user-icon.png'}
-                                                                alt={comentario.usuario_nome}
-                                                                className={css.comentarioFoto}
-                                                                onError={(e) => {
-                                                                    e.currentTarget.src = '/user-icon.png';
-                                                                }}
-                                                            />
+                                                            <img src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : '/user-icon.png'} alt={comentario.usuario_nome} className={css.comentarioFoto} onError={(e) => { e.currentTarget.src = '/user-icon.png'; }} />
                                                             <div className={css.comentarioInfo}>
-                                                                <span className={css.comentarioNome}>
-                                                                    {comentario.usuario_nome}
-                                                                </span>
-                                                                <span className={css.comentarioData}>
-                                                                    {comentario.data_criacao}
-                                                                </span>
+                                                                <span className={css.comentarioNome}>{comentario.usuario_nome}</span>
+                                                                <span className={css.comentarioData}>{comentario.data_criacao}</span>
                                                             </div>
                                                         </div>
-                                                        <p className={css.comentarioTexto}>
-                                                            {comentario.texto}
-                                                        </p>
+                                                        <p className={css.comentarioTexto}>{comentario.texto}</p>
                                                     </div>
                                                 ))
-                                            ) : (
-                                                <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '10px' }}>
-                                                    Nenhum comentário ainda. Seja o primeiro!
-                                                </p>
-                                            )}
+                                            ) : <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '10px' }}>Nenhum comentário ainda. Seja o primeiro!</p>}
 
-                                            <div className={css.novoComentario}>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Escreva um comentário..."
-                                                    value={novoComentario[item.id] || ''}
-                                                    onChange={(e) => setNovoComentario(prev => ({
-                                                        ...prev,
-                                                        [item.id]: e.target.value
-                                                    }))}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            enviarComentario(item.id);
-                                                        }
-                                                    }}
-                                                    className={css.inputComentario}
-                                                />
-                                                <button
-                                                    onClick={() => enviarComentario(item.id)}
-                                                    className={css.btnEnviarComentario}
-                                                >
-                                                    Enviar
-                                                </button>
-                                            </div>
+                                            {/* Input de comentário - apenas doadores */}
+                                            {usuarioTipo === 1 ? (
+                                                <div className={css.novoComentario}>
+                                                    <input type="text" placeholder="Escreva um comentário..." value={novoComentario[item.id] || ''} onChange={(e) => setNovoComentario(prev => ({ ...prev, [item.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === 'Enter') { enviarComentario(item.id); } }} className={css.inputComentario} />
+                                                    <button onClick={() => enviarComentario(item.id)} className={css.btnEnviarComentario}>Enviar</button>
+                                                </div>
+                                            ) : usuarioTipo === 2 ? (
+                                                <p className={css.msgDoador}></p>
+                                            ) : usuarioTipo === 0 ? (
+                                                <p className={css.msgDoador}></p>
+                                            ) : (
+                                                <p className={css.msgLogin}><Link to="/login">Faça login</Link> como doador para comentar.</p>
+                                            )}
                                         </div>
                                     )}
                                 </div>
-
                             </div>
                         ))
                     )}
 
                     {temMais && (
                         <div className={'d-flex align-items-center justify-content-center'}>
-                            <button
-                                onClick={() => {
-                                    const proximaPagina = pagina + 1;
-                                    setPagina(proximaPagina);
-                                    buscarAtualizacoes(proximaPagina, true);
-                                }}
-                                className={css.filtro}
-                            >
-                                {loading ? "Carregando..." : "Carregar mais"}
-                            </button>
+                            <button onClick={() => { const proximaPagina = pagina + 1; setPagina(proximaPagina); buscarAtualizacoes(proximaPagina, true); }} className={css.filtro}>{loading ? "Carregando..." : "Carregar mais"}</button>
                         </div>
                     )}
-
                 </div>
             </section>
 
-            {/* Modal da postagem */}
+            {/* Modal */}
             {modalPostagem && (
                 <div className={css.overlay} onClick={fecharPostagem}>
                     <div className={css.modalPost} onClick={(e) => e.stopPropagation()}>
                         <button className={css.modalFechar} onClick={fecharPostagem}>✕</button>
-
                         <div className={css.modalEsquerda}>
-                            <img
-                                src={modalPostagem.foto ? `${api_url}/uploads/Atualizacoes/${modalPostagem.foto}` : '/sem_imagem.webp'}
-                                alt={modalPostagem.titulo}
-                                className={css.modalImagem}
-                                onError={(e) => {
-                                    e.currentTarget.src = '/sem_imagem.webp';
-                                }}
-                            />
+                            <img src={modalPostagem.foto ? `${api_url}/uploads/Atualizacoes/${modalPostagem.foto}` : '/sem_imagem.webp'} alt={modalPostagem.titulo} className={css.modalImagem} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
                         </div>
-
                         <div className={css.modalDireita}>
                             <div className={css.modalHeader}>
                                 <div className={css.cabecalho}>
                                     <Link to={`/ong/${modalPostagem.ong_id}`} onClick={fecharPostagem}>
-                                        <img
-                                            src={modalPostagem.ong_foto ? `${api_url}/uploads/Usuarios/${modalPostagem.ong_foto}` : "/ong-icon.png"}
-                                            alt={modalPostagem.ong_nome}
-                                            className={css.modalFotoPerfil}
-                                        />
+                                        <img src={modalPostagem.ong_foto ? `${api_url}/uploads/Usuarios/${modalPostagem.ong_foto}` : "/ong-icon.png"} alt={modalPostagem.ong_nome} className={css.modalFotoPerfil} />
                                     </Link>
                                     <div className={css.infocabecalho}>
-                                        <Link to={`/ong/${modalPostagem.ong_id}`} onClick={fecharPostagem} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            <h2>{modalPostagem.ong_nome}</h2>
-                                        </Link>
+                                        <Link to={`/ong/${modalPostagem.ong_id}`} onClick={fecharPostagem} style={{ textDecoration: 'none', color: 'inherit' }}><h2>{modalPostagem.ong_nome}</h2></Link>
                                         <p>{modalPostagem.data}</p>
                                     </div>
                                 </div>
                             </div>
-
                             <div className={css.modalConteudo}>
                                 <h1>{modalPostagem.titulo}</h1>
                                 <p>{modalPostagem.texto}</p>
-                                <div className={css.modalInfo}>
-                                    <span>{modalPostagem.qtd_curtidas || 0} curtidas</span>
-                                    <span> • </span>
-                                    <span>{modalPostagem.qtd_comentarios || 0} comentários</span>
-                                </div>
+                                <div className={css.modalInfo}><span>{modalPostagem.qtd_curtidas || 0} curtidas</span><span> • </span><span>{modalPostagem.qtd_comentarios || 0} comentários</span></div>
                             </div>
-
                             <div className={css.modalComentarios}>
                                 <h3>Comentários</h3>
                                 {comentarios[modalPostagem.id]?.length > 0 ? (
                                     comentarios[modalPostagem.id].map(comentario => (
                                         <div key={comentario.id} className={css.modalComentario}>
-                                            <img
-                                                src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : "/user-icon.png"}
-                                                alt=""
-                                                className={css.modalComentarioFoto}
-                                            />
-                                            <div>
-                                                <strong>{comentario.usuario_nome}</strong>
-                                                <p>{comentario.texto}</p>
-                                            </div>
+                                            <img src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : "/user-icon.png"} alt="" className={css.modalComentarioFoto} />
+                                            <div><strong>{comentario.usuario_nome}</strong><p>{comentario.texto}</p></div>
                                         </div>
                                     ))
-                                ) : (
-                                    <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '20px' }}>
-                                        Nenhum comentário ainda. Seja o primeiro!
-                                    </p>
-                                )}
+                                ) : <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '20px' }}>Nenhum comentário ainda. Seja o primeiro!</p>}
                             </div>
-
                             <div className={css.modalInputArea}>
-                                <input
-                                    type="text"
-                                    placeholder="Adicione um comentário..."
-                                    className={css.modalInput}
-                                    value={novoComentario[modalPostagem.id] || ""}
-                                    onChange={(e) =>
-                                        setNovoComentario(prev => ({
-                                            ...prev,
-                                            [modalPostagem.id]: e.target.value
-                                        }))
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            enviarComentario(modalPostagem.id);
-                                        }
-                                    }}
-                                />
+                                {usuarioTipo === 1 ? (
+                                    <input type="text" placeholder="Adicione um comentário..." className={css.modalInput} value={novoComentario[modalPostagem.id] || ""} onChange={(e) => setNovoComentario(prev => ({ ...prev, [modalPostagem.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === "Enter") { enviarComentario(modalPostagem.id); } }} />
+                                ) : usuarioTipo === 2 ? (
+                                    <p className={css.msgDoador}>ONGs não podem comentar.</p>
+                                ) : usuarioTipo === 0 ? (
+                                    <p className={css.msgDoador}>Administradores não podem comentar.</p>
+                                ) : (
+                                    <p className={css.msgLogin}><Link to="/login">Faça login</Link> como doador para comentar.</p>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <button className={css.botaoVoltar} onClick={() => window.scrollTo(0, 0)}>
-                ↑
-            </button>
+            <button className={css.botaoVoltar} onClick={() => window.scrollTo(0, 0)}>↑</button>
         </div>
     );
 }

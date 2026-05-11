@@ -9,6 +9,14 @@
     width: 100%;
 }
 
+.pix {
+    height: 14rem;
+    width: 14rem;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+
 /* Menu Lateral Fixo */
 .menulateral {
     position: sticky;

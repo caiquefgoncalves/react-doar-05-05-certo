@@ -4,7 +4,7 @@ import Input from "../../components/Input/Input.jsx";
 import Titulo from "../Titulo/Titulo.jsx";
 import Botao from "../Botao/Botao.jsx";
 import {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Mensagem from "../Mensagem/Mensagem.jsx";
 
 export default function Login1({ api }) {
@@ -18,8 +18,11 @@ export default function Login1({ api }) {
         // Mostra mensagem de sessão expirada
         const msg = localStorage.getItem('sessaoExpirada');
         if (msg) {
+            // Só remove depois de 3 segundos
             setMensagem({ texto: msg, tipo: 'erro' });
-            localStorage.removeItem('sessaoExpirada');
+            setTimeout(() => {
+                localStorage.removeItem('sessaoExpirada');
+            }, 3000);
         }
 
         const token = localStorage.getItem('token');
@@ -76,11 +79,18 @@ export default function Login1({ api }) {
             if (retorno.token) {
                 localStorage.setItem('token', retorno.token);
                 localStorage.setItem('nome', retorno.nome);
+                localStorage.removeItem('sessaoExpirada');
+
+                // Mostrar mensagem de sucesso antes de redirecionar
+                setMensagem({ texto: retorno.message || `Bem-vindo ${retorno.nome}!`, tipo: 'sucesso' });
+
                 const tokenData = decodificarToken(retorno.token);
                 if (tokenData) {
-                    if (tokenData.tipo === 0) navigate('/dashboardAdm');
-                    else if (tokenData.tipo === 2) navigate('/dashboardOng');
-                    else if (tokenData.tipo === 1) navigate('/dashboardDoador');
+                    setTimeout(() => {
+                        if (tokenData.tipo === 0) navigate('/dashboardAdm');
+                        else if (tokenData.tipo === 2) navigate('/dashboardOng');
+                        else if (tokenData.tipo === 1) navigate('/dashboardDoador');
+                    }, 1500); // Pequeno delay para mostrar a mensagem
                 }
             } else if (retorno.error === "Verifique o e-mail antes de logar!") {
                 setMensagem({ texto: 'E-mail não confirmado!', tipo: 'erro' });
@@ -95,7 +105,13 @@ export default function Login1({ api }) {
 
     return (
         <div className={"container-fluid " + css.secao}>
-            <Mensagem tipo={mensagem.tipo} texto={mensagem.texto} onClose={() => setMensagem({ texto: '', tipo: '' })} />
+            {mensagem.texto && (
+                <Mensagem
+                    tipo={mensagem.tipo}
+                    texto={mensagem.texto}
+                    onClose={() => setMensagem({ texto: '', tipo: '' })}
+                />
+            )}
             <div className="row g-0">
                 <div className={"col-md-6 " + css.colunaFormulario}>
                     <div className={css.conteudoFormulario}>
@@ -106,7 +122,7 @@ export default function Login1({ api }) {
                             </div>
                             <div className={css.campo}>
                                 <Input alterarInput={alterarSenha} input={senha} label={"Senha"} type={"password"} placeholder={"Digite sua senha"} required={true} />
-                                <a href="/esqueciSenha" className={css.link}>Esqueci minha senha</a>
+                                <Link to="/esqueciSenha" className={css.link}>Esqueci minha senha</Link>
                             </div>
                             <div className={css.areaBotao}>
                                 <Botao acao={realizarLogin} cor={'amarelo'} texto={'Login'} />

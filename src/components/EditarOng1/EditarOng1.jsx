@@ -48,7 +48,6 @@ export default function EditarOng1({api}) {
         if (!token) { navigate('/login'); return; }
         const tokenData = decodificarToken(token);
         if (!tokenData) { localStorage.clear(); navigate('/login'); return; }
-        // Permite ADM (tipo 0) ou a própria ONG (tipo 2)
         if (tokenData.tipo !== 0 && !(tokenData.tipo === 2 && tokenData.id_usuarios === parseInt(id))) {
             navigate('/dashboardOng'); return;
         }
@@ -118,23 +117,16 @@ export default function EditarOng1({api}) {
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
 
             if (response.ok) {
-                // Atualiza o nome no localStorage se veio na resposta
                 if (data.usuario && data.usuario.nome) {
                     localStorage.setItem('nome', data.usuario.nome);
                 }
 
-                // Redireciona após 2 segundos
                 setTimeout(() => {
-                    // Se for ADMIN (tipo 0), volta para o dashboard de admin
                     if (tokenData && tokenData.tipo === 0) {
                         navigate('/dashboardAdm');
-                    }
-                    // Se for ONG (tipo 2), vai para o dashboard da ONG
-                    else if (tokenData && tokenData.tipo === 2) {
+                    } else if (tokenData && tokenData.tipo === 2) {
                         navigate('/dashboardOng');
-                    }
-                    // Fallback
-                    else {
+                    } else {
                         navigate('/login');
                     }
                 }, 2000);
@@ -149,28 +141,30 @@ export default function EditarOng1({api}) {
 
     return (
         <section className={css.containerSection}>
-            <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            {msgTexto && (
+                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            )}
             <div className={css.cadastroOng1}><Titulo titulo={'Editar ONG'} cor={'laranja'}/></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={css.campos}>
-                        <Input label={'Nome'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
-                        <Input label={'Email'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value)} required={true} />
-                        <Input label={'Descrição breve'} type={'text'} input={descBreve} alterarInput={(e) => setDescBreve(e.target.value)} maxLength={30} />
-                        <Input label={'Localização'} type={'text'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
+                        <Input label={'Nome *'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
+                        <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value)} required={true} />
+                        <Input label={'Descrição breve *'} type={'text'} input={descBreve} alterarInput={(e) => setDescBreve(e.target.value)} maxLength={30} />
+                        <Input label={'Localização *'} type={'text'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
                         <Input label={'Nova senha (opcional)'} type={'password'} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
-                        <Input label={'Código do banco'} type={'text'} input={codBanco} alterarInput={(e) => setCodBanco(e.target.value.replace(/\D/g, ''))} maxLength={3} />
-                        <Input label={'Número da conta'} type={'text'} input={numConta} alterarInput={(e) => setNumConta(e.target.value.replace(/\D/g, ''))} maxLength={12} />
-                        <Select label={'Tipo de conta'} input={tipoConta} alterarInput={(e) => setTipoConta(e.target.value)} options={['Conta-corrente', 'Poupança', 'Conta salário', 'Conta digital', 'Conta PJ']} />
+                        <Input label={'Código do banco *'} type={'text'} input={codBanco} alterarInput={(e) => setCodBanco(e.target.value.replace(/\D/g, ''))} maxLength={3} />
+                        <Input label={'Número da conta *'} type={'text'} input={numConta} alterarInput={(e) => setNumConta(e.target.value.replace(/\D/g, ''))} maxLength={12} />
+                        <Select label={'Tipo de conta *'} input={tipoConta} alterarInput={(e) => setTipoConta(e.target.value)} options={['Conta-corrente', 'Poupança', 'Conta salário', 'Conta digital', 'Conta PJ']} />
                     </div>
                     <div className={css.campos}>
-                        <Input label={'CNPJ'} type={'text'} input={cnpj} alterarInput={(e) => setCnpj(e.target.value)} mascara={'cnpj'} />
-                        <Select label={'Categoria'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Animal', 'Escolar', 'Comida', 'Outro']} />
-                        <Input tamanho={'Big'} label={'Descrição longa'} type={'text'} input={descLonga} alterarInput={(e) => setDescLonga(e.target.value)} textarea={true} maxLength={200} />
+                        <Input label={'CNPJ *'} type={'text'} input={cnpj} alterarInput={(e) => setCnpj(e.target.value)} mascara={'cnpj'} />
+                        <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Animal', 'Escolar', 'Comida', 'Outro']} />
+                        <Input tamanho={'Big'} label={'Descrição longa *'} type={'text'} input={descLonga} alterarInput={(e) => setDescLonga(e.target.value)} textarea={true} maxLength={200} />
                         <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
-                        <Input label={'Chave PIX'} type={'text'} input={chavePix} alterarInput={(e) => setChavePix(e.target.value)} />
-                        <Input label={'Número da agência'} type={'text'} input={numAgencia} alterarInput={(e) => setNumAgencia(e.target.value.replace(/\D/g, ''))} maxLength={5} />
-                        <InputArquivo tamanho={'big'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                        <Input label={'Chave PIX *'} type={'text'} input={chavePix} alterarInput={(e) => setChavePix(e.target.value)} />
+                        <Input label={'Número da agência *'} type={'text'} input={numAgencia} alterarInput={(e) => setNumAgencia(e.target.value.replace(/\D/g, ''))} maxLength={5} />
+                        <InputArquivo tamanho={'normal'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

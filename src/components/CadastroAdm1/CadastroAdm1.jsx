@@ -1,7 +1,8 @@
+// src/components/CadastroAdm1/CadastroAdm1.jsx
+import css from './CadastroAdm1.module.css'
 import Titulo from "../Titulo/Titulo.jsx";
 import Input from "../Input/Input.jsx";
 import Botao from "../Botao/Botao.jsx";
-import css from "./CadastroAdm1.module.css";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Mensagem from "../Mensagem/Mensagem.jsx";
@@ -15,159 +16,83 @@ export default function CadastroAdm1({api}) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [confirmarSenha, setConfirmarSenha] = useState('')
-    const [error, setError] = useState('');
-    const sucesso = localStorage.getItem('sucesso');
+    const [fotoPerfil, setFotoPerfil] = useState('')
+    const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
     const navigate = useNavigate();
 
-    if (sucesso) {
-        localStorage.removeItem('sucesso');
-    }
+    function alterarNome(e) { setNome(e.target.value) }
+    function alterarCPF(e) { setCpf(e.target.value) }
+    function alterarTelefone(e) { setTelefone(e.target.value) }
+    function alterarEmail(e) { setEmail(e.target.value.replace(/\s/g, '')) }
+    function alterarSenha(e) { setSenha(e.target.value) }
+    function alterarConfirmarSenha(e) { setConfirmarSenha(e.target.value) }
+    function alterarFotoPerfil(e) { if (e.target.files?.[0]) setFotoPerfil(e.target.files[0]) }
 
-    function alterarNome(e) {
-        setNome(e.target.value)
-    }
-
-    function alterarCPF(e) {
-        let valor = e.currentTarget.value
-        valor = valor.replace(/\D/g, '')
-
-        setCpf(valor)
-    }
-
-    function alterarTelefone(e) {
-        let valor = e.currentTarget.value
-        valor = valor.replace(/\D/g, '')
-        setTelefone(valor)
-    }
-
-    function alterarEmail(e) {
-        setEmail(e.currentTarget.value)
-    }
-
-    function alterarSenha(e) {
-        setSenha(e.target.value)
-    }
-
-    function alterarConfirmarSenha(e) {
-        setConfirmarSenha(e.target.value)
-    }
-
-
-
-    async function criarAdm({api}) {
-        const api_url = api
+    async function criarAdm() {
         const form = new FormData();
         form.append('nome', nome)
-        form.append('cpf_cnpj', cpf)
-        form.append('telefone', telefone)
+        form.append('cpf_cnpj', cpf.replace(/\D/g, ''))
+        form.append('telefone', telefone.replace(/\D/g, ''))
         form.append('email', email)
         form.append('senha', senha)
         form.append('confirmar_senha', confirmarSenha)
         form.append('tipo', 0)
 
-        let retorno = await fetch(`${api_url}/criar_usuarios`, {
-            method: 'POST',
-            credentials: 'include',
-            body: form
-        })
-
-        retorno = await retorno.json();
-
-
-        if (retorno.message) {
-            navigate('/ConfirmarEmail')
-            localStorage.setItem('sucesso', retorno.message)
+        if (!fotoPerfil) {
+            setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
+            return;
         }
+        form.append('foto_perfil', fotoPerfil);
 
-        else {
-            setError(retorno.error)
+        try {
+            const token = localStorage.getItem('token'); // ADICIONADO
+
+            let retorno = await fetch(`${api_url}/criar_usuarios`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}` // ADICIONADO
+                },
+                body: form
+            })
+            retorno = await retorno.json();
+            if (retorno.message) {
+                setMensagem({ texto: retorno.message, tipo: 'sucesso' });
+                setTimeout(() => navigate('/ConfirmarEmail'), 2000);
+            } else {
+                setMensagem({ texto: retorno.error, tipo: 'erro' });
+            }
+        } catch (error) {
+            setMensagem({ texto: 'Erro de conexão com o servidor', tipo: 'erro' });
         }
     }
 
     return (
-        <section className={css.secao}>
-            <div>
-                <Mensagem tipo={"sucesso"} texto={sucesso} onClose={() => setError('')}/>
-                <Mensagem tipo={"erro"} texto={error} onClose={() => setError('')}/>
-            </div>
+        <section className={css.containerSection}>
+            {mensagem.texto && (
+                <Mensagem tipo={mensagem.tipo} texto={mensagem.texto} onClose={() => setMensagem({ texto: '', tipo: '' })} />
+            )}
             <div className={css.organizar}>
-                <Titulo titulo={'Cadastro de Administrador'} cor={'azul-claro'} />
+                <Titulo titulo={'Cadastrar Administrador'} cor={'azul-claro'} />
             </div>
-
             <div className={css.formulario}>
-                <div>
-                    <Input
-                        label={'Nome'}
-                        type={'text'}
-                        placeholder={'Digite seu nome'}
-                        required={true}
-                        maxLength={254}
-                        input={nome}
-                        alterarInput={alterarNome}
-                    />
-                    <Input
-                        label={'Senha'}
-                        type={'password'}
-                        placeholder={'Digite sua senha'}
-                        required={true}
-                        maxLength={254}
-                        input={senha}
-                        alterarInput={alterarSenha}
-                    />
-                    <Input
-                        label={'Telefone'}
-                        type={'text'}
-                        placeholder={'Digite seu telefone'}
-                        required={true}
-                        maxLength={11}
-                        input={telefone}
-                        alterarInput={alterarTelefone}
-                    />
-                    <Input
-                        label={'CPF'}
-                        type={'text'}
-                        placeholder={'Digite seu CPF'}
-                        required={true}
-                        maxLength={11}
-                        input={cpf}
-                        alterarInput={alterarCPF}
-                    />
-
+                <div className={css.linha}>
+                    <div className={css.campos}>
+                        <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={alterarNome} />
+                        <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={alterarSenha} />
+                        <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={alterarTelefone} mascara={'telefone'} />
+                        <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={alterarEmail} />
+                    </div>
+                    <div className={css.campos}>
+                        <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={alterarCPF} mascara={'cpf'} />
+                        <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={alterarConfirmarSenha} />
+                        <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
+                    </div>
                 </div>
-
-                <div>
-                    <Input
-                        label={'Email'}
-                        type={'text'}
-                        placeholder={'Digite seu email'}
-                        required={true}
-                        maxLength={254}
-                        input={email}
-                        alterarInput={alterarEmail}
-
-                    />
-
-                    <Input
-                        label={'Confirmar senha'}
-                        type={'password'}
-                        placeholder={'Confirme sua senha'}
-                        required={true}
-                        maxLength={254}
-                        input={confirmarSenha}
-                        alterarInput={alterarConfirmarSenha}
-                    />
-
-                    <InputArquivo
-                        tamanho={'big'}
-                        required={false}
-                    />
-
+                <div className={css.botaoContainer}>
+                    <Botao acao={criarAdm} texto={'Cadastrar'} cor={'azul'}/>
                 </div>
-            </div>
-
-            <div className={css.botao}>
-                <Botao acao={criarAdm} texto={'Cadastrar'} cor={'rosa'} />
             </div>
         </section>
-    );
+    )
 }

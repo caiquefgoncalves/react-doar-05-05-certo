@@ -26,7 +26,7 @@ export default function Input({
         }
 
         // Para email, garante que fica minúsculo
-        if (type === 'email' || label === 'Email' || label === 'E-mail') {
+        if (type === 'email' || (label && (label.includes('Email') || label.includes('E-mail') || label.includes('email') || label.includes('e-mail')))) {
             valor = valor.toLowerCase();
         }
         // Primeira letra maiúscula - NÃO aplicar em: password, email, máscaras, apenasTexto
@@ -61,7 +61,16 @@ export default function Input({
 
     return (
         <div className={css.inputGroup}>
-            <label className={css.label}>{label}</label>
+            <label className={css.label}>
+                {label?.includes('*') ? (
+                    <>
+                        {label.replace(' *', '').replace('*', '')}
+                        <span className={css.asterisco}> *</span>
+                    </>
+                ) : (
+                    label
+                )}
+            </label>
             {textarea ? (
                 <textarea
                     className={css.Big}

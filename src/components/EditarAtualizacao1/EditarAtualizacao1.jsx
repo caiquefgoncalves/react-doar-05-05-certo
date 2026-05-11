@@ -65,7 +65,6 @@ export default function EditarAtualizacao1({api}) {
             }
         } catch (error) { console.error('Erro:', error); }
         finally {
-            // Depois de carregar a atualização, definir o título do projeto
             if (projetos.length > 0) {
                 const projeto = projetos.find(p => p.id === projetoId);
                 if (projeto) setProjetoTitulo(projeto.titulo);
@@ -97,16 +96,18 @@ export default function EditarAtualizacao1({api}) {
 
     return (
         <section className={css.containerSection}>
-            <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            {msgTexto && (
+                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
+            )}
             <div className={css.titulo}><Titulo titulo={'Editar atualização'} cor={'laranja'}/></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={css.campos}>
-                        <Input label={'Título'} type={'text'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
+                        <Input label={'Título *'} type={'text'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
                         {projetos.length === 0 ? (
                             <div className={css.aviso}><p>⚠️ Nenhum projeto encontrado.</p></div>
                         ) : (
-                            <Select label={'Projeto'} input={projetoTitulo} alterarInput={(e) => {
+                            <Select label={'Projeto *'} input={projetoTitulo} alterarInput={(e) => {
                                 const nomeProjeto = e.target.value;
                                 setProjetoTitulo(nomeProjeto);
                                 const projeto = projetos.find(p => p.titulo === nomeProjeto);
@@ -115,8 +116,8 @@ export default function EditarAtualizacao1({api}) {
                         )}
                     </div>
                     <div className={css.campos}>
-                        <Input label={'Texto'} type={'text'} input={texto} alterarInput={(e) => setTexto(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
-                        <InputArquivo label={'Nova foto (deixe vazio para manter)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
+                        <Input label={'Texto (opcional)'} type={'text'} input={texto} alterarInput={(e) => setTexto(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
+                        <InputArquivo tamanho={'big'} label={'Nova foto (opcional)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

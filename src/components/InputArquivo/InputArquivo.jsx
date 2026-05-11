@@ -31,6 +31,10 @@ export default function InputArquivo({ required = false, tamanho = "normal", alt
 
             <label className={`${css.botao} ${css[tamanho]}`} style={erro ? { border: '2px solid red' } : {}}>
                 Selecionar arquivo
+                <div className={css.hint}>
+                    <p>Deixe vazio caso não for alterar</p>
+                </div>
+
                 <input
                     type="file"
                     accept="image/*"

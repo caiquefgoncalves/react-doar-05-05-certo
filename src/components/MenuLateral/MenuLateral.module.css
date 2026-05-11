@@ -64,9 +64,9 @@
     .container {
         height: auto;
         position: fixed !important;
-        top: 84vh;
+        top: 86vh;
         width: 100%;
-        padding: 1.5rem;
+        padding: 0.9rem;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -96,9 +96,9 @@
     .container {
         height: auto;
         position: fixed !important;
-        top: 80vh;
+        top: 84vh;
         width: 100%;
-        padding: 1.5rem;
+        padding: 0.5rem;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -130,6 +130,6 @@
     }
 
     .container {
-        top: 82vh;
+        top: 87vh;
     }
 }

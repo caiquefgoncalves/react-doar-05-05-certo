@@ -187,6 +187,7 @@
 
 .textoContainer {
     flex: 1;
+    width: 100%;
 }
 
 /* Botão Voltar ao Topo */
@@ -640,7 +641,7 @@
 
     .modalEsquerda {
         flex: none;
-        height: 40%;
+        height: 66%;
     }
 
     .modalDireita {
@@ -680,13 +681,13 @@
     }
 
     .modalPost {
-        width: 100%;
-        height: 100vh;
-        border-radius: 0;
+        width: 90%;
+        height: 96vh;
+        border-radius: 12px;
     }
 
     .modalEsquerda {
-        height: 35%;
+        height: 45%;
     }
 
     .modalDireita {

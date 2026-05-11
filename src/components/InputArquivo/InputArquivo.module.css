@@ -28,6 +28,31 @@
     width: 100%;
 }
 
+
+
+.hint {
+    position: absolute;
+    bottom: 30px;
+    color: #0d5a8a;
+    font-weight: 800;
+    height: 2rem;
+    padding: 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity ease 0.3s;
+}
+
+.botao {
+    position: relative;
+}
+
+.botao:hover .hint {
+    opacity: 1;
+}
+
+
 .botao:hover {
     background-color: #e6e6e6;
 }

@@ -5,9 +5,11 @@ export default function Acoes({cor = 'amarelo', pagina, texto}){
     return (
         <div className={css.cards}>
             <div className={css[cor]}></div>
-            <Link to={pagina}>
-                <button type="button" className={css.link}>{texto}</button>
-            </Link>
+            <div className={css.organizar}>
+                <Link to={pagina}>
+                    <button type="button" className={css.link}>{texto}</button>
+                </Link>
+            </div>
         </div>
     )
 }

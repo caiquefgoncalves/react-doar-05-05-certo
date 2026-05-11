@@ -295,6 +295,80 @@
     background: #d32f2f;
 }
 
+.sectionHeader {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.cardOng {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border: 1px solid #eee;
+}
+
+.cardOng:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #167cbf;
+}
+
+.cardOngImagem {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f0f0f0;
+}
+
+.cardOngInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.cardOngNome {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 4px 0;
+}
+
+.cardOngDesc {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cardOngCategoria {
+    display: inline-block;
+    font-size: 11px;
+    color: #167cbf;
+    font-weight: 600;
+    background: #f0f7ff;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
 /* Responsividade Tablet - 768px */
 @media (max-width: 768px) {
     .secao {
@@ -378,6 +452,19 @@
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
+    }
+
+    .cardOng {
+        padding: 12px 15px;
+    }
+
+    .cardOngImagem {
+        width: 50px;
+        height: 50px;
+    }
+
+    .cardOngNome {
+        font-size: 14px;
     }
 }
 

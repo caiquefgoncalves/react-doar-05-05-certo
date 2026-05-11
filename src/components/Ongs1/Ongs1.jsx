@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
-import Titulo from "../Titulo/Titulo.jsx";
 import css from './Ongs1.module.css'
-import Curtida from "../Curtida/Curtida.jsx";
-import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx"; // Alterado aqui
+import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
+import Mensagem from "../Mensagem/Mensagem.jsx";
 
 export default function Ongs({api}) {
     const api_url = api
@@ -14,8 +13,18 @@ export default function Ongs({api}) {
     const [loading, setLoading] = useState(true);
     const [busca, setBusca] = useState('');
     const [categoriaFiltro, setCategoriaFiltro] = useState('todas');
+    const [usuarioTipo, setUsuarioTipo] = useState(null);
+    const [msgTexto, setMsgTexto] = useState('');
+    const [msgTipo, setMsgTipo] = useState('');
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUsuarioTipo(payload.tipo);
+            } catch (e) {}
+        }
         buscarOngs();
     }, []);
 
@@ -58,6 +67,7 @@ export default function Ongs({api}) {
         <section className={css.secao}>
             <MenuLateral/>
             <div className={css.conteudo}>
+                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
 
                 <div className={css.barraTopo}>
                     <div className={css.buscaInput}>
@@ -88,10 +98,7 @@ export default function Ongs({api}) {
                                         src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
                                         alt={ong.nome}
                                         className={css.cardImagem}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.currentTarget.src = '/sem_imagem.webp';
-                                        }}
+                                        onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }}
                                     />
                                     <div className={css.cardInfo}>
                                         <h3 className={css.cardNome}>{ong.nome}</h3>
@@ -99,11 +106,17 @@ export default function Ongs({api}) {
                                         <span className={css.cardCategoria}>{ong.categoria || 'ONG'}</span>
                                     </div>
                                 </Link>
-                                <BotaoSeguir
-                                    idOng={ong.id}
-                                    apiUrl={api_url}
-                                    onStatusChange={(status) => console.log(`Status alterado para ONG ${ong.id}:`, status)}
-                                />
+                                {/* Botão seguir apenas para doadores ou não logados */}
+                                {(usuarioTipo === 1 || !usuarioTipo) && (
+                                    <BotaoSeguir
+                                        idOng={ong.id}
+                                        apiUrl={api_url}
+                                        onMensagem={(texto, tipo) => {
+                                            setMsgTexto(texto);
+                                            setMsgTipo(tipo);
+                                        }}
+                                    />
+                                )}
                             </div>
                         ))
                     )}

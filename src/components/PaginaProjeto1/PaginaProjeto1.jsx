@@ -230,6 +230,13 @@ export default function PaginaProjeto1({ api }) {
                         <div className={css.colunaDireita}>
                             <div className={css.cardApoie}>
                                 <Titulo titulo={`Apoie o ${ong.nome} diretamente!`} cor={'preto'}/>
+
+                                <img
+                                    className={css.pix}
+                                    src={`${api_url}/uploads/Pix/${ong.pix}`}
+                                    alt={`Pix ${ong.nome}`}
+                                />
+
                                 <div className={css.dadosBancarios}>
                                     <p><strong>Instituição:</strong><br/>{ong.cod_banco || 'Não informado'}</p>
                                     <p><strong>Agência:</strong><br/>{ong.num_agencia || 'Não informada'}</p>

@@ -1,8 +1,8 @@
-// src/components/EditarDoador1/EditarDoador1.jsx
+// src/components/EditarAdm1/EditarAdm1.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
-import css from "../CadastroDoador1/CadastroDoador1.module.css";
+import css from "../CadastroAdm1/CadastroAdm1.module.css";
 import Input from "../Input/Input.jsx";
 import Botao from "../Botao/Botao.jsx";
 import InputArquivo from "../InputArquivo/InputArquivo.jsx";
@@ -17,7 +17,7 @@ function decodificarToken(token) {
     } catch (error) { return null; }
 }
 
-export default function EditarDoador({ api }) {
+export default function EditarAdm1({ api }) {
     const { id } = useParams();
     const navigate = useNavigate();
     const api_url = api;
@@ -29,7 +29,6 @@ export default function EditarDoador({ api }) {
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [cpf, setCpf] = useState('');
     const [fotoPerfil, setFotoPerfil] = useState(null);
-    const [fotoAtual, setFotoAtual] = useState('');
     const [loading, setLoading] = useState(true);
     const [msgTexto, setMsgTexto] = useState('');
     const [msgTipo, setMsgTipo] = useState('');
@@ -38,69 +37,39 @@ export default function EditarDoador({ api }) {
         const token = localStorage.getItem('token');
         if (!token) { navigate('/login'); return; }
         const tokenData = decodificarToken(token);
-        if (!tokenData) { localStorage.clear(); navigate('/login'); return; }
-        if (tokenData.tipo !== 0 && !(tokenData.tipo === 1 && tokenData.id_usuarios === parseInt(id))) {
-            navigate('/dashboardDoador'); return;
-        }
-        buscarDadosDoador();
+        if (!tokenData || tokenData.tipo !== 0) { localStorage.clear(); navigate('/login'); return; }
+        buscarDadosAdm();
     }, [id]);
 
-    async function buscarDadosDoador() {
+    async function buscarDadosAdm() {
         try {
             const token = localStorage.getItem('token');
-            const tokenData = decodificarToken(token);
-
-            let url;
-            if (tokenData && tokenData.tipo === 1 && tokenData.id_usuarios === parseInt(id)) {
-                url = `${api_url}/meus_dados`;
-            } else {
-                url = `${api_url}/listar_usuarios`;
-            }
-
-            const response = await fetch(url, {
+            const response = await fetch(`${api_url}/listar_usuarios`, {
                 method: 'GET',
                 credentials: 'include',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            if (response.status === 401) {
-                localStorage.clear();
-                navigate('/login');
-                return;
-            }
+            if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
 
             if (response.ok) {
                 const data = await response.json();
-
-                if (data.usuario) {
-                    setNome(data.usuario.nome || '');
-                    setEmail(data.usuario.email || '');
-                    setCpf(data.usuario.cpf_cnpj || '');
-                    setTelefone(data.usuario.telefone || '');
-                    setFotoAtual(`${api_url}/uploads/Usuarios/${id}.jpeg`);
-                } else if (data.usuarios) {
-                    const doador = data.usuarios.find(u => u[0] === parseInt(id));
-                    if (doador) {
-                        setNome(doador[1] || '');
-                        setEmail(doador[2] || '');
-                        setCpf(doador[4] || '');
-                        setTelefone(doador[5] || '');
-                        setFotoAtual(`${api_url}/uploads/Usuarios/${id}.jpeg`);
+                if (data.usuarios) {
+                    const adm = data.usuarios.find(u => u[0] === parseInt(id));
+                    if (adm) {
+                        setNome(adm[1] || '');
+                        setEmail(adm[2] || '');
+                        setCpf(adm[4] || '');
+                        setTelefone(adm[5] || '');
                     }
                 }
             }
-        } catch (error) {
-            console.error('Erro:', error);
-        } finally {
-            setLoading(false);
-        }
+        } catch (error) { console.error('Erro:', error); }
+        finally { setLoading(false); }
     }
 
     async function salvarEdicao() {
         const token = localStorage.getItem('token');
-        const tokenData = decodificarToken(token);
 
         const form = new FormData();
         form.append('token', token);
@@ -114,14 +83,10 @@ export default function EditarDoador({ api }) {
 
         try {
             const response = await fetch(`${api_url}/editar_usuarios/${id}`, {
-                method: 'PUT',
-                credentials: 'include',
-                body: form
+                method: 'PUT', credentials: 'include', body: form
             });
 
             const data = await response.json();
-            console.log('Resposta:', data);
-
             setMsgTexto(data.message || data.error);
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
 
@@ -129,21 +94,9 @@ export default function EditarDoador({ api }) {
                 if (data.usuario && data.usuario.nome) {
                     localStorage.setItem('nome', data.usuario.nome);
                 }
-
-                setTimeout(() => {
-                    if (tokenData && tokenData.tipo === 0) {
-                        navigate('/dashboardAdm');
-                    } else if (tokenData && tokenData.tipo === 1) {
-                        navigate('/dashboardDoador');
-                    } else {
-                        navigate('/login');
-                    }
-                }, 2000);
+                setTimeout(() => navigate('/dashboardAdm'), 2000);
             }
-        } catch (error) {
-            setMsgTexto('Erro de conexão');
-            setMsgTipo('erro');
-        }
+        } catch (error) { setMsgTexto('Erro de conexão'); setMsgTipo('erro'); }
     }
 
     if (loading) return (
@@ -154,12 +107,10 @@ export default function EditarDoador({ api }) {
 
     return (
         <section className={css.containerSection}>
-            {msgTexto && (
-                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
-            )}
+            {msgTexto && <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />}
 
             <div className={css.organizar}>
-                <Titulo titulo={'Editar Doador'} cor={'rosa'} />
+                <Titulo titulo={'Editar ADM'} cor={'azul-claro'} />
             </div>
 
             <div className={css.formulario}>
@@ -170,16 +121,14 @@ export default function EditarDoador({ api }) {
                         <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
                         <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value.replace(/\s/g, ''))} required={true} />
                     </div>
-
                     <div className={css.campos}>
                         <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
                         <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
-                        <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                        <InputArquivo tamanho={'big'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
                     </div>
                 </div>
-
                 <div className={css.botaoContainer}>
-                    <Botao acao={salvarEdicao} texto={'Salvar Alterações'} cor={'rosa'} />
+                    <Botao acao={salvarEdicao} texto={'Salvar Alterações'} cor={'azul'} />
                 </div>
             </div>
         </section>

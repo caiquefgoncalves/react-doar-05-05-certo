@@ -22,9 +22,37 @@ export default function Header() {
         }
     }
 
+    function tokenExpirado(token) {
+        try {
+            const tokenData = decodificarToken(token);
+            if (!tokenData || !tokenData.exp) return false;
+            const agora = Math.floor(Date.now() / 1000);
+            return agora >= tokenData.exp;
+        } catch (error) {
+            return true;
+        }
+    }
+
     useEffect(function () {
-        var tokenLocal = localStorage.getItem("token")
-        if(tokenLocal){
+        var tokenLocal = localStorage.getItem("token");
+
+        if (tokenLocal) {
+            // Verificar se o token expirou
+            if (tokenExpirado(tokenLocal)) {
+                // Token expirado - limpar e redirecionar
+                localStorage.removeItem("token");
+                localStorage.removeItem("nome");
+                localStorage.setItem("sessaoExpirada", "Sua sessão expirou. Faça login novamente.");
+                setToken(false);
+                setTipoUsuario(null);
+
+                // Só redireciona se não estiver na página de login
+                if (window.location.pathname !== '/login') {
+                    navigate('/login');
+                }
+                return;
+            }
+
             setToken(tokenLocal);
             const tokenData = decodificarToken(tokenLocal);
             if (tokenData) {
@@ -50,12 +78,14 @@ export default function Header() {
 
     async function fazerLogout() {
         try {
-            const token = localStorage.getItem('token');
+            const tokenLogout = localStorage.getItem('token');
 
-            await fetch(`http://10.92.3.122:5000/logout?token=${token}`, {
-                method: 'POST',
-                credentials: 'include',
-            });
+            if (tokenLogout) {
+                await fetch(`http://10.92.3.135:5000/logout?token=${tokenLogout}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                });
+            }
         } catch (error) {
             console.error('Erro no logout:', error);
         }
@@ -64,13 +94,15 @@ export default function Header() {
         localStorage.removeItem('token');
         localStorage.removeItem('nome');
         localStorage.removeItem('sucesso');
+        localStorage.removeItem('sessaoExpirada');
 
-
+        // Redireciona para home
         navigate('/');
     }
 
     if (token) {
         return (
+            // ... MESMO HEADER DE QUANDO LOGADO ...
             <header className={css.headerContainer}>
                 <div className={css.headerContent}>
                     <a href="/" className={css.logoLink}>
@@ -101,7 +133,6 @@ export default function Header() {
                         </button>
                     </div>
 
-
                     <button
                         className={`d-lg-none ${css.actionBtn}`}
                         type="button"
@@ -126,9 +157,9 @@ export default function Header() {
                         </div>
                         <div className={css.offcanvasBodyCustom}>
                             <ul className={css.navListMobile}>
-                                <li><a href="/" className={css.linkMobile}>Home</a></li>
-                                <li><a href="/" className={css.linkMobile}>Benefícios</a></li>
-                                <li><a href="/" className={css.linkMobile}>Junte-se a nós!</a></li>
+                                <li><Link to="/" className={css.linkMobile}>Home</Link></li>
+                                <li><Link to="/" className={css.linkMobile}>Benefícios</Link></li>
+                                <li><Link to="/" className={css.linkMobile}>Junte-se a nós!</Link></li>
                                 <li><Link to="/feed" className={css.linkMobile}>ONGs e projetos</Link></li>
                                 <li>
                                     <img
@@ -152,6 +183,7 @@ export default function Header() {
         )
     } else {
         return (
+            // ... MESMO HEADER DE QUANDO NÃO LOGADO ...
             <header className={css.headerContainer}>
                 <div className={css.headerContent}>
                     <a href="/" className={css.logoLink}>
@@ -160,9 +192,9 @@ export default function Header() {
 
                     <nav className={`d-none d-lg-flex ${css.desktopNav}`}>
                         <ul className={css.navList}>
-                            <li><a href="/" className={css.link}>Home</a></li>
-                            <li><a href="/" className={css.link}>Benefícios</a></li>
-                            <li><a href="/" className={css.link}>Junte-se a nós!</a></li>
+                            <li><Link to="/" className={css.link}>Home</Link></li>
+                            <li><Link to="/" className={css.link}>Benefícios</Link></li>
+                            <li><Link to="/" className={css.link}>Junte-se a nós!</Link></li>
                             <li><Link to="/feed" className={css.link}>ONGs e projetos</Link></li>
                         </ul>
                     </nav>
@@ -196,9 +228,9 @@ export default function Header() {
                         </div>
                         <div className={css.offcanvasBodyCustom}>
                             <ul className={css.navListMobile}>
-                                <li><a href="/" className={css.linkMobile}>Home</a></li>
-                                <li><a href="/" className={css.linkMobile}>Benefícios</a></li>
-                                <li><a href="/" className={css.linkMobile}>Junte-se a nós!</a></li>
+                                <li><Link to="/" className={css.linkMobile}>Home</Link></li>
+                                <li><Link to="/" className={css.linkMobile}>Benefícios</Link></li>
+                                <li><Link to="/" className={css.linkMobile}>Junte-se a nós!</Link></li>
                                 <li><Link to="/feed" className={css.linkMobile}>ONGs e projetos</Link></li>
                                 <li className="mt-4"><Link to={"/cadastroOng"} className={css.linkMobile}>Cadastro</Link></li>
                                 <li><Link to={"/login"} className={css.linkMobile}>Login</Link></li>
