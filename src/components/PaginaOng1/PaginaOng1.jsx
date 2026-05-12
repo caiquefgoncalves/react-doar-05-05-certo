@@ -1,14 +1,16 @@
 // src/components/PaginaOng1/PaginaOng1.jsx
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import css from "./PaginaOng1.module.css";
 import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
+import Mensagem from "../Mensagem/Mensagem.jsx";
 
 export default function PaginaOng1({api}) {
-    const api_url = api
+    const api_url = api;
     const { id } = useParams();
+    const navigate = useNavigate();
     let [ong, setOng] = useState(null);
     let [projetos, setProjetos] = useState([]);
     let [qtdProjetos, setQtdProjetos] = useState('');
@@ -18,22 +20,24 @@ export default function PaginaOng1({api}) {
     let [paginaProjetos, setPaginasProjetos] = useState(0);
     let [idsAbertos, setIdsAbertos] = useState("");
     let [paginaAtualizacoes, setPaginaAtualizacoes] = useState(0);
+    const [usuarioTipo, setUsuarioTipo] = useState(null);
+    const [msgTexto, setMsgTexto] = useState('');
+    const [msgTipo, setMsgTipo] = useState('');
 
-    // Detectar se é mobile
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 425);
-
-    // Quantidade de itens por página (dinâmico)
     const projetosPorPagina = isMobile ? 1 : 2;
     const atualizacoesPorPagina = isMobile ? 1 : 2;
 
-
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUsuarioTipo(payload.tipo);
+            } catch (e) {}
+        }
         buscarDados();
-
-        // Listener para redimensionamento
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 425);
-        };
+        const handleResize = () => { setIsMobile(window.innerWidth <= 425); };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [id]);
@@ -41,92 +45,53 @@ export default function PaginaOng1({api}) {
     async function buscarDados() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/ver_ong_publica/${id}?token=${token || ''}`, {
-                credentials: 'include'
-            });
+            const response = await fetch(`${api_url}/ver_ong_publica/${id}?token=${token || ''}`, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
-                console.log('Dados ONG:', data);
-                if (data.ong) {
-                    setOng(data.ong);
-                }
+                if (data.ong) setOng(data.ong);
                 if (data.projetos) setProjetos(data.projetos);
                 if (data.atualizacoes) setAtualizacoes(data.atualizacoes || []);
-                if (data.qtd_projetos) setQtdProjetos(data.qtd_projetos || []);
-                if (data.qtd_atualizacoes) setQtdAtualizacoes(data.qtd_atualizacoes);
+                if (data.qtd_projetos !== undefined) setQtdProjetos(data.qtd_projetos);
+                if (data.qtd_atualizacoes !== undefined) setQtdAtualizacoes(data.qtd_atualizacoes);
             }
         } catch (error) { console.error('Erro:', error); }
         finally { setLoading(false); }
     }
 
+    function handleVoluntariar(projetoId) {
+        navigate(`/voluntario/${projetoId}`);
+    }
+
+    function handleDoar(projetoId) {
+        navigate(`/doar/${projetoId}`);
+    }
+
     if (loading) return (
         <section className={css.secao}>
-            <div className={css.menulateral}>
-                <MenuLateral/>
-            </div>
+            <div className={css.menulateral}><MenuLateral/></div>
             <div className={css.conteudo}><p>Carregando...</p></div>
         </section>
     );
 
     if (!ong) return (
         <section className={css.secao}>
-            <div className={css.menulateral}>
-                <MenuLateral/>
-            </div>
+            <div className={css.menulateral}><MenuLateral/></div>
             <div className={css.conteudo}><p>ONG não encontrada</p></div>
         </section>
     );
 
     const totalPaginasProjetos = Math.ceil(projetos.length / projetosPorPagina);
-
-    const projetosPaginados = projetos.slice(
-        paginaProjetos * projetosPorPagina,
-        (paginaProjetos + 1) * projetosPorPagina
-    );
-
-    const proximaPaginaProjetos = () => {
-        if (paginaProjetos < totalPaginasProjetos - 1) {
-            setPaginasProjetos(p => p + 1);
-        }
-    };
-
-    const paginaAnteriorProjetos = () => {
-        if (paginaProjetos > 0) {
-            setPaginasProjetos(p => p - 1);
-        }
-    };
-
+    const projetosPaginados = projetos.slice(paginaProjetos * projetosPorPagina, (paginaProjetos + 1) * projetosPorPagina);
     const totalPaginasAtualizacoes = Math.ceil(atualizacoes.length / atualizacoesPorPagina);
-
-    const atualizacoesPaginadas = atualizacoes.slice(
-        paginaAtualizacoes * atualizacoesPorPagina,
-        (paginaAtualizacoes + 1) * atualizacoesPorPagina
-    );
-
-    const proximaPaginaAtualizacoes = () => {
-        if (paginaAtualizacoes < totalPaginasAtualizacoes - 1) {
-            setPaginaAtualizacoes(p => p + 1);
-        }
-    };
-
-    const paginaAnteriorAtualizacoes = () => {
-        if (paginaAtualizacoes > 0) {
-            setPaginaAtualizacoes(p => p - 1);
-        }
-    };
-
-
+    const atualizacoesPaginadas = atualizacoes.slice(paginaAtualizacoes * atualizacoesPorPagina, (paginaAtualizacoes + 1) * atualizacoesPorPagina);
 
     return (
         <section className={css.secao}>
-            <div className={css.menulateral}>
-                <MenuLateral/>
-            </div>
+            <div className={css.menulateral}><MenuLateral/></div>
             <div className={css.conteudo}>
+                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
 
                 <div className={css.layoutDuasColunas}>
-
-                    {/* Coluna Esquerda */}
                     <div className={css.colunaEsquerda}>
                         <div className="d-flex justify-content-between align-items-center">
                             <div className={css.headerONG}>
@@ -135,32 +100,26 @@ export default function PaginaOng1({api}) {
                                         className={css.imagem}
                                         src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
                                         alt={`Logo da ONG ${ong.nome}`}
-                                        onError={(e) => {
-                                            e.currentTarget.onerror = null;
-                                            e.currentTarget.src = '/sem_imagem.webp';
-                                        }}
+                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }}
                                     />
-
                                 )}
                                 <div>
                                     <h1 className={css.nome}>{ong.nome}</h1>
                                     <p className={css.descBreve}>{ong.descricao_breve}</p>
-                                    {ong.qtd_seguidores == 0 && (
-                                        <p className={css.texto}>Não há seguidores</p>
-                                    )}
-                                    {ong.qtd_seguidores == 1 && (
-                                        <p className={css.texto}>{ong.qtd_seguidores} seguidor</p>
-                                    )}
-                                    {ong.qtd_seguidores > 1 && (
-                                        <p className={css.texto}>{ong.qtd_seguidores} seguidores</p>
-                                    )}
+                                    {ong.qtd_seguidores == 0 && <p className={css.texto}>Não há seguidores</p>}
+                                    {ong.qtd_seguidores == 1 && <p className={css.texto}>{ong.qtd_seguidores} seguidor</p>}
+                                    {ong.qtd_seguidores > 1 && <p className={css.texto}>{ong.qtd_seguidores} seguidores</p>}
                                 </div>
                             </div>
-
-                            <BotaoSeguir/>
-
+                            {/* Botão seguir - apenas doadores ou não logados */}
+                            {(usuarioTipo === 1 || usuarioTipo === null) && (
+                                <BotaoSeguir
+                                    idOng={id}
+                                    apiUrl={api_url}
+                                    onMensagem={(texto, tipo) => { setMsgTexto(texto); setMsgTipo(tipo); }}
+                                />
+                            )}
                         </div>
-
 
                         {/* Sobre Nós */}
                         <div className={css.secaoBox}>
@@ -171,116 +130,81 @@ export default function PaginaOng1({api}) {
                         {/* Informações */}
                         <div className={css.secaoBox}>
                             <div className={css.infoGrid}>
-                                <div>
-                                    <span className={css.infoLabel}>Categoria</span>
-                                    <p className={css.infoValor}>{ong.categoria || 'Não informada'}</p>
-                                </div>
-                                <div>
-                                    <span className={css.infoLabel}>Localização</span>
-                                    <p className={css.infoValor}>{ong.localizacao || 'Não informada'}</p>
-                                </div>
+                                <div><span className={css.infoLabel}>Categoria</span><p className={css.infoValor}>{ong.categoria || 'Não informada'}</p></div>
+                                <div><span className={css.infoLabel}>Localização</span><p className={css.infoValor}>{ong.localizacao || 'Não informada'}</p></div>
                             </div>
                         </div>
 
-                        {/* Projetos da ONG */}
+                        {/* Projetos */}
                         {projetos.length > 0 && (
                             <div className={css.secaoBox}>
                                 <div className={css.headerAtualizacoes}>
                                     <p className={css.sobrenos}>Projetos ativos</p>
-                                    {qtdProjetos == 0 && (
-                                        <p className={css.texto}>Não há projetos</p>
-                                    )}
-                                    {qtdProjetos == 1 && (
-                                        <p className={css.texto}>{qtdProjetos} projeto</p>
-                                    )}
-                                    {qtdProjetos > 1 && (
-                                        <p className={css.texto}>{qtdProjetos} projetos</p>
-                                    )}
+                                    {qtdProjetos == 0 && <p className={css.texto}>Não há projetos</p>}
+                                    {qtdProjetos == 1 && <p className={css.texto}>{qtdProjetos} projeto</p>}
+                                    {qtdProjetos > 1 && <p className={css.texto}>{qtdProjetos} projetos</p>}
                                 </div>
                                 <div className={css.projetosLista}>
-                                    {/* MAPEANDO APENAS OS PAGINADOS */}
                                     {projetosPaginados.map(proj => (
-                                        <Link to={`/projeto/${proj.id}`} key={proj.id} className={css.atualizacao}>
-                                            <img
-                                                className={css.attImagem}
-                                                src={`${api_url}/uploads/Projetos/${proj.id}.jpeg`}
-                                                alt={proj.titulo}
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.currentTarget.src = '/sem_imagem.webp';
-                                                }}
-                                            />
+                                        <div key={proj.id} className={css.atualizacao}>
+                                            <Link to={`/projeto/${proj.id}`}>
+                                                <img
+                                                    className={css.attImagem}
+                                                    src={`${api_url}/uploads/Projetos/${proj.id}.jpeg`}
+                                                    alt={proj.titulo}
+                                                    onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }}
+                                                />
+                                            </Link>
                                             <h3 className={css.attTitulo}>{proj.titulo}</h3>
                                             <p className={css.attTexto}>{proj.descricao?.substring(0, 100)}...</p>
                                             <span className={css.tipoAjuda}>{proj.tipo_ajuda}</span>
-                                        </Link>
+
+                                            {/* Botão Voluntariar-se ou Doar - apenas para doadores ou não logados */}
+                                            {(usuarioTipo === 1 || usuarioTipo === null) && (
+                                                <div style={{ marginTop: '10px' }}>
+                                                    {proj.tipo_ajuda === 'Voluntariado' ? (
+                                                        <button onClick={() => handleVoluntariar(proj.id)} className={css.btnVoluntariar}>
+                                                            🤝 Voluntariar-se
+                                                        </button>
+                                                    ) : (
+                                                        <button onClick={() => handleDoar(proj.id)} className={css.btnDoar}>
+                                                            💰 Doar
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     ))}
                                 </div>
-
-                                {/* CONTROLES DO CARROSSEL */}
                                 {totalPaginasProjetos > 1 && (
                                     <div className={css.controlesCarrossel}>
-                                        <button
-                                            className={`${css.botaoCarrossel} ${paginaProjetos === 0 ? css.desabilitado : ''}`}
-                                            onClick={paginaAnteriorProjetos}
-                                            disabled={paginaProjetos === 0}
-                                        > ← </button>
-
-                                        <span className={css.paginaInfo}>
-                                            {paginaProjetos + 1} de {totalPaginasProjetos}
-                                        </span>
-
-                                        <button
-                                            className={`${css.botaoCarrossel} ${paginaProjetos === totalPaginasProjetos - 1 ? css.desabilitado : ''}`}
-                                            onClick={proximaPaginaProjetos}
-                                            disabled={paginaProjetos === totalPaginasProjetos - 1}
-                                        > → </button>
+                                        <button className={`${css.botaoCarrossel} ${paginaProjetos === 0 ? css.desabilitado : ''}`} onClick={() => setPaginasProjetos(p => p - 1)} disabled={paginaProjetos === 0}>←</button>
+                                        <span className={css.paginaInfo}>{paginaProjetos + 1} de {totalPaginasProjetos}</span>
+                                        <button className={`${css.botaoCarrossel} ${paginaProjetos === totalPaginasProjetos - 1 ? css.desabilitado : ''}`} onClick={() => setPaginasProjetos(p => p + 1)} disabled={paginaProjetos === totalPaginasProjetos - 1}>→</button>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        {/* Últimas atualizações da ONG */}
+                        {/* Atualizações */}
                         {atualizacoes.length > 0 && (
                             <div className={css.secaoBox}>
                                 <div className={css.headerAtualizacoes}>
                                     <p className={css.sobrenos}>Últimas atualizações</p>
-                                    {qtdAtualizacoes == 0 && (
-                                        <p className={css.texto}>Não há atualizações</p>
-                                    )}
-                                    {qtdAtualizacoes == 1 && (
-                                        <p className={css.texto}>{qtdAtualizacoes} atualização</p>
-                                    )}
-                                    {qtdAtualizacoes > 1 && (
-                                        <p className={css.texto}>{qtdAtualizacoes} atualizações</p>
-                                    )}
+                                    {qtdAtualizacoes == 0 && <p className={css.texto}>Não há atualizações</p>}
+                                    {qtdAtualizacoes == 1 && <p className={css.texto}>{qtdAtualizacoes} atualização</p>}
+                                    {qtdAtualizacoes > 1 && <p className={css.texto}>{qtdAtualizacoes} atualizações</p>}
                                 </div>
                                 <div className={css.projetosLista}>
                                     {atualizacoesPaginadas.map(att => (
                                         <div key={att.id} className={css.atualizacao}>
-                                            {att && (
-                                                <img
-                                                    className={css.attImagem}
-                                                    src={`${api_url}/uploads/Atualizacoes/${att.id}.jpeg`}
-                                                    alt={att.titulo}
-                                                    onError={(e) => { e.target.onerror = null;
-                                                        e.currentTarget.src = '/sem_imagem.webp';
-                                                    }}
-                                                />
-                                            )}
+                                            {att && <img className={css.attImagem} src={`${api_url}/uploads/Atualizacoes/${att.id}.jpeg`} alt={att.titulo} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />}
                                             <h3 className={css.attTitulo}>{att.titulo}</h3>
                                             {att.texto && (
                                                 <p className={css.attTexto}>
-                                                    {/* Só corta e coloca "..." se o texto for maior que 100 E não estiver aberto */}
-                                                    {idsAbertos === att.id || att.texto.length <= 100
-                                                        ? att.texto
-                                                        : att.texto.substring(0, 100) + "..."}
-
-                                                    {/* O botão só aparece se o texto for maior que 100 caracteres */}
+                                                    {idsAbertos === att.id || att.texto.length <= 100 ? att.texto : att.texto.substring(0, 100) + "..."}
                                                     {att.texto.length > 100 && (
-                                                        <button
-                                                            onClick={() => setIdsAbertos(idsAbertos === att.id ? null : att.id)}
-                                                            className={css.btnDoar}>
+                                                        <button onClick={() => setIdsAbertos(idsAbertos === att.id ? null : att.id)} className={css.btnDoar}>
                                                             {idsAbertos === att.id ? "Ler menos" : "Ler mais"}
                                                         </button>
                                                     )}
@@ -291,51 +215,22 @@ export default function PaginaOng1({api}) {
                                 </div>
                                 {totalPaginasAtualizacoes > 1 && (
                                     <div className={css.controlesCarrossel}>
-                                        <button
-                                            className={`${css.botaoCarrossel} ${paginaAtualizacoes === 0 ? css.desabilitado : ''}`}
-                                            onClick={paginaAnteriorAtualizacoes}
-                                            disabled={paginaAtualizacoes === 0}
-                                        >
-                                            ←
-                                        </button>
+                                        <button className={`${css.botaoCarrossel} ${paginaAtualizacoes === 0 ? css.desabilitado : ''}`} onClick={() => setPaginaAtualizacoes(p => p - 1)} disabled={paginaAtualizacoes === 0}>←</button>
                                         <span className={css.paginaInfo}>{paginaAtualizacoes + 1} de {totalPaginasAtualizacoes}</span>
-                                        <button
-                                            className={`${css.botaoCarrossel} ${paginaAtualizacoes === totalPaginasAtualizacoes - 1 ? css.desabilitado : ''}`}
-                                            onClick={proximaPaginaAtualizacoes}
-                                            disabled={paginaAtualizacoes === totalPaginasAtualizacoes - 1}
-                                        >
-                                            →
-                                        </button>
+                                        <button className={`${css.botaoCarrossel} ${paginaAtualizacoes === totalPaginasAtualizacoes - 1 ? css.desabilitado : ''}`} onClick={() => setPaginaAtualizacoes(p => p + 1)} disabled={paginaAtualizacoes === totalPaginasAtualizacoes - 1}>→</button>
                                     </div>
                                 )}
                             </div>
                         )}
-
                         {atualizacoes.length === 0 && (
-                            <div className={css.secaoBox}>
-                                <p className={css.sobrenos}>Últimas atualizações</p>
-                                <p className={css.semAtualizacoes}>Nenhuma atualização disponível no momento.</p>
-                            </div>
+                            <div className={css.secaoBox}><p className={css.sobrenos}>Últimas atualizações</p><p className={css.semAtualizacoes}>Nenhuma atualização disponível no momento.</p></div>
                         )}
-
-
                     </div>
-
 
                     <div className={css.colunaDireita}>
                         <div className={css.cardApoie}>
                             <Titulo titulo={`Apoie o ${ong.nome} diretamente!`} cor={'preto'}/>
-
-                            <img
-                                className={css.pix}
-                                src={`${api_url}/uploads/Pix/${ong.pix}`}
-                                alt={`Pix ${ong.nome}`}
-                                onError={(e) => { e.target.onerror = null;
-                                    e.currentTarget.src = '/sem_imagem.webp';
-                                }}
-                            />
-
-
+                            <img className={css.pix} src={ong.pix ? `${api_url}/uploads/Pix/${ong.pix}` : '/sem_imagem.webp'} alt={`Pix ${ong.nome}`} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
                             <div className={css.dadosBancarios}>
                                 <p><strong>Instituição:</strong><br/>{ong.cod_banco || 'Não informado'}</p>
                                 <p><strong>Agência:</strong><br/>{ong.num_agencia || 'Não informada'}</p>

@@ -1,0 +1,16 @@
+.titulo{
+    margin-top: 5rem;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.botaoQr{
+    margin-top: 1rem;
+    margin-bottom: 5rem;
+}

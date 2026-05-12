@@ -270,9 +270,12 @@ export default function Feed({ api }) {
                                         <h3 className={css.nomeOng}>{item.ong_nome}</h3>
                                         <span className={css.data}>{item.data}</span>
                                     </div>
-                                    <div onClick={(e) => e.stopPropagation()}>
-                                        <Curtida idAtualizacao={item.id} apiUrl={api_url} onStatusChange={(status) => handleCurtidaChange(item.id, status)} />
-                                    </div>
+                                    {/* Coração só aparece para doadores ou não logados */}
+                                    {(usuarioTipo === 1 || usuarioTipo === null) && (
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <Curtida idAtualizacao={item.id} apiUrl={api_url} onStatusChange={(status) => handleCurtidaChange(item.id, status)} />
+                                        </div>
+                                    )}
                                 </Link>
                                 <div className={css.corpo} onClick={() => abrirPostagem(item)} style={{ cursor: 'pointer' }}>
                                     {item.foto && <img src={`${api_url}/uploads/Atualizacoes/${item.foto}`} alt={item.titulo} className={css.fotoAtualizacao} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />}
@@ -308,9 +311,9 @@ export default function Feed({ api }) {
                                                     <button onClick={() => enviarComentario(item.id)} className={css.btnEnviarComentario}>Enviar</button>
                                                 </div>
                                             ) : usuarioTipo === 2 ? (
-                                                <p className={css.msgDoador}></p>
+                                                <p className={css.msgDoador}>ONGs não podem comentar.</p>
                                             ) : usuarioTipo === 0 ? (
-                                                <p className={css.msgDoador}></p>
+                                                <p className={css.msgDoador}>Administradores não podem comentar.</p>
                                             ) : (
                                                 <p className={css.msgLogin}><Link to="/login">Faça login</Link> como doador para comentar.</p>
                                             )}

@@ -6,6 +6,7 @@ import css from "../DashboardAdm1/DashboardAdm1.module.css";
 import Acoes from "../Acoes/Acoes.jsx";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import Mensagem from "../Mensagem/Mensagem.jsx";
+import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
 function decodificarToken(token) {
     try {
@@ -22,29 +23,27 @@ export default function DashboardAdm1({ api }) {
     const [nomeADM, setNomeADM] = useState('');
     const [ongs, setOngs] = useState([]);
     const [doadores, setDoadores] = useState([]);
-    const [adms, setAdms] = useState([]); // NOVO
+    const [adms, setAdms] = useState([]);
     const [mensagem, setMensagem] = useState('');
     const [tipoMensagem, setTipoMensagem] = useState('');
     const [autorizado, setAutorizado] = useState(false);
 
-    // Modal de exclusão
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
     const [tipoExclusao, setTipoExclusao] = useState('');
 
-    // Modal de bloqueio/desbloqueio
     const [modalBloqueioAberto, setModalBloqueioAberto] = useState(false);
     const [usuarioParaBloquear, setUsuarioParaBloquear] = useState(null);
     const [motivoBloqueio, setMotivoBloqueio] = useState('');
 
     const [paginaOngs, setPaginaOngs] = useState(0);
     const [paginaDoadores, setPaginaDoadores] = useState(0);
-    const [paginaAdms, setPaginaAdms] = useState(0); // NOVO
+    const [paginaAdms, setPaginaAdms] = useState(0);
 
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 426);
     const ongsPorPagina = isMobile ? 1 : 3;
     const doadoresPorPagina = isMobile ? 1 : 3;
-    const admsPorPagina = isMobile ? 1 : 3; // NOVO
+    const admsPorPagina = isMobile ? 1 : 3;
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -56,7 +55,7 @@ export default function DashboardAdm1({ api }) {
         if (nome) setNomeADM(nome);
         buscarOngs();
         buscarDoadores();
-        buscarAdms(); // NOVO
+        buscarAdms();
 
         const handleResize = () => { setIsMobile(window.innerWidth <= 426); };
         window.addEventListener('resize', handleResize);
@@ -80,7 +79,6 @@ export default function DashboardAdm1({ api }) {
         } catch (error) { console.error('Erro:', error); }
     }
 
-    // NOVO: Buscar ADMs
     async function buscarAdms() {
         try {
             const token = localStorage.getItem('token');
@@ -170,15 +168,11 @@ export default function DashboardAdm1({ api }) {
             <div className={css.conteudo}>
                 <Mensagem tipo={tipoMensagem} texto={mensagem} onClose={() => setMensagem('')} />
 
-                {/* MODAL DE EXCLUSÃO */}
                 {modalExcluirAberto && (
                     <div className={css.modalOverlay} onClick={() => setModalExcluirAberto(false)}>
                         <div className={css.modal} onClick={(e) => e.stopPropagation()}>
                             <h3 className={css.modalTitulo}>Confirmar Exclusão</h3>
-                            <p className={css.modalTexto}>
-                                Tem certeza que deseja excluir permanentemente{' '}
-                                <strong>{tipoExclusao === 'ong' ? itemParaExcluir?.nome : itemParaExcluir?.[1]}</strong>?
-                            </p>
+                            <p className={css.modalTexto}>Tem certeza que deseja excluir permanentemente <strong>{tipoExclusao === 'ong' ? itemParaExcluir?.nome : itemParaExcluir?.[1]}</strong>?</p>
                             <p className={css.modalAviso}>Esta ação não pode ser desfeita.</p>
                             <div className={css.modalBotoes}>
                                 <button className={css.modalBtnCancelar} onClick={() => setModalExcluirAberto(false)}>Cancelar</button>
@@ -188,23 +182,17 @@ export default function DashboardAdm1({ api }) {
                     </div>
                 )}
 
-                {/* MODAL DE BLOQUEIO */}
                 {modalBloqueioAberto && (
                     <div className={css.modalOverlay} onClick={() => setModalBloqueioAberto(false)}>
                         <div className={css.modal} onClick={(e) => e.stopPropagation()}>
-                            <h3 className={css.modalTitulo}>
-                                {usuarioParaBloquear?.ativo ? '🔒 Bloquear ' : '🔓 Desbloquear '}
-                                {usuarioParaBloquear?.tipoUsuario === 'ong' ? 'ONG' : usuarioParaBloquear?.tipoUsuario === 'doador' ? 'Doador' : 'ADM'}
-                            </h3>
+                            <h3 className={css.modalTitulo}>{usuarioParaBloquear?.ativo ? '🔒 Bloquear ' : '🔓 Desbloquear '}{usuarioParaBloquear?.tipoUsuario === 'ong' ? 'ONG' : usuarioParaBloquear?.tipoUsuario === 'doador' ? 'Doador' : 'ADM'}</h3>
                             <p className={css.modalTexto}><strong>{usuarioParaBloquear?.nome}</strong></p>
                             {usuarioParaBloquear?.ativo && (
                                 <div className={css.motivoReprovacao}>
                                     <textarea className={css.modalTextarea} placeholder="Descreva o motivo do bloqueio..." value={motivoBloqueio} onChange={(e) => setMotivoBloqueio(e.target.value)} rows={4} />
                                 </div>
                             )}
-                            {!usuarioParaBloquear?.ativo && (
-                                <p className={css.modalSubtexto}>Deseja realmente desbloquear este usuário?</p>
-                            )}
+                            {!usuarioParaBloquear?.ativo && <p className={css.modalSubtexto}>Deseja realmente desbloquear este usuário?</p>}
                             <div className={css.modalBotoes}>
                                 <button className={css.modalBtnCancelar} onClick={() => setModalBloqueioAberto(false)}>Cancelar</button>
                                 <button className={usuarioParaBloquear?.ativo ? css.modalBtnExcluir : css.modalBtnAtivar} onClick={executarBloqueio}>Confirmar</button>
@@ -217,7 +205,7 @@ export default function DashboardAdm1({ api }) {
                 <p className={css.acoesRapidas}>Ações rápidas</p>
                 <div className={css.acoes}>
                     <Acoes cor={'amarelo'} texto={'Aprovar ONGs'} pagina={'/listaAprovacoes'} />
-                    <Acoes cor={'azul'} texto={'Cadastrar ADM'} pagina={'/cadastroAdm'} />
+                    <Acoes cor={'amarelo'} texto={'Cadastrar ADM'} pagina={'/cadastroAdm'} />
                 </div>
 
                 {/* ONGs */}
@@ -239,9 +227,7 @@ export default function DashboardAdm1({ api }) {
                                         <>
                                             <button className={css.btnEditar} onClick={() => navigate(`/editarOng/${ong.id}`)}>Editar ONG</button>
                                             <button className={ong.ativo ? css.btnInativar : css.btnAtivar} onClick={() => abrirModalBloqueio({ id: ong.id, nome: ong.nome, ativo: ong.ativo }, 'ong')}>{ong.ativo ? 'Bloquear ONG' : 'Desbloquear ONG'}</button>
-                                            {ong.codigo_aprovacao === 2 && (
-                                                <button className={css.btnExcluir} onClick={() => confirmarExcluir('ong', ong)}>Excluir ONG</button>
-                                            )}
+                                            {ong.codigo_aprovacao === 2 && <button className={css.btnExcluir} onClick={() => confirmarExcluir('ong', ong)}>Excluir ONG</button>}
                                         </>
                                     )}
                                 </div>
@@ -263,16 +249,17 @@ export default function DashboardAdm1({ api }) {
                     {doadoresPaginados.length === 0 ? <p>Nenhum doador cadastrado</p> : doadoresPaginados.map((doador) => (
                         <div key={doador[0]} className={css.cardAdm} style={{ borderTop: `4px solid ${doador[15] === 1 ? '#167cbf' : '#f65682'}` }}>
                             <div className={css.cardAdmTopo}>
-                                <img src={getImagemUrl(doador[0])} alt={doador[1]} className={css.cardAdmImagem} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                <div style={{ position: 'relative', display: 'inline-block' }}>
+                                    <img src={getImagemUrl(doador[0])} alt={doador[1]} className={css.cardAdmImagem} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                    <SeloVoluntario idUsuario={doador[0]} apiUrl={api_url} />
+                                </div>
                                 <h3 className={css.cardAdmNome}>{doador[1]}</h3>
                             </div>
                             <span className={css.cardAdmStatus} style={{ color: doador[15] === 1 ? '#167cbf' : '#f65682' }}>{doador[15] === 1 ? 'Ativo' : 'Inativo'}</span>
                             <div className={css.cardAdmBotoes}>
                                 <button className={css.btnEditar} onClick={() => navigate(`/editarDoador/${doador[0]}`)}>Editar Doador</button>
                                 <button className={doador[15] === 1 ? css.btnInativar : css.btnAtivar} onClick={() => abrirModalBloqueio({ id: doador[0], nome: doador[1], ativo: doador[15] === 1 }, 'doador')}>{doador[15] === 1 ? 'Bloquear Doador' : 'Desbloquear Doador'}</button>
-                                {doador[15] === 0 && (
-                                    <button className={css.btnExcluir} onClick={() => confirmarExcluir('doador', doador)}>Excluir Doador</button>
-                                )}
+                                {doador[15] === 0 && <button className={css.btnExcluir} onClick={() => confirmarExcluir('doador', doador)}>Excluir Doador</button>}
                             </div>
                         </div>
                     ))}
@@ -285,7 +272,7 @@ export default function DashboardAdm1({ api }) {
                     </div>
                 )}
 
-                {/* ADMs - NOVO */}
+                {/* ADMs */}
                 <div className={css.titulos}><Titulo titulo={'Administradores'} cor={'preto'} /></div>
                 <div className={css.cardsAdm}>
                     {admsPaginados.length === 0 ? <p>Nenhum ADM cadastrado</p> : admsPaginados.map((adm) => (
@@ -298,9 +285,7 @@ export default function DashboardAdm1({ api }) {
                             <div className={css.cardAdmBotoes}>
                                 <button className={css.btnEditar} onClick={() => navigate(`/editarAdm/${adm[0]}`)}>Editar ADM</button>
                                 <button className={adm[15] === 1 ? css.btnInativar : css.btnAtivar} onClick={() => abrirModalBloqueio({ id: adm[0], nome: adm[1], ativo: adm[15] === 1 }, 'adm')}>{adm[15] === 1 ? 'Bloquear ADM' : 'Desbloquear ADM'}</button>
-                                {adm[15] === 0 && (
-                                    <button className={css.btnExcluir} onClick={() => confirmarExcluir('adm', adm)}>Excluir ADM</button>
-                                )}
+                                {adm[15] === 0 && <button className={css.btnExcluir} onClick={() => confirmarExcluir('adm', adm)}>Excluir ADM</button>}
                             </div>
                         </div>
                     ))}

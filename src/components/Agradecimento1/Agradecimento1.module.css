@@ -1,0 +1,25 @@
+.container {
+    background-image: url('agradecimento.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    text-align: center;
+    padding-top: 100px;
+    height: 600px;
+}
+
+.titulo{
+    margin-top: 4rem;
+    max-width: 25rem;
+    margin-left: 10rem;
+}
+
+.botoes{
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    margin-left: 15rem;
+    gap: 1rem;
+    max-width: 15rem;
+    margin-bottom: 10rem;
+}

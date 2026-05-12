@@ -2,11 +2,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
-import Titulo from "../Titulo/Titulo.jsx";
 import css from './Projetos1.module.css'
-import Botao from "../Botao/Botao.jsx";
 import BotaoProjetos from "../BotaoProjetos/BotaoProjetos.jsx";
-
 
 export default function Projetos({api}) {
     const api_url = api
@@ -15,9 +12,16 @@ export default function Projetos({api}) {
     const [loading, setLoading] = useState(true);
     const [busca, setBusca] = useState('');
     const [statusFiltro, setStatusFiltro] = useState('todos');
-
+    const [usuarioTipo, setUsuarioTipo] = useState(null);
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUsuarioTipo(payload.tipo);
+            } catch (e) {}
+        }
         buscarProjetos();
     }, []);
 
@@ -60,7 +64,6 @@ export default function Projetos({api}) {
             <MenuLateral/>
             <div className={css.conteudo}>
 
-
                 <div className={css.barraTopo}>
                     <div className={css.buscaInput}>
                         <input type="text" placeholder="Buscar por Projeto..." value={busca} onChange={(e) => setBusca(e.target.value)} className={css.inputBusca} />
@@ -85,13 +88,11 @@ export default function Projetos({api}) {
                     ) : (
                         projetos.map(projeto => (
                             <Link to={`/projeto/${projeto.id}`} key={projeto.id} className={css.card}>
-                                <img src={projeto.foto ? `${api_url}/uploads/Projetos/${projeto.foto}` : '/projeto-default.png'} alt={projeto.titulo} className={css.cardImagem} onError={(e) => {
-                                    e.currentTarget.src = '/sem_imagem.webp';
-                                }} />
+                                <img src={projeto.foto ? `${api_url}/uploads/Projetos/${projeto.foto}` : '/projeto-default.png'} alt={projeto.titulo} className={css.cardImagem} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
                                 <div className={css.cardInfo}>
                                     <div className={'d-flex justify-content-between align-items-center mb-3'}>
                                         <h3 className={css.cardNome}>{projeto.titulo}</h3>
-                                        <BotaoProjetos status={projeto.tipo_ajuda} />
+                                        <BotaoProjetos status={projeto.tipo_ajuda} projetoId={projeto.id} usuarioTipo={usuarioTipo} />
                                     </div>
                                     <p className={css.cardDesc}>{projeto.descricao?.substring(0, 80)}...</p>
                                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -102,7 +103,6 @@ export default function Projetos({api}) {
                             </Link>
                         ))
                     )}
-
                 </div>
             </div>
         </section>

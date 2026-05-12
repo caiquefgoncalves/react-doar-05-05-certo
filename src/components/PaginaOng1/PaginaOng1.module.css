@@ -312,6 +312,38 @@
     text-align: center;
 }
 
+.btnVoluntariar {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btnVoluntariar:hover {
+    background-color: #388E3C;
+}
+
+.btnDoar {
+    background-color: #167cbf;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btnDoar:hover {
+    background-color: #125d8f;
+}
+
 /* Tablet - 768px */
 @media (max-width: 768px) {
     .secao { flex-direction: column; }

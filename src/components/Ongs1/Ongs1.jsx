@@ -107,7 +107,7 @@ export default function Ongs({api}) {
                                     </div>
                                 </Link>
                                 {/* Botão seguir apenas para doadores ou não logados */}
-                                {(usuarioTipo === 1 || !usuarioTipo) && (
+                                {(usuarioTipo === 1 || usuarioTipo === null) && (
                                     <BotaoSeguir
                                         idOng={ong.id}
                                         apiUrl={api_url}

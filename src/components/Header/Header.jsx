@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
+import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
 export default function Header() {
     const [token, setToken] = useState(false);
@@ -33,20 +34,40 @@ export default function Header() {
         }
     }
 
+    function getFotoUsuario() {
+        const tokenLocal = localStorage.getItem('token');
+        if (tokenLocal) {
+            try {
+                const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
+                const idUsuario = payload.id_usuarios;
+                return `http://192.168.0.123:5000/uploads/Usuarios/${idUsuario}.jpeg`;
+            } catch (e) {}
+        }
+        return '/perfil.png';
+    }
+
+    function getIdUsuario() {
+        const tokenLocal = localStorage.getItem('token');
+        if (tokenLocal) {
+            try {
+                const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
+                return payload.id_usuarios;
+            } catch (e) {}
+        }
+        return null;
+    }
+
     useEffect(function () {
         var tokenLocal = localStorage.getItem("token");
 
         if (tokenLocal) {
-            // Verificar se o token expirou
             if (tokenExpirado(tokenLocal)) {
-                // Token expirado - limpar e redirecionar
                 localStorage.removeItem("token");
                 localStorage.removeItem("nome");
                 localStorage.setItem("sessaoExpirada", "Sua sessão expirou. Faça login novamente.");
                 setToken(false);
                 setTipoUsuario(null);
 
-                // Só redireciona se não estiver na página de login
                 if (window.location.pathname !== '/login') {
                     navigate('/login');
                 }
@@ -81,7 +102,7 @@ export default function Header() {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`http://10.92.3.135:5000/logout?token=${tokenLogout}`, {
+                await fetch(`http://192.168.0.123:5000/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });
@@ -90,19 +111,16 @@ export default function Header() {
             console.error('Erro no logout:', error);
         }
 
-        // Limpa o localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('nome');
         localStorage.removeItem('sucesso');
         localStorage.removeItem('sessaoExpirada');
 
-        // Redireciona para home
         navigate('/');
     }
 
     if (token) {
         return (
-            // ... MESMO HEADER DE QUANDO LOGADO ...
             <header className={css.headerContainer}>
                 <div className={css.headerContent}>
                     <a href="/" className={css.logoLink}>
@@ -119,16 +137,26 @@ export default function Header() {
                     </nav>
 
                     <div className={`d-none d-lg-flex ${css.divbotoes}`}>
-                        <img
-                            src="/perfil.png"
-                            onClick={irParaPerfil}
-                            style={{cursor: 'pointer', marginRight: '15px'}}
-                            alt="Perfil"
-                        />
+                        <div style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
+                            <img
+                                src={getFotoUsuario()}
+                                onClick={irParaPerfil}
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '50%',
+                                    objectFit: 'cover',
+                                    border: '2px solid #167cbf'
+                                }}
+                                alt="Perfil"
+                                onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
+                            />
+                            {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} apiUrl="http://192.168.0.123:5000" />}
+                        </div>
                     </div>
 
                     <div className={`d-none d-lg-flex ${css.divbotoes}`}>
-                        <button onClick={fazerLogout} className={css.sair}>
+                        <button onClick={fazerLogout} className={css.sair} style={{ marginLeft: '10px' }}>
                             Sair
                         </button>
                     </div>
@@ -162,16 +190,24 @@ export default function Header() {
                                 <li><Link to="/" className={css.linkMobile}>Junte-se a nós!</Link></li>
                                 <li><Link to="/feed" className={css.linkMobile}>ONGs e projetos</Link></li>
                                 <li>
-                                    <img
-                                        src="/perfil.png"
-                                        onClick={irParaPerfil}
-                                        style={{cursor: 'pointer', marginRight: '15px'}}
-                                        alt="Perfil"
-                                    />
-                                    <button
-                                        onClick={fazerLogout}
-                                        className={css.btnSairMobile}
-                                    >
+                                    <div style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
+                                        <img
+                                            src={getFotoUsuario()}
+                                            onClick={irParaPerfil}
+                                            style={{
+                                                width: '40px',
+                                                height: '40px',
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid #167cbf',
+                                                marginRight: '10px'
+                                            }}
+                                            alt="Perfil"
+                                            onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
+                                        />
+                                        {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} apiUrl="http://192.168.0.123:5000" />}
+                                    </div>
+                                    <button onClick={fazerLogout} className={css.btnSairMobile} style={{ marginLeft: '10px' }}>
                                         Sair
                                     </button>
                                 </li>
@@ -183,7 +219,6 @@ export default function Header() {
         )
     } else {
         return (
-            // ... MESMO HEADER DE QUANDO NÃO LOGADO ...
             <header className={css.headerContainer}>
                 <div className={css.headerContent}>
                     <a href="/" className={css.logoLink}>
