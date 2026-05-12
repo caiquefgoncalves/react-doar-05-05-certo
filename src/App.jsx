@@ -23,6 +23,7 @@ import ListaAprovacoes from "./pages/ListaAprovacoes.jsx";
 import AprovarOng1 from "./components/AprovarOng1/AprovarOng1.jsx";
 import EditarOng1 from './components/EditarOng1/EditarOng1.jsx';
 import EditarDoador1 from './components/EditarDoador1/EditarDoador1.jsx';
+import EditarAdm1 from './components/EditarAdm1/EditarAdm1.jsx';
 import DashboardDaOng1 from './components/DashboardDaOng1/DashboardDaOng1.jsx';
 import CriarProjeto1 from './components/CriarProjeto1/CriarProjeto1.jsx';
 import EditarProjeto1 from './components/EditarProjeto1/EditarProjeto1.jsx';
@@ -35,8 +36,11 @@ import Busca1 from './components/Busca1/Busca1.jsx';
 import Ongs1 from './components/Ongs1/Ongs1.jsx';
 import Projetos1 from './components/Projetos1/Projetos1.jsx';
 import DashboardDoador1 from './components/DashboardDoador1/DashboardDoador1.jsx';
+import Doacoes from "./pages/Doacoes.jsx";
+import Agradecimento from "./pages/Agradecimento.jsx";
+import MensagemVoluntario from "./pages/MensagemVoluntario.jsx";
 
-const API_URL = "http://10.92.3.122:5000"
+const API_URL = "http://192.168.0.123:5000"
 
 export default function App() {
     return (
@@ -62,6 +66,7 @@ export default function App() {
                 <Route path="/aprovarOng1/:id" element={<AprovarOng1 api={API_URL} />} />
                 <Route path="/editarOng/:id" element={<EditarOng1 api={API_URL}/>} />
                 <Route path="/editarDoador/:id" element={<EditarDoador1 api={API_URL}/>} />
+                <Route path="/editarAdm/:id" element={<EditarAdm1 api={API_URL}/>} />
                 <Route path="/dashboardOng" element={<DashboardDaOng1 api={API_URL}/>} />
                 <Route path="/dashboardDoador" element={<DashboardDoador1 api={API_URL}/>} />
                 <Route path="/criarProjeto" element={<CriarProjeto1 api={API_URL}/>} />
@@ -74,7 +79,9 @@ export default function App() {
                 <Route path="/busca" element={<Busca1 api={API_URL}/>} />
                 <Route path="/ongs" element={<Ongs1 api={API_URL}/>} />
                 <Route path="/projetos" element={<Projetos1 api={API_URL}/>} />
-
+                <Route path="/doar/:id" element={<Doacoes api={API_URL}/>}/>
+                <Route path="/voluntario/:id" element={<MensagemVoluntario api={API_URL}/>}/>
+                <Route path="/agradecimento" element={<Agradecimento api={API_URL}/>}/>
                 <Route path="/*" element={<TelaErro/>} />
             </Routes>
             <Footer/>
