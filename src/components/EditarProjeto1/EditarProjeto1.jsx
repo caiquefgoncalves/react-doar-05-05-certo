@@ -101,7 +101,7 @@ export default function EditarProjeto1({api}) {
                     <div className={css.campos}>
                         <Input label={'Descrição *'} type={'text'} input={descricao} alterarInput={(e) => setDescricao(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
                         <Input label={'Localização'} type={'text'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
-                        <InputArquivo tamanho={'big'} label={'Nova foto (opcional)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
+                        <InputArquivo tamanho={'normal'} label={'Nova foto (opcional)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

@@ -29,6 +29,36 @@ export default function CadastroAdm1({api}) {
     function alterarFotoPerfil(e) { if (e.target.files?.[0]) setFotoPerfil(e.target.files[0]) }
 
     async function criarAdm() {
+        // Validações em ordem
+        if (!nome.trim()) {
+            setMensagem({ texto: 'O nome é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!senha.trim()) {
+            setMensagem({ texto: 'A senha é obrigatória', tipo: 'erro' });
+            return;
+        }
+        if (!telefone.trim()) {
+            setMensagem({ texto: 'O telefone é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!email.trim()) {
+            setMensagem({ texto: 'O email é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!cpf.trim()) {
+            setMensagem({ texto: 'O CPF é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!confirmarSenha.trim()) {
+            setMensagem({ texto: 'Confirme sua senha', tipo: 'erro' });
+            return;
+        }
+        if (!fotoPerfil) {
+            setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
+            return;
+        }
+
         const form = new FormData();
         form.append('nome', nome)
         form.append('cpf_cnpj', cpf.replace(/\D/g, ''))
@@ -37,21 +67,16 @@ export default function CadastroAdm1({api}) {
         form.append('senha', senha)
         form.append('confirmar_senha', confirmarSenha)
         form.append('tipo', 0)
-
-        if (!fotoPerfil) {
-            setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
-            return;
-        }
         form.append('foto_perfil', fotoPerfil);
 
         try {
-            const token = localStorage.getItem('token'); // ADICIONADO
+            const token = localStorage.getItem('token');
 
             let retorno = await fetch(`${api_url}/criar_usuarios`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}` // ADICIONADO
+                    'Authorization': `Bearer ${token}`
                 },
                 body: form
             })

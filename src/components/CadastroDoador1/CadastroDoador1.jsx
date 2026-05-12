@@ -30,6 +30,36 @@ export default function CadastroDoador1({api}) {
     function alterarFotoPerfil(e) { if (e.target.files?.[0]) setFotoPerfil(e.target.files[0]) }
 
     async function criarDoador() {
+        // Validações em ordem (mesma ordem do formulário)
+        if (!nome.trim()) {
+            setMensagem({ texto: 'O nome é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!cpf.trim()) {
+            setMensagem({ texto: 'O CPF é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!senha.trim()) {
+            setMensagem({ texto: 'A senha é obrigatória', tipo: 'erro' });
+            return;
+        }
+        if (!confirmarSenha.trim()) {
+            setMensagem({ texto: 'Confirme sua senha', tipo: 'erro' });
+            return;
+        }
+        if (!telefone.trim()) {
+            setMensagem({ texto: 'O telefone é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!email.trim()) {
+            setMensagem({ texto: 'O email é obrigatório', tipo: 'erro' });
+            return;
+        }
+        if (!fotoPerfil) {
+            setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
+            return;
+        }
+
         const form = new FormData();
         form.append('nome', nome)
         form.append('cpf_cnpj', cpf.replace(/\D/g, ''))
@@ -38,11 +68,6 @@ export default function CadastroDoador1({api}) {
         form.append('senha', senha)
         form.append('confirmar_senha', confirmarSenha)
         form.append('tipo', 1)
-
-        if (!fotoPerfil) {
-            setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
-            return;
-        }
         form.append('foto_perfil', fotoPerfil);
 
         try {
@@ -72,18 +97,39 @@ export default function CadastroDoador1({api}) {
             </div>
             <div className={css.formulario}>
                 <div className={css.linha}>
-                    <div className={css.campos}>
-                        <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={alterarNome} />
-                        <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={alterarSenha} />
-                        <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={alterarTelefone} mascara={'telefone'} />
-                        <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={alterarEmail} />
-                    </div>
-                    <div className={css.campos}>
-                        <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={alterarCPF} mascara={'cpf'} />
-                        <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={alterarConfirmarSenha} />
-                        <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
+                    <div className={"row"}>
+                        {/* Linha 1: Nome | CPF */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={alterarNome} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={alterarCPF} mascara={'cpf'} />
+                        </div>
+                        {/* Linha 2: Senha | Confirmar Senha */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={alterarSenha} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={alterarConfirmarSenha} />
+                        </div>
+                        {/* Linha 3: Telefone | Foto de Perfil */}
+                        <div className={"col-md-6 col-12"}>
+                            <div className={"row"}>
+                                <div className={"col-12"}>
+                                    <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={alterarEmail} />
+                                </div>
+                                <div className={"col-12"}>
+                                    <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={alterarTelefone} mascara={'telefone'} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
+                        </div>
+                        {/* Linha 4: Email | (vazio) */}
                     </div>
                 </div>
+
                 <div className={css.botaoContainer}>
                     <Botao acao={criarDoador} texto={'Cadastre-se'} cor={'rosa'}/>
                 </div>

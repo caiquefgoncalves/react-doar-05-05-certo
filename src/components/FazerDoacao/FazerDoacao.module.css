@@ -1,3 +1,4 @@
+
 .titulo{
     margin-top: 5rem;
 }
@@ -13,4 +14,18 @@
 .botaoQr{
     margin-top: 1rem;
     margin-bottom: 5rem;
+}
+
+@media (max-width: 426px) {
+    .corpo{
+        background-color: #F77CA8;
+        margin: 0;
+
+    }
+
+    .titulo{
+        margin-top: 0;
+    }
+
+
 }

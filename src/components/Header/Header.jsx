@@ -9,6 +9,9 @@ export default function Header() {
     const [tipoUsuario, setTipoUsuario] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location])
 
     function decodificarToken(token) {
         try {
@@ -40,7 +43,7 @@ export default function Header() {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                return `http://10.92.3.122:5000/uploads/Usuarios/${idUsuario}.jpeg`;
+                return `http://10.92.3.164:5000/uploads/Usuarios/${idUsuario}.jpeg`;
             } catch (e) {}
         }
         return '/perfil.png';
@@ -102,7 +105,7 @@ export default function Header() {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`http://10.92.3.122:5000/logout?token=${tokenLogout}`, {
+                await fetch(`http://10.92.3.164:5000/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });

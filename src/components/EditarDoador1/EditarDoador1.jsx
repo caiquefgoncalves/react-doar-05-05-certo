@@ -58,22 +58,14 @@ export default function EditarDoador({ api }) {
             }
 
             const response = await fetch(url, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                method: 'GET', credentials: 'include',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            if (response.status === 401) {
-                localStorage.clear();
-                navigate('/login');
-                return;
-            }
+            if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
 
             if (response.ok) {
                 const data = await response.json();
-
                 if (data.usuario) {
                     setNome(data.usuario.nome || '');
                     setEmail(data.usuario.email || '');
@@ -91,14 +83,18 @@ export default function EditarDoador({ api }) {
                     }
                 }
             }
-        } catch (error) {
-            console.error('Erro:', error);
-        } finally {
-            setLoading(false);
-        }
+        } catch (error) { console.error('Erro:', error); }
+        finally { setLoading(false); }
     }
 
     async function salvarEdicao() {
+        // Validações em ordem (senha é opcional)
+        if (!nome?.trim()) { setMsgTexto('O nome é obrigatório'); setMsgTipo('erro'); return; }
+        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
+        if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
+        if (!cpf?.trim()) { setMsgTexto('O CPF é obrigatório'); setMsgTipo('erro'); return; }
+        if (!fotoPerfil) { setMsgTexto('A foto de perfil é obrigatória'); setMsgTipo('erro'); return; }
+
         const token = localStorage.getItem('token');
         const tokenData = decodificarToken(token);
 
@@ -114,14 +110,10 @@ export default function EditarDoador({ api }) {
 
         try {
             const response = await fetch(`${api_url}/editar_usuarios/${id}`, {
-                method: 'PUT',
-                credentials: 'include',
-                body: form
+                method: 'PUT', credentials: 'include', body: form
             });
 
             const data = await response.json();
-            console.log('Resposta:', data);
-
             setMsgTexto(data.message || data.error);
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
 
@@ -129,21 +121,13 @@ export default function EditarDoador({ api }) {
                 if (data.usuario && data.usuario.nome) {
                     localStorage.setItem('nome', data.usuario.nome);
                 }
-
                 setTimeout(() => {
-                    if (tokenData && tokenData.tipo === 0) {
-                        navigate('/dashboardAdm');
-                    } else if (tokenData && tokenData.tipo === 1) {
-                        navigate('/dashboardDoador');
-                    } else {
-                        navigate('/login');
-                    }
+                    if (tokenData && tokenData.tipo === 0) navigate('/dashboardAdm');
+                    else if (tokenData && tokenData.tipo === 1) navigate('/dashboardDoador');
+                    else navigate('/login');
                 }, 2000);
             }
-        } catch (error) {
-            setMsgTexto('Erro de conexão');
-            setMsgTipo('erro');
-        }
+        } catch (error) { setMsgTexto('Erro de conexão'); setMsgTipo('erro'); }
     }
 
     if (loading) return (
@@ -154,30 +138,22 @@ export default function EditarDoador({ api }) {
 
     return (
         <section className={css.containerSection}>
-            {msgTexto && (
-                <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
-            )}
-
-            <div className={css.organizar}>
-                <Titulo titulo={'Editar Doador'} cor={'rosa'} />
-            </div>
-
+            {msgTexto && <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />}
+            <div className={css.organizar}><Titulo titulo={'Editar Doador'} cor={'rosa'} /></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={css.campos}>
                         <Input label={'Nome *'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
                         <Input label={'Nova senha (opcional)'} type={'password'} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
-                        <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
+                        <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} required={true} />
                         <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value.replace(/\s/g, ''))} required={true} />
                     </div>
-
                     <div className={css.campos}>
-                        <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
+                        <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} required={true} />
                         <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
                         <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
                     </div>
                 </div>
-
                 <div className={css.botaoContainer}>
                     <Botao acao={salvarEdicao} texto={'Salvar Alterações'} cor={'rosa'} />
                 </div>

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import css from './InputArquivo.module.css'
 
-export default function InputArquivo({ required = false, tamanho = "normal", alterarInput, label = "Foto de Perfil" }) {
+export default function InputArquivo({ required = false, tipo = 'hint' , tamanho = "normal", alterarInput, label = "Foto de Perfil" }) {
 
     const [nomeArquivo, setNomeArquivo] = useState("Nenhum arquivo selecionado")
     const [erro, setErro] = useState(false)
@@ -31,7 +31,7 @@ export default function InputArquivo({ required = false, tamanho = "normal", alt
 
             <label className={`${css.botao} ${css[tamanho]}`} style={erro ? { border: '2px solid red' } : {}}>
                 Selecionar arquivo
-                <div className={css.hint}>
+                <div className={css[tipo]}>
                     <p>Deixe vazio caso não for alterar</p>
                 </div>
 

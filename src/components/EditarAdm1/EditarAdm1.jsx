@@ -45,13 +45,10 @@ export default function EditarAdm1({ api }) {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`${api_url}/listar_usuarios`, {
-                method: 'GET',
-                credentials: 'include',
+                method: 'GET', credentials: 'include',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-
             if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
-
             if (response.ok) {
                 const data = await response.json();
                 if (data.usuarios) {
@@ -69,6 +66,12 @@ export default function EditarAdm1({ api }) {
     }
 
     async function salvarEdicao() {
+        // Validações em ordem (senha é opcional)
+        if (!nome?.trim()) { setMsgTexto('O nome é obrigatório'); setMsgTipo('erro'); return; }
+        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
+        if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
+        if (!cpf?.trim()) { setMsgTexto('O CPF é obrigatório'); setMsgTipo('erro'); return; }
+
         const token = localStorage.getItem('token');
 
         const form = new FormData();
@@ -82,18 +85,12 @@ export default function EditarAdm1({ api }) {
         if (fotoPerfil) form.append('foto_perfil', fotoPerfil);
 
         try {
-            const response = await fetch(`${api_url}/editar_usuarios/${id}`, {
-                method: 'PUT', credentials: 'include', body: form
-            });
-
+            const response = await fetch(`${api_url}/editar_usuarios/${id}`, { method: 'PUT', credentials: 'include', body: form });
             const data = await response.json();
             setMsgTexto(data.message || data.error);
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
-
             if (response.ok) {
-                if (data.usuario && data.usuario.nome) {
-                    localStorage.setItem('nome', data.usuario.nome);
-                }
+                if (data.usuario && data.usuario.nome) localStorage.setItem('nome', data.usuario.nome);
                 setTimeout(() => navigate('/dashboardAdm'), 2000);
             }
         } catch (error) { setMsgTexto('Erro de conexão'); setMsgTipo('erro'); }
@@ -108,21 +105,17 @@ export default function EditarAdm1({ api }) {
     return (
         <section className={css.containerSection}>
             {msgTexto && <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />}
-
-            <div className={css.organizar}>
-                <Titulo titulo={'Editar ADM'} cor={'azul-claro'} />
-            </div>
-
+            <div className={css.organizar}><Titulo titulo={'Editar ADM'} cor={'azul-claro'} /></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={css.campos}>
                         <Input label={'Nome *'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
                         <Input label={'Nova senha (opcional)'} type={'password'} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
-                        <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
+                        <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} required={true} />
                         <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value.replace(/\s/g, ''))} required={true} />
                     </div>
                     <div className={css.campos}>
-                        <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
+                        <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} required={true} />
                         <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
                         <InputArquivo tamanho={'big'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
                     </div>

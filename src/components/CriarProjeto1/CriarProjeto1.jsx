@@ -81,7 +81,7 @@ export default function CriarProjeto1({api}) {
                     <div className={css.campos}>
                         <Input label={'Descrição *'} type={'text'} placeholder={'Descrição do projeto'} input={descricao} alterarInput={(e) => setDescricao(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
                         <Input label={'Localização'} type={'text'} placeholder={'Localização'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
-                        <InputArquivo tamanho={'big'} label={'Foto do projeto'} required={true} alterarInput={(e) => setFoto(e.target.files[0])} />
+                        <InputArquivo tamanho={'normal'} tipo={'normaledicao'} label={'Foto do projeto'} required={true} alterarInput={(e) => setFoto(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

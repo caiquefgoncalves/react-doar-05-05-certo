@@ -1,4 +1,3 @@
-
 .containerSection {
     width: 100%;
     min-height: 100vh;
@@ -18,13 +17,13 @@
 }
 
 .formulario {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 5rem;
-        padding: 0 2rem;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5rem;
+    padding: 0 6rem;
+}
 
 .linha {
     display: flex;
