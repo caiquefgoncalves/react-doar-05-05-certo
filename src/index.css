@@ -45,3 +45,8 @@
     background-color: #FCECEF;
     color: #F77CA8;
 }
+
+label{
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+}
