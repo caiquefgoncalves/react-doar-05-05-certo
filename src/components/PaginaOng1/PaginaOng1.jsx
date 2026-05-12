@@ -111,6 +111,9 @@ export default function PaginaOng1({api}) {
                                     {ong.qtd_seguidores > 1 && <p className={css.texto}>{ong.qtd_seguidores} seguidores</p>}
                                 </div>
                             </div>
+                            <div>
+
+                            </div>
                             {/* Botão seguir - apenas doadores ou não logados */}
                             {(usuarioTipo === 1 || usuarioTipo === null) && (
                                 <BotaoSeguir

@@ -34,3 +34,47 @@
     width: auto;
     height: 500px;
 }
+
+@media (max-width: 769px) {
+    .imagem{
+        display: none;
+    }
+
+    .mensagem{
+
+    }
+    .botoes{
+        margin-left: 7rem;
+
+    }
+}
+@media (max-width: 426px) {
+    .conteudo{
+        margin-top: 0;
+    }
+    .imagem{
+        display: none;
+    }
+
+    .corpo{
+        background-color: #F77CA8;
+    }
+
+    .titulo p{
+        color: white;
+        max-width: 15rem;
+    }
+
+    .mensagem{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .botoes{
+        margin-left: 0 ;
+        flex-direction: column;
+        margin-top: 1rem;
+    }
+}

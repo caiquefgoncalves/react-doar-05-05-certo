@@ -4,14 +4,16 @@ import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
-export default function Header() {
+export default function Header({ api }) {
+    const api_url = api;
     const [token, setToken] = useState(false);
     const [tipoUsuario, setTipoUsuario] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [location])
+    }, [location]);
 
     function decodificarToken(token) {
         try {
@@ -43,7 +45,7 @@ export default function Header() {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                return `http://10.92.3.164:5000/uploads/Usuarios/${idUsuario}.jpeg`;
+                return `${api_url}/uploads/Usuarios/${idUsuario}.jpeg`;
             } catch (e) {}
         }
         return '/perfil.png';
@@ -105,7 +107,7 @@ export default function Header() {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`http://10.92.3.164:5000/logout?token=${tokenLogout}`, {
+                await fetch(`${api_url}/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });
@@ -154,13 +156,13 @@ export default function Header() {
                                 alt="Perfil"
                                 onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
                             />
-                            {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api="http://10.92.3.122:5000" />}
+                            {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api={api_url} />}
                         </div>
                     </div>
 
                     <div className={`d-none d-lg-flex ${css.divbotoes}`}>
                         <button onClick={fazerLogout} className={css.sair} style={{ marginLeft: '10px' }}>
-                            <img src="/sair.png"/>
+                            <img src="/sair.png" alt="Sair"/>
                         </button>
                     </div>
 
@@ -208,10 +210,10 @@ export default function Header() {
                                             alt="Perfil"
                                             onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
                                         />
-                                        {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api="http://10.92.3.122:5000" />}
+                                        {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api={api_url} />}
                                     </div>
                                     <button onClick={fazerLogout} className={css.btnSairMobile} style={{ marginLeft: '10px' }}>
-                                        <img src="/sair.png"/>
+                                        <img src="/sair.png" alt="Sair"/>
                                     </button>
                                 </li>
                             </ul>

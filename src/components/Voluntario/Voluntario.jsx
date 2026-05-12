@@ -47,7 +47,7 @@ export default function Voluntario({ api }) {
     }
 
     return (
-        <section>
+        <section className={css.corpo}>
             <Mensagem tipo={msgTipo} texto={msgTexto} onClose={() => setMsgTexto('')} />
             <div>
                 <div className={css.conteudo}>
@@ -56,16 +56,18 @@ export default function Voluntario({ api }) {
                             <Titulo titulo={'Voluntarie-se!'} cor={'rosa'}/>
                             <p>Mande uma mensagem para a ONG para se voluntariar</p>
                         </div>
-                        <Input
-                            label={'Mensagem *'}
-                            type={'text'}
-                            textarea={true}
-                            input={mensagem}
-                            alterarInput={(e) => setMensagem(e.target.value)}
-                            placeholder={'Digite a mensagem para a ONG'}
-                        />
+                        <div>
+                            <Input
+                                label={'Mensagem *'}
+                                type={'text'}
+                                textarea={true}
+                                input={mensagem}
+                                alterarInput={(e) => setMensagem(e.target.value)}
+                                placeholder={'Digite a mensagem para a ONG'}
+                            />
+                        </div>
                         <div className={css.botoes}>
-                            <Botao texto={'Voltar'} cor={'vazadorosa'} acao={() => navigate(-1)}/>
+                            <Botao texto={'Voltar'} cor={'vazadorosa2'} acao={() => navigate(-1)}/>
                             <Botao texto={'Enviar'} cor={'rosa'} acao={enviarVoluntariado}/>
                         </div>
                     </div>

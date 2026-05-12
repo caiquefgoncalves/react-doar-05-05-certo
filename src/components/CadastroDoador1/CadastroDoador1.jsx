@@ -126,7 +126,6 @@ export default function CadastroDoador1({api}) {
                         <div className={"col-md-6 col-12"}>
                             <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
                         </div>
-                        {/* Linha 4: Email | (vazio) */}
                     </div>
                 </div>
 

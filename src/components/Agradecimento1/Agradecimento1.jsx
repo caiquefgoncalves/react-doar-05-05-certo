@@ -25,7 +25,7 @@ export default function Agradecimento1() {
             </div>
             <div className={css.botoes}>
                 <Botao texto={'Ir para o feed'} cor={'rosa'} pagina={'/feed'} />
-                <Botao texto={'Ir para o dashboard'} cor={'vazadorosa'} pagina={dashboardRoute} />
+                <Botao texto={'Ir para o dashboard'} cor={'vazadorosa2'} pagina={dashboardRoute} />
             </div>
         </section>
     )

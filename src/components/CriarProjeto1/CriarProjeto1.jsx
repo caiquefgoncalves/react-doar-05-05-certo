@@ -71,17 +71,37 @@ export default function CriarProjeto1({api}) {
             )}
             <div className={css.titulo}><Titulo titulo={'Criar novo projeto'} cor={'laranja'}/></div>
             <div className={css.formulario}>
-                <div className={css.linha}>
-                    <div className={css.campos}>
-                        <Input label={'Título *'} type={'text'} placeholder={'Título do projeto'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
-                        <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Escolha uma categoria', 'Animal', 'Escolar', 'Comida', 'Saúde', 'Outro']} />
-                        <Select label={'Tipo de ajuda *'} input={tipoAjuda} alterarInput={(e) => setTipoAjuda(e.target.value)} options={['Escolha um tipo', 'Dinheiro', 'Voluntariado']} />
-                        <Select label={'Status *'} input={status} alterarInput={(e) => setStatus(e.target.value)} options={['Ativo', 'Inativo', 'Concluído']} />
+                <div className={"row"}>
+                    <div className={"col-md-6 col-12"}>
+                        <div className={"row"}>
+                            <div className={"col-12"}>
+                                <Input label={'Título *'} type={'text'} placeholder={'Título do projeto'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
+
+                            </div>
+                            <div className={"col-12"}>
+                                <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Escolha uma categoria', 'Animal', 'Escolar', 'Comida', 'Saúde', 'Outro']} />
+                            </div>
+                        </div>
                     </div>
-                    <div className={css.campos}>
+
+                    <div className={"col-md-6 col-12"}>
                         <Input label={'Descrição *'} type={'text'} placeholder={'Descrição do projeto'} input={descricao} alterarInput={(e) => setDescricao(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
+                    </div>
+                    <div className={"col-md-6 col-12"}>
+                        <Select label={'Tipo de ajuda *'} input={tipoAjuda} alterarInput={(e) => setTipoAjuda(e.target.value)} options={['Escolha um tipo', 'Dinheiro', 'Voluntariado']} />
+                    </div>
+
+                    <div className={"col-md-6 col-12"}>
                         <Input label={'Localização'} type={'text'} placeholder={'Localização'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
+
+                    </div>
+                    <div className={"col-md-6 col-12"}>
                         <InputArquivo tamanho={'normal'} tipo={'normaledicao'} label={'Foto do projeto'} required={true} alterarInput={(e) => setFoto(e.target.files[0])} />
+
+                    </div>
+                    <div className={"col-md-6 col-12"}>
+                        <Select label={'Status *'} input={status} alterarInput={(e) => setStatus(e.target.value)} options={['Ativo', 'Inativo', 'Concluído']} />
+
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

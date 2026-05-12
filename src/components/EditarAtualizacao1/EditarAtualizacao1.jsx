@@ -101,23 +101,22 @@ export default function EditarAtualizacao1({api}) {
             )}
             <div className={css.titulo}><Titulo titulo={'Editar atualização'} cor={'laranja'}/></div>
             <div className={css.formulario}>
-                <div className={css.linha}>
-                    <div className={css.campos}>
-                        <Input label={'Título *'} type={'text'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
+                <div className={"row"}>
+                    <div className={"col-md-6 col-12"}>
+                        <Input label={'Título *'} type={'text'} placeholder={'Título da atualização'} input={titulo} alterarInput={(e) => setTitulo(e.target.value)} required={true} apenasTexto={true} />
+                    </div>
+                    <div className={"col-md-6 col-12"}>
                         {projetos.length === 0 ? (
-                            <div className={css.aviso}><p>⚠️ Nenhum projeto encontrado.</p></div>
+                            <div className={css.aviso}><p>⚠️ Nenhum projeto encontrado. Crie um projeto primeiro.</p></div>
                         ) : (
-                            <Select label={'Projeto *'} input={projetoTitulo} alterarInput={(e) => {
-                                const nomeProjeto = e.target.value;
-                                setProjetoTitulo(nomeProjeto);
-                                const projeto = projetos.find(p => p.titulo === nomeProjeto);
-                                if (projeto) setProjetoId(projeto.id);
-                            }} options={['Escolha um projeto', ...projetos.map(p => p.titulo)]} />
+                            <Select label={'Projeto *'} input={projetoTitulo} alterarInput={handleProjetoChange} options={['Escolha um projeto', ...projetos.map(p => p.titulo)]} />
                         )}
                     </div>
-                    <div className={css.campos}>
-                        <Input label={'Texto (opcional)'} type={'text'} input={texto} alterarInput={(e) => setTexto(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
-                        <InputArquivo tamanho={'big'} label={'Nova foto (opcional)'} required={false} alterarInput={(e) => setFoto(e.target.files[0])} />
+                    <div className={"col-md-6 col-12"}>
+                        <Input label={'Texto (opcional)'} type={'text'} placeholder={'Texto da atualização'} input={texto} alterarInput={(e) => setTexto(e.target.value)} textarea={true} tamanho={'Big'} apenasTexto={true} />
+                    </div>
+                    <div className={"col-md-6 col-12"}>
+                        <InputArquivo tamanho={'big'} tipo={'normaledicao'} label={'Foto da atualização'} required={true} alterarInput={(e) => setFoto(e.target.files[0])} />
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

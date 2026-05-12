@@ -31,3 +31,15 @@
     background-color: #F65682;
     color: white;
 }
+
+.voluntariadoFeito {
+    background-color: #f65682;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: default;
+    font-weight: 600;
+    font-size: 13px;
+    opacity: 0.8;
+}

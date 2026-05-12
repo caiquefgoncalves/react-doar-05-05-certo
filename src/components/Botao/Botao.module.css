@@ -94,12 +94,26 @@
     font-size: 1rem;
 }
 
+
+
 .rosa:hover {
     background-color: #d8456a;
     transform: scale(1.02);
 }
 
 .vazadorosa {
+    background-color: transparent;
+    border: 2px solid #F65682;
+    border-radius: 2rem;
+    padding: 0.7rem 2rem;
+    color: #F65682;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vazadorosa2 {
     background-color: transparent;
     border: 2px solid #F65682;
     border-radius: 2rem;
@@ -160,5 +174,11 @@
         background-color: #F65682;
         color: #FFFFFF;
 
+    }
+
+    .vazadorosa2{
+        background-color: #fff5f5;
+        color:#F65682;
+        border: none;
     }
 }

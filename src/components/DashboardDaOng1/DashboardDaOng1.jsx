@@ -23,20 +23,20 @@ export default function DashboardDaOng1({api}) {
     const [idOng, setIdOng] = useState('');
     const [projetos, setProjetos] = useState([]);
     const [atualizacoes, setAtualizacoes] = useState([]);
+    const [doadoresOng, setDoadoresOng] = useState([]);
     const [mensagem, setMensagem] = useState('');
     const [tipoMensagem, setTipoMensagem] = useState('');
     const [paginaProjetos, setPaginaProjetos] = useState(0);
     const [paginaAtualizacoes, setPaginaAtualizacoes] = useState(0);
+    const [paginaDoadores, setPaginaDoadores] = useState(0);
 
-    // Modal de exclusão
+    const [dadosGrafico, setDadosGrafico] = useState([]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
     const [tipoExclusao, setTipoExclusao] = useState('');
 
-    // Detectar se é mobile
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 426);
-
-    // Quantidade de itens por página (dinâmico)
     const itensPorPagina = isMobile ? 1 : 3;
 
     useEffect(() => {
@@ -47,7 +47,6 @@ export default function DashboardDaOng1({api}) {
             return;
         }
 
-        // Verificar se o token expirou
         const tokenData = decodificarToken(token);
         if (tokenData && tokenData.exp) {
             const agora = Math.floor(Date.now() / 1000);
@@ -65,16 +64,17 @@ export default function DashboardDaOng1({api}) {
             return;
         }
 
-        setIdOng(tokenData.id_usuarios);
+        const id = tokenData.id_usuarios;
+        setIdOng(id);
         const nome = localStorage.getItem('nome');
         if (nome) setNomeOng(nome);
+
         buscarProjetos();
         buscarAtualizacoes();
+        buscarDadosGrafico();
+        buscarDoadores(id); // Passa o ID diretamente
 
-        // Listener para redimensionamento
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 426);
-        };
+        const handleResize = () => { setIsMobile(window.innerWidth <= 768); };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -104,6 +104,35 @@ export default function DashboardDaOng1({api}) {
                 return;
             }
             if (response.ok) { const data = await response.json(); if (data.atualizacoes) setAtualizacoes(data.atualizacoes); }
+        } catch (error) { console.error('Erro:', error); }
+    }
+
+    async function buscarDadosGrafico() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${api_url}/arrecadacao_mensal_ong`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setDadosGrafico(data.dados || []);
+            }
+        } catch (error) { console.error('Erro:', error); }
+    }
+
+    async function buscarDoadores(idOngParam) {
+        try {
+            const token = localStorage.getItem('token');
+            const idUsar = idOngParam || idOng;
+            if (!idUsar) return;
+
+            const response = await fetch(`${api_url}/ong/doadores/${idUsar}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setDoadoresOng(data.doadores || []);
+            }
         } catch (error) { console.error('Erro:', error); }
     }
 
@@ -151,8 +180,74 @@ export default function DashboardDaOng1({api}) {
 
     const projetosPaginados = projetos.slice(paginaProjetos * itensPorPagina, (paginaProjetos + 1) * itensPorPagina);
     const atualizacoesPaginadas = atualizacoes.slice(paginaAtualizacoes * itensPorPagina, (paginaAtualizacoes + 1) * itensPorPagina);
+    const doadoresPaginados = doadoresOng.slice(paginaDoadores * itensPorPagina, (paginaDoadores + 1) * itensPorPagina);
     const totalPaginasProjetos = Math.ceil(projetos.length / itensPorPagina);
     const totalPaginasAtualizacoes = Math.ceil(atualizacoes.length / itensPorPagina);
+    const totalPaginasDoadores = Math.ceil(doadoresOng.length / itensPorPagina);
+
+    function renderGrafico() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const maxValor = Math.max(...dadosGrafico.map(d => d.valor), 1);
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '220px', padding: '10px 0', justifyContent: 'center' }}>
+                {meses.map((mes, i) => {
+                    const dado = dadosGrafico.find(d => d.mes === mes);
+                    const valor = dado ? dado.valor : 0;
+                    return (
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ fontSize: '10px', color: '#666', fontWeight: '600' }}>
+                                {valor > 0 ? `R$${valor.toFixed(0)}` : ''}
+                            </span>
+                            <div style={{
+                                width: '30px',
+                                height: `${Math.max((valor / maxValor) * 160, 4)}px`,
+                                backgroundColor: valor > 0 ? '#f7b567' : '#f0f0f0',
+                                borderRadius: '6px 6px 0 0'
+                            }} />
+                            <span style={{ fontSize: '9px', color: '#999' }}>{mes}</span>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }
+
+    function renderGraficoPizza() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const coresMeses = ['#f7b567', '#167cbf', '#f65682', '#4CAF50', '#9C27B0', '#FF9800', '#00BCD4', '#795548', '#607D8B', '#E91E63', '#3F51B5', '#8BC34A'];
+        const mesesComDados = dadosGrafico.filter(d => d.valor > 0);
+        const total = mesesComDados.reduce((acc, d) => acc + d.valor, 0);
+
+        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma arrecadação ainda</p>;
+
+        let gradiente = '';
+        let acumulado = 0;
+        mesesComDados.forEach((d, i) => {
+            const perc = (d.valor / total) * 100;
+            const cor = coresMeses[meses.indexOf(d.mes)];
+            gradiente += `${cor} ${acumulado}% ${acumulado + perc}%`;
+            if (i < mesesComDados.length - 1) gradiente += ', ';
+            acumulado += perc;
+        });
+
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+                <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `conic-gradient(${gradiente})` }} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', maxWidth: '300px' }}>
+                    {mesesComDados.map((d) => {
+                        const cor = coresMeses[meses.indexOf(d.mes)];
+                        return (
+                            <div key={d.mes} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: cor }} />
+                                <span style={{ fontSize: '10px', color: '#666' }}>{d.mes}: R${d.valor.toFixed(0)}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <section className={css.secao}>
@@ -160,14 +255,13 @@ export default function DashboardDaOng1({api}) {
             <div className={css.conteudo}>
                 <Mensagem tipo={tipoMensagem} texto={mensagem} onClose={() => setMensagem('')} />
 
-                {/* MODAL DE EXCLUSÃO */}
                 {modalExcluirAberto && (
                     <div className={css.modalOverlay} onClick={() => setModalExcluirAberto(false)}>
                         <div className={css.modal} onClick={(e) => e.stopPropagation()}>
                             <h3 className={css.modalTitulo}>Confirmar Exclusão</h3>
                             <p className={css.modalTexto}>
                                 Tem certeza que deseja excluir permanentemente{' '}
-                                <strong>{tipoExclusao === 'projeto' ? itemParaExcluir?.titulo : itemParaExcluir?.titulo}</strong>?
+                                <strong>{itemParaExcluir?.titulo}</strong>?
                             </p>
                             <p className={css.modalAviso}>Esta ação não pode ser desfeita.</p>
                             <div className={css.modalBotoes}>
@@ -178,7 +272,6 @@ export default function DashboardDaOng1({api}) {
                     </div>
                 )}
 
-
                 <div className={css.Titulo}><Titulo titulo={`Olá,`} cor={'saudacao'} span={nomeOng} corSpan={'laranja-span'}/></div>
                 <p className={css.acoesRapidas}>Ações rápidas</p>
                 <div className={css.acoes}>
@@ -187,14 +280,13 @@ export default function DashboardDaOng1({api}) {
                     <Acoes cor={'amarelo'} texto={'Criar Atualização'} pagina={'/criarAtualizacao'}/>
                 </div>
 
+                {/* Projetos Ativos */}
                 <div className={css.titulos}><Titulo titulo={'Projetos Ativos'} cor={'preto'}/></div>
                 <div className={css.cardsAdm}>
                     {projetosPaginados.length === 0 ? <p>Nenhum projeto cadastrado</p> : projetosPaginados.map((projeto) => (
                         <div key={projeto.id} className={css.cardAdm}>
                             <div className={css.cardAdmTopo}>
-                                <img src={projeto.foto ? `${api_url}/uploads/Projetos/${projeto.foto}` : '/projeto-default.png'} alt={projeto.titulo} className={css.cardAdmImagem} onError={(e) => {
-                                    e.currentTarget.src = '/sem_imagem.webp';
-                                }} />
+                                <img src={projeto.foto ? `${api_url}/uploads/Projetos/${projeto.foto}` : '/projeto-default.png'} alt={projeto.titulo} className={css.cardAdmImagem} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
                                 <h3 className={css.cardAdmNome}>{projeto.titulo}</h3>
                             </div>
                             <span className={css.cardAdmStatus} style={{ color: '#167cbf' }}>{projeto.status || 'Ativo'}</span>
@@ -213,14 +305,13 @@ export default function DashboardDaOng1({api}) {
                     </div>
                 )}
 
+                {/* Últimas Atualizações */}
                 <div className={css.titulos}><Titulo titulo={'Últimas atualizações'} cor={'preto'}/></div>
                 <div className={css.cardsAdm}>
                     {atualizacoesPaginadas.length === 0 ? <p>Nenhuma atualização</p> : atualizacoesPaginadas.map((atualizacao) => (
                         <div key={atualizacao.id} className={css.cardAdm}>
                             <div className={css.cardAdmTopo}>
-                                <img src={atualizacao.foto ? `${api_url}/uploads/Atualizacoes/${atualizacao.foto}` : '/atualizacao-default.png'} alt={atualizacao.titulo} className={css.cardAdmImagem} onError={(e) => {
-                                    e.currentTarget.src = '/sem_imagem.webp';
-                                }} />
+                                <img src={atualizacao.foto ? `${api_url}/uploads/Atualizacoes/${atualizacao.foto}` : '/atualizacao-default.png'} alt={atualizacao.titulo} className={css.cardAdmImagem} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
                                 <h3 className={css.cardAdmNome}>{atualizacao.titulo}</h3>
                             </div>
                             <span className={css.cardAdmStatus} style={{ color: '#167cbf' }}>{atualizacao.data || 'Sem data'}</span>
@@ -238,6 +329,36 @@ export default function DashboardDaOng1({api}) {
                         <button className={css.botaoPagina} onClick={() => setPaginaAtualizacoes(p => p + 1)} disabled={paginaAtualizacoes === totalPaginasAtualizacoes - 1}>→</button>
                     </div>
                 )}
+
+                {/* Doadores */}
+                <div className={css.titulos}><Titulo titulo={'Doadores'} cor={'preto'}/></div>
+                <div className={css.cardsAdm}>
+                    {doadoresPaginados.length === 0 ? <p>Nenhum doador ainda</p> : doadoresPaginados.map((doador) => (
+                        <div key={doador.id} className={css.cardAdm} style={{ borderTop: '4px solid #167cbf' }}>
+                            <div className={css.cardAdmTopo}>
+                                <img src={`${api_url}/uploads/Usuarios/${doador.foto}`} alt={doador.nome} className={css.cardAdmImagem} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                <h3 className={css.cardAdmNome}>{doador.nome}</h3>
+                            </div>
+                            <span className={css.cardAdmStatus} style={{ color: '#167cbf' }}>Último: {doador.ultimo_valor}</span>
+                            <p style={{ fontSize: '10px', color: '#888', textAlign: 'center', marginTop: '5px' }}>Última: {doador.ultima_doacao}</p>
+                        </div>
+                    ))}
+                </div>
+                {totalPaginasDoadores > 1 && (
+                    <div className={css.paginacao}>
+                        <button className={css.botaoPagina} onClick={() => setPaginaDoadores(p => p - 1)} disabled={paginaDoadores === 0}>←</button>
+                        <span className={css.paginaInfo}>{paginaDoadores + 1} de {totalPaginasDoadores}</span>
+                        <button className={css.botaoPagina} onClick={() => setPaginaDoadores(p => p + 1)} disabled={paginaDoadores === totalPaginasDoadores - 1}>→</button>
+                    </div>
+                )}
+
+                {/* Gráfico de Arrecadação Mensal */}
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#333', marginTop: '30px', marginBottom: '15px' }}>
+                    Arrecadação Mensal
+                </h2>
+                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', marginBottom: '30px' }}>
+                    {isMobile ? renderGraficoPizza() : renderGrafico()}
+                </div>
             </div>
         </section>
     );

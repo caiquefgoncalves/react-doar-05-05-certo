@@ -28,14 +28,17 @@ export default function DashboardDoador1({ api }) {
     const [ongsSeguidas, setOngsSeguidas] = useState([]);
     const [loadingOngs, setLoadingOngs] = useState(true);
     const [paginaOngs, setPaginaOngs] = useState(0);
-    const ongsPorPagina = 3;
 
     const [atividades, setAtividades] = useState([]);
     const [loadingAtividades, setLoadingAtividades] = useState(true);
     const [dadosGrafico, setDadosGrafico] = useState([]);
     const [paginaDoacoes, setPaginaDoacoes] = useState(0);
-    const doacoesPorPagina = 3;
+
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    // Quantidade dinâmica: mobile 1, PC 3
+    const ongsPorPagina = isMobile ? 1 : 3;
+    const doacoesPorPagina = isMobile ? 1 : 3;
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -161,9 +164,10 @@ export default function DashboardDoador1({ api }) {
                     Suas ONGs do <span style={{ color: '#000' }}>coração</span>
                 </h2>
                 {loadingOngs ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : ongsSeguidas.length === 0 ? (
-
+                    <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '16px' }}>
                         <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG</p>
-
+                        <Link to="/ongs" style={{ color: '#fff', background: '#167cbf', padding: '12px 24px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', fontSize: '14px' }}>Encontrar ONGs</Link>
+                    </div>
                 ) : (
                     <>
                         <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '30px' }}>
@@ -171,7 +175,6 @@ export default function DashboardDoador1({ api }) {
                                 <Link to={`/ong/${ong.id}`} key={ong.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit' }}>
                                     <div style={{ position: 'relative', display: 'inline-block' }}>
                                         <img src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'} alt={ong.nome} style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
-
                                     </div>
                                     <span style={{ fontSize: '16px', fontWeight: '600', color: '#333', textAlign: 'center' }}>{ong.nome}</span>
                                 </Link>
@@ -201,12 +204,7 @@ export default function DashboardDoador1({ api }) {
                             {atividadesPaginadas.map((ativ, i) => (
                                 <div key={i} className={css.cardAdm} style={{ borderTop: '4px solid #f65682' }}>
                                     <div className={css.cardAdmTopo}>
-                                        <img
-                                            src={ativ.ong_foto ? `${api_url}/uploads/Usuarios/${ativ.ong_foto}` : '/ong-icon.png'}
-                                            alt={ativ.ong || 'ONG'}
-                                            className={css.cardAdmImagem}
-                                            onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/ong-icon.png'; }}
-                                        />
+                                        <img src={ativ.ong_foto ? `${api_url}/uploads/Usuarios/${ativ.ong_foto}` : '/ong-icon.png'} alt={ativ.ong || 'ONG'} className={css.cardAdmImagem} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/ong-icon.png'; }} />
                                         <h3 className={css.cardAdmNome} style={{ fontSize: '11px' }}>{ativ.ong || 'ONG'}</h3>
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
@@ -232,7 +230,7 @@ export default function DashboardDoador1({ api }) {
 
                 {/* Gráfico */}
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
-                    Sua frequência de <span style={{ color: '#000' }}>Doações</span>
+                    Sua frequência de Doações
                 </h2>
                 <div style={{ background: '#fff', borderRadius: '16px', padding: '25px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}

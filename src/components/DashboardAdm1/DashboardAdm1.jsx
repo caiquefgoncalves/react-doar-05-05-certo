@@ -40,7 +40,9 @@ export default function DashboardAdm1({ api }) {
     const [paginaDoadores, setPaginaDoadores] = useState(0);
     const [paginaAdms, setPaginaAdms] = useState(0);
 
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 426);
+    const [dadosGrafico, setDadosGrafico] = useState([]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
     const ongsPorPagina = isMobile ? 1 : 3;
     const doadoresPorPagina = isMobile ? 1 : 3;
     const admsPorPagina = isMobile ? 1 : 3;
@@ -56,8 +58,9 @@ export default function DashboardAdm1({ api }) {
         buscarOngs();
         buscarDoadores();
         buscarAdms();
+        buscarDadosGrafico();
 
-        const handleResize = () => { setIsMobile(window.innerWidth <= 426); };
+        const handleResize = () => { setIsMobile(window.innerWidth <= 768); };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -84,6 +87,19 @@ export default function DashboardAdm1({ api }) {
             const token = localStorage.getItem('token');
             const response = await fetch(`${api_url}/listar_usuarios?token=${token}`, { method: 'GET', credentials: 'include' });
             if (response.ok) { const data = await response.json(); if (data.usuarios) setAdms(data.usuarios.filter(u => u[17] === 0)); }
+        } catch (error) { console.error('Erro:', error); }
+    }
+
+    async function buscarDadosGrafico() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${api_url}/admin/arrecadacao_global`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setDadosGrafico(data.dados || []);
+            }
         } catch (error) { console.error('Erro:', error); }
     }
 
@@ -161,6 +177,70 @@ export default function DashboardAdm1({ api }) {
     const doadoresPaginados = doadores.slice(paginaDoadores * doadoresPorPagina, (paginaDoadores + 1) * doadoresPorPagina);
     const totalPaginasAdms = Math.ceil(adms.length / admsPorPagina);
     const admsPaginados = adms.slice(paginaAdms * admsPorPagina, (paginaAdms + 1) * admsPorPagina);
+
+    function renderGrafico() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const maxValor = Math.max(...dadosGrafico.map(d => d.valor), 1);
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '220px', padding: '10px 0', justifyContent: 'center' }}>
+                {meses.map((mes, i) => {
+                    const dado = dadosGrafico.find(d => d.mes === mes);
+                    const valor = dado ? dado.valor : 0;
+                    return (
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ fontSize: '10px', color: '#666', fontWeight: '600' }}>
+                                {valor > 0 ? `R$${valor.toFixed(0)}` : ''}
+                            </span>
+                            <div style={{
+                                width: '30px',
+                                height: `${Math.max((valor / maxValor) * 160, 4)}px`,
+                                backgroundColor: valor > 0 ? '#f7b567' : '#f0f0f0',
+                                borderRadius: '6px 6px 0 0'
+                            }} />
+                            <span style={{ fontSize: '9px', color: '#999' }}>{mes}</span>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }
+
+    function renderGraficoPizza() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const coresMeses = ['#f7b567', '#167cbf', '#f65682', '#4CAF50', '#9C27B0', '#FF9800', '#00BCD4', '#795548', '#607D8B', '#E91E63', '#3F51B5', '#8BC34A'];
+        const mesesComDados = dadosGrafico.filter(d => d.valor > 0);
+        const total = mesesComDados.reduce((acc, d) => acc + d.valor, 0);
+
+        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma arrecadação ainda</p>;
+
+        let gradiente = '';
+        let acumulado = 0;
+        mesesComDados.forEach((d, i) => {
+            const perc = (d.valor / total) * 100;
+            const cor = coresMeses[meses.indexOf(d.mes)];
+            gradiente += `${cor} ${acumulado}% ${acumulado + perc}%`;
+            if (i < mesesComDados.length - 1) gradiente += ', ';
+            acumulado += perc;
+        });
+
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+                <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `conic-gradient(${gradiente})` }} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', maxWidth: '300px' }}>
+                    {mesesComDados.map((d) => {
+                        const cor = coresMeses[meses.indexOf(d.mes)];
+                        return (
+                            <div key={d.mes} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: cor }} />
+                                <span style={{ fontSize: '10px', color: '#666' }}>{d.mes}: R${d.valor.toFixed(0)}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <section className={css.secao}>
@@ -297,6 +377,14 @@ export default function DashboardAdm1({ api }) {
                         <button className={css.botaoPagina} onClick={() => setPaginaAdms(p => p + 1)} disabled={paginaAdms === totalPaginasAdms - 1}>→</button>
                     </div>
                 )}
+
+                {/* Gráfico de Arrecadação Global */}
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#333', marginTop: '30px', marginBottom: '15px' }}>
+                    Arrecadação Global
+                </h2>
+                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', marginBottom: '30px' }}>
+                    {isMobile ? renderGraficoPizza() : renderGrafico()}
+                </div>
             </div>
         </section>
     );

@@ -59,7 +59,7 @@ export default function EditarDoador({ api }) {
 
             const response = await fetch(url, {
                 method: 'GET', credentials: 'include',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `${token}` }
             });
 
             if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
@@ -142,16 +142,35 @@ export default function EditarDoador({ api }) {
             <div className={css.organizar}><Titulo titulo={'Editar Doador'} cor={'rosa'} /></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
-                    <div className={css.campos}>
-                        <Input label={'Nome *'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
-                        <Input label={'Nova senha (opcional)'} type={'password'} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
-                        <Input label={'Telefone *'} type={'text'} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} required={true} />
-                        <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value.replace(/\s/g, ''))} required={true} />
-                    </div>
-                    <div className={css.campos}>
-                        <Input label={'CPF *'} type={'text'} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} required={true} />
-                        <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
-                        <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                    <div className={"row"}>
+                        {/* Linha 1: Nome | CPF */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={(e) => setNome(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
+                        </div>
+                        {/* Linha 2: Senha | Confirmar Senha */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
+                        </div>
+                        {/* Linha 3: Telefone | Foto de Perfil */}
+                        <div className={"col-md-6 col-12"}>
+                            <div className={"row"}>
+                                <div className={"col-12"}>
+                                    <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={(e) => setEmail(e.target.value)} />
+                                </div>
+                                <div className={"col-12"}>
+                                    <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                        </div>
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

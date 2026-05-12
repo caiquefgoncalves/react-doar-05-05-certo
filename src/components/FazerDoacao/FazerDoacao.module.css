@@ -1,8 +1,7 @@
-
-.titulo{
-    margin-top: 5rem;
+.titulo {
+    margin: 0;
+    padding-top: 2rem;
 }
-
 .container{
     display: flex;
     flex-direction: column;
@@ -11,12 +10,60 @@
     margin-top: 2rem;
 }
 
+.informacoes{
+    display: flex;
+    justify-content: space-between;
+    gap: 7rem;
+}
+.qrCode{
+    display: flex;
+
+}
+
+.qrCode img{
+    width: auto;
+    height: 15rem;
+}
+
+.botoes{
+    display: flex;
+    flex-direction: column;
+    max-width: 20rem;
+}
 .botaoQr{
     margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.botao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 5rem;
 }
 
 @media (max-width: 426px) {
+    .informacoes{
+        display: flex;
+        align-items: center;
+        flex-direction: column-reverse;
+        gap: 2rem;
+
+    }
+
+    .geral{
+        background-color: #F77CA8;
+        margin: 0;
+    }
+
+    .titulo{
+        margin-top: 0;
+    }
+    .container{
+        margin-top: 1rem;
+
+    }
+
     .corpo{
         background-color: #F77CA8;
         margin: 0;

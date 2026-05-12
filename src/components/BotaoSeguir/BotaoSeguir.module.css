@@ -73,6 +73,11 @@
     100% { transform: rotate(360deg); }
 }
 
+.desabilitado {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Responsivo para mobile */
 @media (max-width: 768px) {
     .botaoSeguir {

@@ -1,9 +1,9 @@
 // src/components/SeloVoluntario/SeloVoluntario.jsx
 import { useState, useEffect } from "react";
 
-export default function SeloVoluntario({ idUsuario, api }) {
+export default function SeloVoluntario({ idUsuario}) {
     const [isVoluntario, setIsVoluntario] = useState(false);
-    const api_url = api;
+
 
     useEffect(() => {
         if (idUsuario) {
@@ -14,7 +14,7 @@ export default function SeloVoluntario({ idUsuario, api }) {
     async function verificarVoluntario() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/verificar_voluntario/${idUsuario}`, {
+            const response = await fetch(` http://10.92.3.164:5000/verificar_voluntario/${idUsuario}`, {
                 headers: { 'Authorization': `Bearer ${token || ''}` }
             });
             if (response.ok) {

@@ -140,24 +140,64 @@ export default function EditarOng1({api}) {
             <div className={css.cadastroOng1}><Titulo titulo={'Editar ONG'} cor={'laranja'}/></div>
             <div className={css.formulario}>
                 <div className={css.linha}>
-                    <div className={css.campos}>
-                        <Input label={'Nome *'} type={'text'} input={nome} alterarInput={(e) => setNome(e.target.value)} required={true} />
-                        <Input label={'Email *'} type={'text'} input={email} alterarInput={(e) => setEmail(e.target.value)} required={true} />
-                        <Input label={'Descrição breve *'} type={'text'} input={descBreve} alterarInput={(e) => setDescBreve(e.target.value)} maxLength={30} required={true} />
-                        <Input label={'Localização *'} type={'text'} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} required={true} />
-                        <Input label={'Nova senha (opcional)'} type={'password'} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
-                        <Input label={'Código do banco *'} type={'text'} input={codBanco} alterarInput={(e) => setCodBanco(e.target.value.replace(/\D/g, ''))} maxLength={3} required={true} />
-                        <Input label={'Número da conta *'} type={'text'} input={numConta} alterarInput={(e) => setNumConta(e.target.value.replace(/\D/g, ''))} maxLength={12} required={true} />
-                        <Select label={'Tipo de conta *'} input={tipoConta} alterarInput={(e) => setTipoConta(e.target.value)} options={['Conta-corrente', 'Poupança', 'Conta salário', 'Conta digital', 'Conta PJ']} />
-                    </div>
-                    <div className={css.campos}>
-                        <Input label={'CNPJ *'} type={'text'} input={cnpj} alterarInput={(e) => setCnpj(e.target.value)} mascara={'cnpj'} required={true} />
-                        <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Animal', 'Escolar', 'Comida', 'Outro']} />
-                        <Input tamanho={'Big'} label={'Descrição longa *'} type={'text'} input={descLonga} alterarInput={(e) => setDescLonga(e.target.value)} textarea={true} maxLength={200} required={true} />
-                        <Input label={'Confirmar senha'} type={'password'} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
-                        <Input label={'Chave PIX *'} type={'text'} input={chavePix} alterarInput={(e) => setChavePix(e.target.value)} required={true} />
-                        <Input label={'Número da agência *'} type={'text'} input={numAgencia} alterarInput={(e) => setNumAgencia(e.target.value.replace(/\D/g, ''))} maxLength={5} required={true} />
-                        <InputArquivo tamanho={'normal'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                    <div className={"row"}>
+                        {/* Linha 1: Nome | CNPJ */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={(e) => setNome(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'CNPJ *'} type={'text'} placeholder={'Digite o CNPJ'} required={true} input={cnpj} alterarInput={(e) => setCnpj(e.target.value)} mascara={'cnpj'} />
+                        </div>
+                        {/* Linha 2: Email | Categoria */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Select label={'Categoria *'} input={categoria} alterarInput={(e) => setCategoria(e.target.value)} options={['Escolha uma categoria', 'Animal', 'Escolar', 'Comida', 'Outro']}/>
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <div className={"row"}>
+                                <div className={"col-12"}>
+                                    <Input label={'Descrição breve *'} type={'text'} placeholder={'Descrição breve sobre sua ONG'} required={true} maxLength={50} input={descBreve} alterarInput={(e) => setDescBreve(e.target.value)} />
+                                </div>
+                                <div className={"col-12"}>
+                                    <Input label={'Localização *'} type={'text'} placeholder={'Digite sua localização'} required={true} maxLength={254} input={localizacao} alterarInput={(e) => setLocalizacao(e.target.value)} />
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input tamanho={'Big'} label={'Descrição longa *'} type={'text'} placeholder={'Descrição longa sobre sua ONG'} required={true} maxLength={254} textarea={true} alterarInput={(e) => setDescLonga(e.target.value)} />
+                        </div>
+                        {/* Linha 4: Localização | (vazio) */}
+                        {/* Linha 5: Senha | Confirmar Senha */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Senha *'} type={'password'} placeholder={'Crie uma senha'} required={true} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
+                        </div>
+                        {/* Linha 6: Chave PIX | Número da Conta */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Chave PIX *'} type={'text'} placeholder={'Digite sua chave PIX'} required={true} maxLength={254} input={chavePix} alterarInput={(e) => setChavePix(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Número da conta *'} type={'text'} placeholder={'Digite o número da conta'} required={true} input={numConta} alterarInput={(e) => setNumConta(e.target.value)} maxLength={12} />
+                        </div>
+                        {/* Linha 7: Código do Banco | Tipo de Conta */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Código do banco *'} type={'text'} placeholder={'Digite o código do banco'} required={true} maxLength={3} input={(e) => setCodBanco(e.target.value)} alterarInput={(e) => setCodBanco(e.target.files[0])} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <Select label={'Tipo de conta *'} options={['Escolha um tipo de conta', 'Conta-corrente', 'Poupança', 'Conta salário', 'Conta digital', 'Conta PJ']} input={tipoConta} alterarInput={(e) => setTipoConta(e.target.value)} />
+                        </div>
+                        {/* Linha 8: Número da Agência | Foto de Perfil */}
+                        <div className={"col-md-6 col-12"}>
+                            <Input label={'Número da agência *'} type={'text'} placeholder={'Digite o número da sua agência'} required={true} maxLength={4} input={numAgencia} alterarInput={(e) => setNumAgencia(e.target.value)} />
+                        </div>
+                        <div className={"col-md-6 col-12"}>
+                            <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                        </div>
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

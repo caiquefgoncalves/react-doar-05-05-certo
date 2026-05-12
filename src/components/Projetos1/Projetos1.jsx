@@ -92,14 +92,18 @@ export default function Projetos({api}) {
                                 <div className={css.cardInfo}>
                                     <div className={'d-flex justify-content-between align-items-center mb-3'}>
                                         <h3 className={css.cardNome}>{projeto.titulo}</h3>
-                                        <BotaoProjetos status={projeto.tipo_ajuda} projetoId={projeto.id} usuarioTipo={usuarioTipo} />
+
                                     </div>
                                     <p className={css.cardDesc}>{projeto.descricao?.substring(0, 80)}...</p>
                                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                         <span className={css.cardCategoria}>{projeto.status}</span>
                                         <span style={{ fontSize: '11px', color: '#999' }}>{projeto.ong_nome}</span>
                                     </div>
+                                    <div className={css.botao}>
+                                        <BotaoProjetos status={projeto.tipo_ajuda} projetoId={projeto.id} usuarioTipo={usuarioTipo} />
+                                    </div>
                                 </div>
+
                             </Link>
                         ))
                     )}
