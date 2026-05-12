@@ -40,7 +40,7 @@ export default function Header() {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                return `http://192.168.0.123:5000/uploads/Usuarios/${idUsuario}.jpeg`;
+                return `http://10.92.3.122:5000/uploads/Usuarios/${idUsuario}.jpeg`;
             } catch (e) {}
         }
         return '/perfil.png';
@@ -102,7 +102,7 @@ export default function Header() {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`http://192.168.0.123:5000/logout?token=${tokenLogout}`, {
+                await fetch(`http://10.92.3.122:5000/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });
@@ -142,8 +142,8 @@ export default function Header() {
                                 src={getFotoUsuario()}
                                 onClick={irParaPerfil}
                                 style={{
-                                    width: '40px',
-                                    height: '40px',
+                                    width: '50px',
+                                    height: '50px',
                                     borderRadius: '50%',
                                     objectFit: 'cover',
                                     border: '2px solid #167cbf'
@@ -151,13 +151,13 @@ export default function Header() {
                                 alt="Perfil"
                                 onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
                             />
-                            {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} apiUrl="http://192.168.0.123:5000" />}
+                            {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api="http://10.92.3.122:5000" />}
                         </div>
                     </div>
 
                     <div className={`d-none d-lg-flex ${css.divbotoes}`}>
                         <button onClick={fazerLogout} className={css.sair} style={{ marginLeft: '10px' }}>
-                            Sair
+                            <img src="/sair.png"/>
                         </button>
                     </div>
 
@@ -195,8 +195,8 @@ export default function Header() {
                                             src={getFotoUsuario()}
                                             onClick={irParaPerfil}
                                             style={{
-                                                width: '40px',
-                                                height: '40px',
+                                                width: '60px',
+                                                height: '60px',
                                                 borderRadius: '50%',
                                                 objectFit: 'cover',
                                                 border: '2px solid #167cbf',
@@ -205,10 +205,10 @@ export default function Header() {
                                             alt="Perfil"
                                             onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
                                         />
-                                        {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} apiUrl="http://192.168.0.123:5000" />}
+                                        {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api="http://10.92.3.122:5000" />}
                                     </div>
                                     <button onClick={fazerLogout} className={css.btnSairMobile} style={{ marginLeft: '10px' }}>
-                                        Sair
+                                        <img src="/sair.png"/>
                                     </button>
                                 </li>
                             </ul>

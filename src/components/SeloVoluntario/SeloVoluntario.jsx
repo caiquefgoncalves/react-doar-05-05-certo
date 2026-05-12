@@ -1,21 +1,25 @@
 // src/components/SeloVoluntario/SeloVoluntario.jsx
 import { useState, useEffect } from "react";
 
-export default function SeloVoluntario({ idUsuario, apiUrl }) {
+export default function SeloVoluntario({ idUsuario, api }) {
     const [isVoluntario, setIsVoluntario] = useState(false);
+    const api_url = api;
 
     useEffect(() => {
-        verificarVoluntario();
+        if (idUsuario) {
+            verificarVoluntario();
+        }
     }, [idUsuario]);
 
     async function verificarVoluntario() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${apiUrl}/verificar_voluntario/${idUsuario}`, {
+            const response = await fetch(`${api_url}/verificar_voluntario/${idUsuario}`, {
                 headers: { 'Authorization': `Bearer ${token || ''}` }
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log('Verificação voluntário:', data); // Debug
                 setIsVoluntario(data.voluntario);
             }
         } catch (error) {
@@ -30,8 +34,8 @@ export default function SeloVoluntario({ idUsuario, apiUrl }) {
             src="/coracao_dourado.png"
             alt="Selo Voluntário"
             style={{
-                width: '22px',
-                height: '22px',
+                width: '30px',
+                height: '30px',
                 position: 'absolute',
                 bottom: '-2px',
                 right: '-2px',

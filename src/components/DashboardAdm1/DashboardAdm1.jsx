@@ -251,7 +251,7 @@ export default function DashboardAdm1({ api }) {
                             <div className={css.cardAdmTopo}>
                                 <div style={{ position: 'relative', display: 'inline-block' }}>
                                     <img src={getImagemUrl(doador[0])} alt={doador[1]} className={css.cardAdmImagem} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
-                                    <SeloVoluntario idUsuario={doador[0]} apiUrl={api_url} />
+                                    <SeloVoluntario idUsuario={doador[0]} api={api_url} />
                                 </div>
                                 <h3 className={css.cardAdmNome}>{doador[1]}</h3>
                             </div>

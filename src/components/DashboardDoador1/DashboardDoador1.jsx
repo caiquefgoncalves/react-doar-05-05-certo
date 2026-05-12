@@ -27,8 +27,15 @@ export default function DashboardDoador1({ api }) {
 
     const [ongsSeguidas, setOngsSeguidas] = useState([]);
     const [loadingOngs, setLoadingOngs] = useState(true);
-    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [paginaOngs, setPaginaOngs] = useState(0);
     const ongsPorPagina = 3;
+
+    const [atividades, setAtividades] = useState([]);
+    const [loadingAtividades, setLoadingAtividades] = useState(true);
+    const [dadosGrafico, setDadosGrafico] = useState([]);
+    const [paginaDoacoes, setPaginaDoacoes] = useState(0);
+    const doacoesPorPagina = 3;
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -43,6 +50,12 @@ export default function DashboardDoador1({ api }) {
         if (nome) setNomeDoador(nome);
 
         buscarOngsSeguidas(token);
+        buscarAtividades(token);
+        buscarDadosGrafico(token);
+
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const sucesso = localStorage.getItem('sucesso');
@@ -52,20 +65,86 @@ export default function DashboardDoador1({ api }) {
 
     async function buscarOngsSeguidas(token) {
         try {
-            const response = await fetch(`${api_url}/minhas_ongs_seguidas`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setOngsSeguidas(data.ongs || []);
-            }
-        } catch (error) { console.error('Erro ao buscar ONGs seguidas:', error); }
+            const response = await fetch(`${api_url}/minhas_ongs_seguidas`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { const data = await response.json(); setOngsSeguidas(data.ongs || []); }
+        } catch (error) { console.error('Erro:', error); }
         finally { setLoadingOngs(false); }
     }
 
-    const totalPaginas = Math.ceil(ongsSeguidas.length / ongsPorPagina);
-    const indiceInicio = (paginaAtual - 1) * ongsPorPagina;
-    const ongsPaginaAtual = ongsSeguidas.slice(indiceInicio, indiceInicio + ongsPorPagina);
+    async function buscarAtividades(token) {
+        try {
+            const response = await fetch(`${api_url}/minhas_doacoes`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { const data = await response.json(); setAtividades(data.atividades || []); }
+        } catch (error) { console.error('Erro:', error); }
+        finally { setLoadingAtividades(false); }
+    }
+
+    async function buscarDadosGrafico(token) {
+        try {
+            const response = await fetch(`${api_url}/frequencia_doacoes`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { const data = await response.json(); setDadosGrafico(data.dados || []); }
+        } catch (error) { console.error('Erro:', error); }
+    }
+
+    const totalPaginasOngs = Math.ceil(ongsSeguidas.length / ongsPorPagina);
+    const ongsPaginadas = ongsSeguidas.slice(paginaOngs * ongsPorPagina, (paginaOngs + 1) * ongsPorPagina);
+
+    const totalPaginasDoacoes = Math.ceil(atividades.length / doacoesPorPagina);
+    const atividadesPaginadas = atividades.slice(paginaDoacoes * doacoesPorPagina, (paginaDoacoes + 1) * doacoesPorPagina);
+
+    const coresMeses = ['#f7b567', '#167cbf', '#f65682', '#4CAF50', '#9C27B0', '#FF9800', '#00BCD4', '#795548', '#607D8B', '#E91E63', '#3F51B5', '#8BC34A'];
+
+    function renderGrafico() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const maxQtd = Math.max(...dadosGrafico.map(d => d.qtd), 1);
+        return (
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '220px', padding: '10px 0', justifyContent: 'center' }}>
+                {meses.map((mes, i) => {
+                    const dado = dadosGrafico.find(d => d.mes === mes);
+                    const qtd = dado ? dado.qtd : 0;
+                    return (
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ fontSize: '10px', color: '#666', fontWeight: '600' }}>{qtd || ''}</span>
+                            <div style={{ width: '30px', height: `${Math.max((qtd / maxQtd) * 160, 4)}px`, backgroundColor: qtd > 0 ? '#f7b567' : '#f0f0f0', borderRadius: '6px 6px 0 0' }} />
+                            <span style={{ fontSize: '9px', color: '#999' }}>{mes}</span>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }
+
+    function renderGraficoPizza() {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const mesesComDados = dadosGrafico.filter(d => d.qtd > 0);
+        const total = mesesComDados.reduce((acc, d) => acc + d.qtd, 0);
+        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma doação realizada ainda</p>;
+        let gradiente = '';
+        let acumulado = 0;
+        mesesComDados.forEach((d, i) => {
+            const perc = (d.qtd / total) * 100;
+            const cor = coresMeses[meses.indexOf(d.mes)];
+            gradiente += `${cor} ${acumulado}% ${acumulado + perc}%`;
+            if (i < mesesComDados.length - 1) gradiente += ', ';
+            acumulado += perc;
+        });
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+                <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `conic-gradient(${gradiente})` }} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', maxWidth: '300px' }}>
+                    {mesesComDados.map((d) => {
+                        const cor = coresMeses[meses.indexOf(d.mes)];
+                        return (
+                            <div key={d.mes} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: cor }} />
+                                <span style={{ fontSize: '10px', color: '#666' }}>{d.mes}: {d.qtd}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <section className={css.secao}>
@@ -75,49 +154,90 @@ export default function DashboardDoador1({ api }) {
                 <div className={css.Titulo}><Titulo titulo={`Olá,`} cor={'saudacao'} span={nomeDoador} corSpan={'rosa-span'}/></div>
 
                 <p className={css.acoesRapidas}>Ações rápidas</p>
-                <div className={css.acoes}>
-                    <Acoes cor={'amarelo'} texto={'Editar perfil'} pagina={`/editarDoador/${idDoador}`}/>
-                </div>
+                <div className={css.acoes}><Acoes cor={'amarelo'} texto={'Editar perfil'} pagina={`/editarDoador/${idDoador}`}/></div>
 
+                {/* ONGs do coração */}
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
                     Suas ONGs do <span style={{ color: '#000' }}>coração</span>
                 </h2>
-
-                {loadingOngs ? (
-                    <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p>
-                ) : ongsSeguidas.length === 0 ? (
-
-                        <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG</p>
-
-
+                {loadingOngs ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : ongsSeguidas.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '16px' }}>
+                        <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG 💔</p>
+                        <Link to="/ongs" style={{ color: '#fff', background: '#167cbf', padding: '12px 24px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', fontSize: '14px' }}>Encontrar ONGs</Link>
+                    </div>
                 ) : (
                     <>
                         <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '30px' }}>
-                            {ongsPaginaAtual.map(ong => (
+                            {ongsPaginadas.map(ong => (
                                 <Link to={`/ong/${ong.id}`} key={ong.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit' }}>
                                     <div style={{ position: 'relative', display: 'inline-block' }}>
-                                        <img
-                                            src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'}
-                                            alt={ong.nome}
-                                            style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
-                                            onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }}
-                                        />
-                                        <SeloVoluntario idUsuario={idDoador} apiUrl={api_url} />
+                                        <img src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'} alt={ong.nome} style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                        <SeloVoluntario idUsuario={idDoador} api={api_url} />
                                     </div>
                                     <span style={{ fontSize: '16px', fontWeight: '600', color: '#333', textAlign: 'center' }}>{ong.nome}</span>
                                 </Link>
                             ))}
                         </div>
-
-                        {totalPaginas > 1 && (
+                        {totalPaginasOngs > 1 && (
                             <div className={css.paginacao}>
-                                <button onClick={() => setPaginaAtual(p => p - 1)} disabled={paginaAtual === 1} className={css.botaoPagina}>← Anterior</button>
-                                <span className={css.paginaInfo}>{paginaAtual} de {totalPaginas}</span>
-                                <button onClick={() => setPaginaAtual(p => p + 1)} disabled={paginaAtual === totalPaginas} className={css.botaoPagina}>Próxima →</button>
+                                <button onClick={() => setPaginaOngs(p => p - 1)} disabled={paginaOngs === 0} className={css.botaoPagina}>←</button>
+                                <span className={css.paginaInfo}>{paginaOngs + 1} de {totalPaginasOngs}</span>
+                                <button onClick={() => setPaginaOngs(p => p + 1)} disabled={paginaOngs === totalPaginasOngs - 1} className={css.botaoPagina}>→</button>
                             </div>
                         )}
                     </>
                 )}
+
+                {/* Suas Doações */}
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
+                    Suas <span style={{ color: '#000' }}>doações</span>
+                </h2>
+                {loadingAtividades ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : atividades.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '16px' }}>
+                        <p style={{ fontSize: '16px', color: '#666' }}>Você ainda não realizou nenhuma doação ou voluntariado</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className={css.cardsAdm}>
+                            {atividadesPaginadas.map((ativ, i) => (
+                                <div key={i} className={css.cardAdm} style={{ borderTop: '4px solid #f65682' }}>
+                                    <div className={css.cardAdmTopo}>
+                                        <img
+                                            src={ativ.ong_foto ? `${api_url}/uploads/Usuarios/${ativ.ong_foto}` : '/ong-icon.png'}
+                                            alt={ativ.ong || 'ONG'}
+                                            className={css.cardAdmImagem}
+                                            onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/ong-icon.png'; }}
+                                        />
+                                        <h3 className={css.cardAdmNome} style={{ fontSize: '11px' }}>{ativ.ong || 'ONG'}</h3>
+                                    </div>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <span style={{ display: 'inline-block', backgroundColor: '#f65682', color: '#fff', fontSize: '9px', fontWeight: '700', padding: '2px 8px', borderRadius: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                            {ativ.tipo === 'Monetário' ? 'Monetária' : 'Voluntariado'}
+                                        </span>
+                                    </div>
+                                    <p style={{ fontSize: '14px', fontWeight: '700', color: '#333', margin: '5px 10px 2px 10px', textAlign: 'center' }}>{ativ.valor}</p>
+                                    <p style={{ fontSize: '10px', color: '#888', margin: '0 10px 5px 10px', textAlign: 'center', wordBreak: 'break-word' }}>{ativ.projeto}</p>
+                                    {ativ.data && <p style={{ fontSize: '9px', color: '#aaa', textAlign: 'center', marginTop: 'auto', paddingBottom: '8px' }}>{ativ.data}</p>}
+                                </div>
+                            ))}
+                        </div>
+                        {totalPaginasDoacoes > 1 && (
+                            <div className={css.paginacao}>
+                                <button onClick={() => setPaginaDoacoes(p => p - 1)} disabled={paginaDoacoes === 0} className={css.botaoPagina}>←</button>
+                                <span className={css.paginaInfo}>{paginaDoacoes + 1} de {totalPaginasDoacoes}</span>
+                                <button onClick={() => setPaginaDoacoes(p => p + 1)} disabled={paginaDoacoes === totalPaginasDoacoes - 1} className={css.botaoPagina}>→</button>
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Gráfico */}
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
+                    Sua frequência de <span style={{ color: '#000' }}>Doações</span>
+                </h2>
+                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #eee' }}>
+                    {isMobile ? renderGraficoPizza() : renderGrafico()}
+                </div>
             </div>
         </section>
     );
