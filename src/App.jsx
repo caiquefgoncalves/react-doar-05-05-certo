@@ -6,6 +6,7 @@ import CadastroOng from "./pages/CadastroOng.jsx";
 import Header from "./components/Header/Header.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import CadastroDoador from "./pages/CadastroDoador.jsx";
+import RelatoriosAdm from "./pages/RelatoriosAdm.jsx";
 import CadastroAdm from "./pages/CadastroAdm.jsx";
 import EsqueciSenha from "./pages/EsqueciSenha.jsx";
 import VerificarCodigoSenha from "./pages/VerificarCodigoSenha.jsx";
@@ -40,7 +41,7 @@ import Doacoes from "./pages/Doacoes.jsx";
 import Agradecimento from "./pages/Agradecimento.jsx";
 import MensagemVoluntario from "./pages/MensagemVoluntario.jsx";
 
-const API_URL = "http://10.92.3.164:5000"
+const API_URL = "http://192.168.0.135:5000"
 
 export default function App() {
     return (
@@ -82,6 +83,7 @@ export default function App() {
                 <Route path="/doar/:id" element={<Doacoes api={API_URL}/>}/>
                 <Route path="/voluntario/:id" element={<MensagemVoluntario api={API_URL}/>}/>
                 <Route path="/agradecimento" element={<Agradecimento api={API_URL}/>}/>
+                <Route path="/relatorios" element={<RelatoriosAdm api={API_URL} />} />
                 <Route path="/*" element={<TelaErro/>} />
             </Routes>
             <Footer/>
