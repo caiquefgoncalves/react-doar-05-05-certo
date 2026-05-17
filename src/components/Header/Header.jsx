@@ -47,7 +47,7 @@ export default function Header({ api }) {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                const url = `${api_url}/uploads/Usuarios/${idUsuario}.jpeg`;
+                const url = `${API_URL}/uploads/Usuarios/${idUsuario}.jpeg`;
                 console.log('URL da foto:', url);
                 return url;
             } catch (e) {

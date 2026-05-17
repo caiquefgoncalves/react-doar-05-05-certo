@@ -24,6 +24,9 @@ export default function PaginaOng1({api}) {
     const [msgTexto, setMsgTexto] = useState('');
     const [msgTipo, setMsgTipo] = useState('');
 
+    // Estado local para seguidores
+    const [qtdSeguidores, setQtdSeguidores] = useState(0);
+
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 425);
     const projetosPorPagina = isMobile ? 1 : 2;
     const atualizacoesPorPagina = isMobile ? 1 : 2;
@@ -48,7 +51,10 @@ export default function PaginaOng1({api}) {
             const response = await fetch(`${api_url}/ver_ong_publica/${id}?token=${token || ''}`, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
-                if (data.ong) setOng(data.ong);
+                if (data.ong) {
+                    setOng(data.ong);
+                    setQtdSeguidores(data.ong.qtd_seguidores || 0);
+                }
                 if (data.projetos) setProjetos(data.projetos);
                 if (data.atualizacoes) setAtualizacoes(data.atualizacoes || []);
                 if (data.qtd_projetos !== undefined) setQtdProjetos(data.qtd_projetos);
@@ -58,12 +64,22 @@ export default function PaginaOng1({api}) {
         finally { setLoading(false); }
     }
 
+    function handleSeguirChange(novoStatus) {
+        setQtdSeguidores(prev => prev + (novoStatus ? 1 : -1));
+    }
+
     function handleVoluntariar(projetoId) {
         navigate(`/voluntario/${projetoId}`);
     }
 
     function handleDoar(projetoId) {
         navigate(`/doar/${projetoId}`);
+    }
+
+    function getTextoSeguidores() {
+        if (qtdSeguidores === 0) return 'Não há seguidores';
+        if (qtdSeguidores === 1) return `${qtdSeguidores} seguidor`;
+        return `${qtdSeguidores} seguidores`;
     }
 
     if (loading) return (
@@ -106,19 +122,15 @@ export default function PaginaOng1({api}) {
                                 <div>
                                     <h1 className={css.nome}>{ong.nome}</h1>
                                     <p className={css.descBreve}>{ong.descricao_breve}</p>
-                                    {ong.qtd_seguidores == 0 && <p className={css.texto}>Não há seguidores</p>}
-                                    {ong.qtd_seguidores == 1 && <p className={css.texto}>{ong.qtd_seguidores} seguidor</p>}
-                                    {ong.qtd_seguidores > 1 && <p className={css.texto}>{ong.qtd_seguidores} seguidores</p>}
+                                    <p className={css.texto}>{getTextoSeguidores()}</p>
                                 </div>
-                            </div>
-                            <div>
-
                             </div>
                             {/* Botão seguir - apenas doadores ou não logados */}
                             {(usuarioTipo === 1 || usuarioTipo === null) && (
                                 <BotaoSeguir
                                     idOng={id}
                                     apiUrl={api_url}
+                                    onStatusChange={handleSeguirChange}
                                     onMensagem={(texto, tipo) => { setMsgTexto(texto); setMsgTipo(tipo); }}
                                 />
                             )}
@@ -162,15 +174,14 @@ export default function PaginaOng1({api}) {
                                             <p className={css.attTexto}>{proj.descricao?.substring(0, 100)}...</p>
                                             <span className={css.tipoAjuda}>{proj.tipo_ajuda}</span>
 
-                                            {/* Botão Voluntariar-se ou Doar - apenas para doadores ou não logados */}
                                             {(usuarioTipo === 1 || usuarioTipo === null) && (
                                                 <div style={{ marginTop: '10px' }}>
                                                     {proj.tipo_ajuda === 'Voluntariado' ? (
-                                                        <button onClick={() => handleVoluntariar(proj.id)} className={css.btnVoluntariar}>
+                                                        <button onClick={() => handleVoluntariar(proj.id)} style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
                                                             🤝 Voluntariar-se
                                                         </button>
                                                     ) : (
-                                                        <button onClick={() => handleDoar(proj.id)} className={css.btnDoar}>
+                                                        <button onClick={() => handleDoar(proj.id)} style={{ backgroundColor: '#167cbf', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
                                                             💰 Doar
                                                         </button>
                                                     )}
@@ -207,7 +218,7 @@ export default function PaginaOng1({api}) {
                                                 <p className={css.attTexto}>
                                                     {idsAbertos === att.id || att.texto.length <= 100 ? att.texto : att.texto.substring(0, 100) + "..."}
                                                     {att.texto.length > 100 && (
-                                                        <button onClick={() => setIdsAbertos(idsAbertos === att.id ? null : att.id)} className={css.btnDoar}>
+                                                        <button onClick={() => setIdsAbertos(idsAbertos === att.id ? null : att.id)} style={{ backgroundColor: '#167cbf', color: 'white', border: 'none', padding: '4px 10px', borderRadius: '10px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', marginLeft: '5px' }}>
                                                             {idsAbertos === att.id ? "Ler menos" : "Ler mais"}
                                                         </button>
                                                     )}
