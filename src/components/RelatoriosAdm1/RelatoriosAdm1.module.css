@@ -1,0 +1,218 @@
+/* src/components/RelatoriosAdm/RelatoriosAdm.module.css */
+.secao {
+    display: flex;
+    min-height: 100vh;
+    background-color: white;
+}
+
+.menulateral {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+.conteudo {
+    flex: 1;
+    margin-left: 250px;
+    padding: 30px;
+    overflow-x: auto;
+    background-color: white;
+}
+
+@media (max-width: 768px) {
+    .conteudo {
+        margin-left: 0;
+        padding: 20px;
+        padding-bottom: 80px;
+    }
+}
+
+.tituloPrincipal {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.relatoriosContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    max-width: 900px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+}
+
+.itemRelatorio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 20px 25px;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.itemRelatorio:last-child {
+    border-bottom: none;
+}
+
+.itemRelatorio:hover {
+    background-color: #fafafa;
+}
+
+.itemInfo {
+    flex: 1;
+}
+
+.itemTitulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.itemTipo {
+    font-size: 0.75rem;
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.itemAcao {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 100px;
+}
+
+.btnBaixar {
+    background-color: #f7b567;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnBaixar:hover:not(:disabled) {
+    background-color: #f5a742;
+    transform: translateY(-1px);
+}
+
+.btnBaixar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.itemPeriodo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.campoPeriodo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campoPeriodo label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inputData {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background-color: white;
+    min-width: 130px;
+}
+
+.inputData:focus {
+    outline: none;
+    border-color: #f7b567;
+}
+
+.btnBaixarPeriodo {
+    background-color: #f7b567;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: 38px;
+    margin-top: 0;
+}
+
+.btnBaixarPeriodo:hover:not(:disabled) {
+    background-color: #f5a742;
+    transform: translateY(-1px);
+}
+
+.btnBaixarPeriodo:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .itemRelatorio {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .itemAcao {
+        width: 100%;
+    }
+
+    .btnBaixar {
+        width: 100%;
+    }
+
+    .itemPeriodo {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .campoPeriodo {
+        width: 100%;
+    }
+
+    .inputData {
+        width: 100%;
+    }
+
+    .btnBaixarPeriodo {
+        width: 100%;
+        margin-top: 5px;
+    }
+}

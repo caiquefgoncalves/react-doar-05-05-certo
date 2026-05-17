@@ -52,14 +52,13 @@ export default function EditarDoador({ api }) {
 
             let url;
             if (tokenData && tokenData.tipo === 1 && tokenData.id_usuarios === parseInt(id)) {
-                url = `${api_url}/meus_dados`;
+                url = `${api_url}/meus_dados?token=${token}`;
             } else {
-                url = `${api_url}/listar_usuarios`;
+                url = `${api_url}/listar_usuarios?token=${token}`;
             }
 
             const response = await fetch(url, {
-                method: 'GET', credentials: 'include',
-                headers: { 'Authorization': `${token}` }
+                method: 'GET', credentials: 'include'
             });
 
             if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
@@ -88,12 +87,10 @@ export default function EditarDoador({ api }) {
     }
 
     async function salvarEdicao() {
-        // Validações em ordem (senha é opcional)
         if (!nome?.trim()) { setMsgTexto('O nome é obrigatório'); setMsgTipo('erro'); return; }
-        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
         if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
         if (!cpf?.trim()) { setMsgTexto('O CPF é obrigatório'); setMsgTipo('erro'); return; }
-        if (!fotoPerfil) { setMsgTexto('A foto de perfil é obrigatória'); setMsgTipo('erro'); return; }
+        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
 
         const token = localStorage.getItem('token');
         const tokenData = decodificarToken(token);
@@ -143,21 +140,18 @@ export default function EditarDoador({ api }) {
             <div className={css.formulario}>
                 <div className={css.linha}>
                     <div className={"row"}>
-                        {/* Linha 1: Nome | CPF */}
                         <div className={"col-md-6 col-12"}>
                             <Input label={'Nome *'} type={'text'} placeholder={'Digite seu nome'} required={true} maxLength={254} input={nome} alterarInput={(e) => setNome(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
                             <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
                         </div>
-                        {/* Linha 2: Senha | Confirmar Senha */}
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
+                            <Input label={'Nova senha (opcional)'} type={'password'} placeholder={'Digite sua senha'} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
+                            <Input label={'Confirmar senha'} type={'password'} placeholder={'Confirme sua senha'} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
                         </div>
-                        {/* Linha 3: Telefone | Foto de Perfil */}
                         <div className={"col-md-6 col-12"}>
                             <div className={"row"}>
                                 <div className={"col-12"}>
@@ -169,7 +163,7 @@ export default function EditarDoador({ api }) {
                             </div>
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                            <InputArquivo tamanho={'big'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
                         </div>
                     </div>
                 </div>

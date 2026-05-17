@@ -44,9 +44,8 @@ export default function EditarAdm1({ api }) {
     async function buscarDadosAdm() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/listar_usuarios`, {
-                method: 'GET', credentials: 'include',
-                headers: { 'Authorization': `${token}` }
+            const response = await fetch(`${api_url}/listar_usuarios?token=${token}`, {
+                method: 'GET', credentials: 'include'
             });
             if (response.status === 401) { localStorage.clear(); navigate('/login'); return; }
             if (response.ok) {
@@ -66,11 +65,11 @@ export default function EditarAdm1({ api }) {
     }
 
     async function salvarEdicao() {
-        // Validações em ordem (senha é opcional)
+        // Validações em ordem (senha e foto são opcionais na edição)
         if (!nome?.trim()) { setMsgTexto('O nome é obrigatório'); setMsgTipo('erro'); return; }
-        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
-        if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
         if (!cpf?.trim()) { setMsgTexto('O CPF é obrigatório'); setMsgTipo('erro'); return; }
+        if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
+        if (!telefone?.trim()) { setMsgTexto('O telefone é obrigatório'); setMsgTipo('erro'); return; }
 
         const token = localStorage.getItem('token');
 
@@ -116,27 +115,24 @@ export default function EditarAdm1({ api }) {
                         <div className={"col-md-6 col-12"}>
                             <Input label={'CPF *'} type={'text'} placeholder={'Digite seu CPF'} required={true} input={cpf} alterarInput={(e) => setCpf(e.target.value)} mascara={'cpf'} />
                         </div>
-                        {/* Linha 2: Senha | Confirmar Senha */}
+                        {/* Linha 2: Senha (opcional) | Confirmar Senha */}
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Senha *'} type={'password'} placeholder={'Digite sua senha'} required={true} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
+                            <Input label={'Nova senha (opcional)'} type={'password'} placeholder={'Digite sua senha'} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
+                            <Input label={'Confirmar senha'} type={'password'} placeholder={'Confirme sua senha'} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
                         </div>
-                        {/* Linha 3: Telefone | Foto de Perfil */}
+                        {/* Linha 3: Email + Telefone | Foto */}
                         <div className={"col-md-6 col-12"}>
-                            <div className={"row"}>
-                                <div className={"col-12"}>
-                                    <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={(e) => setEmail(e.target.value)} />
-                                </div>
-                                <div className={"col-12"}>
-                                    <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
-                                </div>
-                            </div>
+                            <Input label={'Email *'} type={'text'} placeholder={'Digite seu email'} required={true} maxLength={254} input={email} alterarInput={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <InputArquivo tamanho={'big'} required={true} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                            <Input label={'Telefone *'} type={'text'} placeholder={'Digite seu telefone'} required={true} input={telefone} alterarInput={(e) => setTelefone(e.target.value)} mascara={'telefone'} />
                         </div>
+                        <div className={"col-md-6 col-12"}>
+                            <InputArquivo tamanho={'big'} required={false} alterarInput={(e) => setFotoPerfil(e.target.files[0])} />
+                        </div>
+                        <div className={"col-md-6 col-12"}></div>
                     </div>
                 </div>
                 <div className={css.botaoContainer}>

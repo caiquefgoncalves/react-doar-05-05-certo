@@ -4,8 +4,10 @@ import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
+const API_URL = "http://192.168.0.135:5000";
+
 export default function Header({ api }) {
-    const api_url = api;
+    const api_url = api || API_URL;
     const [token, setToken] = useState(false);
     const [tipoUsuario, setTipoUsuario] = useState(null);
     const location = useLocation();
@@ -45,8 +47,12 @@ export default function Header({ api }) {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                return `${api_url}/uploads/Usuarios/${idUsuario}.jpeg`;
-            } catch (e) {}
+                const url = `${api_url}/uploads/Usuarios/${idUsuario}.jpeg`;
+                console.log('URL da foto:', url);
+                return url;
+            } catch (e) {
+                console.error('Erro ao decodificar token para foto:', e);
+            }
         }
         return '/perfil.png';
     }
@@ -154,7 +160,10 @@ export default function Header({ api }) {
                                     border: '2px solid #167cbf'
                                 }}
                                 alt="Perfil"
-                                onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/perfil.png';
+                                }}
                             />
                             {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api={api_url} />}
                         </div>
@@ -208,7 +217,10 @@ export default function Header({ api }) {
                                                 marginRight: '10px'
                                             }}
                                             alt="Perfil"
-                                            onError={(e) => { e.currentTarget.src = '/perfil.png'; }}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = '/perfil.png';
+                                            }}
                                         />
                                         {tipoUsuario === 1 && <SeloVoluntario idUsuario={getIdUsuario()} api={api_url} />}
                                     </div>

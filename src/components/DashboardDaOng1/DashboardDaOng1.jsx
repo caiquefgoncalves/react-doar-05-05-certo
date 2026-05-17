@@ -72,7 +72,7 @@ export default function DashboardDaOng1({api}) {
         buscarProjetos();
         buscarAtualizacoes();
         buscarDadosGrafico();
-        buscarDoadores(id); // Passa o ID diretamente
+        buscarDoadores(id);
 
         const handleResize = () => { setIsMobile(window.innerWidth <= 768); };
         window.addEventListener('resize', handleResize);
@@ -110,9 +110,7 @@ export default function DashboardDaOng1({api}) {
     async function buscarDadosGrafico() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/arrecadacao_mensal_ong`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await fetch(`${api_url}/arrecadacao_mensal_ong?token=${token}`, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
                 setDadosGrafico(data.dados || []);
@@ -126,9 +124,7 @@ export default function DashboardDaOng1({api}) {
             const idUsar = idOngParam || idOng;
             if (!idUsar) return;
 
-            const response = await fetch(`${api_url}/ong/doadores/${idUsar}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await fetch(`${api_url}/ong/doadores/${idUsar}?token=${token}`, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
                 setDoadoresOng(data.doadores || []);
@@ -354,7 +350,7 @@ export default function DashboardDaOng1({api}) {
 
                 {/* Gráfico de Arrecadação Mensal */}
                 <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#333', marginTop: '30px', marginBottom: '15px' }}>
-                    Arrecadação Mensal
+                    Arrecadação <span style={{ color: '#f7b567' }}>Mensal</span>
                 </h2>
                 <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', marginBottom: '30px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}

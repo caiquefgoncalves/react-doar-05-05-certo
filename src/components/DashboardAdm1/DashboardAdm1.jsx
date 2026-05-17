@@ -1,6 +1,6 @@
 // src/components/DashboardAdm1/DashboardAdm1.jsx
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
 import css from "../DashboardAdm1/DashboardAdm1.module.css";
 import Acoes from "../Acoes/Acoes.jsx";
@@ -21,6 +21,7 @@ export default function DashboardAdm1({ api }) {
     const api_url = api;
     const navigate = useNavigate();
     const [nomeADM, setNomeADM] = useState('');
+    const [idAdm, setIdAdm] = useState('');
     const [ongs, setOngs] = useState([]);
     const [doadores, setDoadores] = useState([]);
     const [adms, setAdms] = useState([]);
@@ -55,6 +56,7 @@ export default function DashboardAdm1({ api }) {
         setAutorizado(true);
         const nome = localStorage.getItem('nome');
         if (nome) setNomeADM(nome);
+        setIdAdm(tokenData.id_usuarios);
         buscarOngs();
         buscarDoadores();
         buscarAdms();
@@ -93,9 +95,7 @@ export default function DashboardAdm1({ api }) {
     async function buscarDadosGrafico() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${api_url}/admin/arrecadacao_global`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await fetch(`${api_url}/admin/arrecadacao_global?token=${token}`, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
                 setDadosGrafico(data.dados || []);
@@ -286,6 +286,8 @@ export default function DashboardAdm1({ api }) {
                 <div className={css.acoes}>
                     <Acoes cor={'amarelo'} texto={'Aprovar ONGs'} pagina={'/listaAprovacoes'} />
                     <Acoes cor={'amarelo'} texto={'Cadastrar ADM'} pagina={'/cadastroAdm'} />
+                    <Acoes cor={'amarelo'} texto={'Editar Perfil'} pagina={`/editarAdm/${idAdm}`} />
+                    <Acoes cor={'amarelo'} texto={'Ver Relatório'} pagina={'/relatorios'} />
                 </div>
 
                 {/* ONGs */}

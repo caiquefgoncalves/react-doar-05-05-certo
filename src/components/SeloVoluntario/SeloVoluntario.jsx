@@ -14,7 +14,7 @@ export default function SeloVoluntario({ idUsuario}) {
     async function verificarVoluntario() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(` http://10.92.3.164:5000/verificar_voluntario/${idUsuario}`, {
+            const response = await fetch(`http://192.168.0.135:5000/verificar_voluntario/${idUsuario}`, {
                 headers: { 'Authorization': `Bearer ${token || ''}` }
             });
             if (response.ok) {

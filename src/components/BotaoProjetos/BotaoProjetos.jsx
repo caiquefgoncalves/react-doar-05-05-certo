@@ -3,10 +3,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import css from "./BotaoProjetos.module.css";
 
+const API_URL = "http://192.168.0.135:5000";
+
 export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiUrl }) {
     const navigate = useNavigate();
     const [jaVoluntariou, setJaVoluntariou] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const api = apiUrl || API_URL;
 
     useEffect(() => {
         if (status === 1 && usuarioTipo === 1 && projetoId) {
@@ -19,7 +23,7 @@ export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiU
     async function verificarVoluntariado() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${apiUrl}/verificar_voluntario_projeto/${projetoId}`, {
+            const response = await fetch(`${api}/verificar_voluntario_projeto/${projetoId}`, {
                 headers: { 'Authorization': `Bearer ${token || ''}` }
             });
             if (response.ok) {
@@ -37,19 +41,15 @@ export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiU
         e.preventDefault();
         e.stopPropagation();
 
-        // ADM e ONG não podem interagir
         if (usuarioTipo === 0 || usuarioTipo === 2) return;
 
         if (status === 0) {
-            // Dinheiro - vai para doação
             navigate(`/doar/${projetoId}`);
         } else if (status === 1 && !jaVoluntariou) {
-            // Voluntariado - vai para mensagem
             navigate(`/voluntario/${projetoId}`);
         }
     }
 
-    // Esconder botão para ADM e ONG
     if (usuarioTipo === 0 || usuarioTipo === 2) return null;
 
     if (loading) {
@@ -59,7 +59,6 @@ export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiU
             </button>
         );
     }
-
 
     if (status === 1 && jaVoluntariou) {
         return (

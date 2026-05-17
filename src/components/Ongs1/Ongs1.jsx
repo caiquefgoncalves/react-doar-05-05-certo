@@ -111,6 +111,27 @@ export default function Ongs({api}) {
                                     <BotaoSeguir
                                         idOng={ong.id}
                                         apiUrl={api_url}
+                                        onStatusChange={(novoStatus) => {
+                                            // Atualizar o estado local
+                                            setOngs(prev => prev.map(o => {
+                                                if (o.id === ong.id) {
+                                                    return {
+                                                        ...o,
+                                                        qtd_seguidores: (o.qtd_seguidores || 0) + (novoStatus ? 1 : -1)
+                                                    };
+                                                }
+                                                return o;
+                                            }));
+                                            setTodasOngs(prev => prev.map(o => {
+                                                if (o.id === ong.id) {
+                                                    return {
+                                                        ...o,
+                                                        qtd_seguidores: (o.qtd_seguidores || 0) + (novoStatus ? 1 : -1)
+                                                    };
+                                                }
+                                                return o;
+                                            }));
+                                        }}
                                         onMensagem={(texto, tipo) => {
                                             setMsgTexto(texto);
                                             setMsgTipo(tipo);
