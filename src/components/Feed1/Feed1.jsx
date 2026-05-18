@@ -239,6 +239,12 @@ export default function Feed({ api }) {
                         <button className={`${css.tabFeed} ${tipoFeed === 'todas' ? css.tabAtivo : ''}`} onClick={() => handleMudarTipoFeed('todas')}>Todas as ONGs</button>
                         <button className={`${css.tabFeed} ${tipoFeed === 'seguindo' ? css.tabAtivo : ''}`} onClick={() => handleMudarTipoFeed('seguindo')}>Seguindo</button>
                     </div>
+
+                    {/* MUDANÇA 1: Recomendações acima da barra de busca apenas no Celular (d-block d-lg-none) */}
+                    <div className="d-block d-lg-none mb-4">
+                        <Recomendacoes />
+                    </div>
+
                     <div className={css.barraTopo}>
                         <div className={css.buscaInput}>
                             <input type="text" placeholder="Busque por Atualizações..." value={busca} onChange={(e) => setBusca(e.target.value)} className={css.inputBusca} />
@@ -252,8 +258,9 @@ export default function Feed({ api }) {
                         </div>
                     </div>
 
-                    <div className={"row"}>
-                        <div className={"col-8 d-flex flex-column gap-4"}>
+                    {/* Ajuste de colunas para responsividade */}
+                    <div className={"row g-4"}>
+                        <div className={"col-12 col-lg-8 d-flex flex-column gap-4"}>
                             {atualizacoes.length === 0 ? (
                                 <div className={css.vazio}>
 
@@ -334,7 +341,8 @@ export default function Feed({ api }) {
                                 </div>
                             )}
                         </div>
-                        <div className={"col-4"}>
+                        {/* MUDANÇA 2: Barra lateral que se oculta no Celular (d-none d-lg-block) */}
+                        <div className={"col-12 col-lg-4 d-none d-lg-block"}>
                             <Recomendacoes/>
                         </div>
                     </div>

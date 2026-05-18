@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import css from "./BotaoProjetos.module.css";
 
-const API_URL = "http://10.92.3.133:5000";
+const API_URL = "http://192.168.0.126:5000";
 
 export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiUrl }) {
     const navigate = useNavigate();

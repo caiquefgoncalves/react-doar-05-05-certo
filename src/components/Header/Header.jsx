@@ -3,10 +3,10 @@ import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
-const API_URL = "http://10.92.3.133:5000";
+const API_URL = "http://192.168.0.126:5000";
 
 export default function Header({ api }) {
-    const api_url = api || API_URL;
+    const api_url = api ;
     const [token, setToken] = useState(false);
     const [tipoUsuario, setTipoUsuario] = useState(null);
     const location = useLocation();
@@ -57,7 +57,7 @@ export default function Header({ api }) {
             try {
                 const payload = JSON.parse(atob(tokenLocal.split('.')[1]));
                 const idUsuario = payload.id_usuarios;
-                const url = `${API_URL}/uploads/Usuarios/${idUsuario}.jpeg`;
+                const url = `${api_url}/uploads/Usuarios/${idUsuario}.jpeg`;
                 console.log('URL da foto:', url);
                 return url;
             } catch (e) {
@@ -125,7 +125,7 @@ export default function Header({ api }) {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`${API_URL}/logout?token=${tokenLogout}`, {
+                await fetch(`${api_url}/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });
