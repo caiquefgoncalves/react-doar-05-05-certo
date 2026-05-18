@@ -41,12 +41,12 @@ import Doacoes from "./pages/Doacoes.jsx";
 import Agradecimento from "./pages/Agradecimento.jsx";
 import MensagemVoluntario from "./pages/MensagemVoluntario.jsx";
 
-const API_URL = "http://192.168.0.135:5000"
+const API_URL = "http://10.92.3.120:5000"
 
 export default function App() {
     return (
         <BrowserRouter>
-            <Header/>
+            <Header api={API_URL}/>
             <Routes>
                 <Route path="/" element={<Home/>} />
                 <Route path="/login" element={<Login api={API_URL} />} />
