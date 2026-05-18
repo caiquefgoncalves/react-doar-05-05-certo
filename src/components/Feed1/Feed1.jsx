@@ -341,9 +341,12 @@ export default function Feed({ api }) {
                                 </div>
                             )}
                         </div>
-                        {/* MUDANÇA 2: Barra lateral que se oculta no Celular (d-none d-lg-block) */}
+                        {/* MUDANÇA 2: Barra lateral oculta no Celular com STICKY ADICIONADO */}
                         <div className={"col-12 col-lg-4 d-none d-lg-block"}>
-                            <Recomendacoes/>
+                            {/* A div abaixo faz o componente grudar na tela (top: 24px) ao dar scroll */}
+                            <div style={{ position: 'sticky', top: '24px' }}>
+                                <Recomendacoes/>
+                            </div>
                         </div>
                     </div>
                 </div>
