@@ -4,44 +4,33 @@
     font-size: 1.5rem;
 }
 
-
-.secao{
+.secao {
     display: flex;
     align-items: flex-start;
     gap: 7rem;
 }
 
-.menulateral{
+.menulateral {
     display: flex;
-
-
 }
 
-.conteudo{
+.conteudo {
     margin-top: 4rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
-
 }
-.acoes{
+
+.acoes {
     display: flex;
     gap: 1rem;
     justify-content: center;
     align-items: center;
 }
 
-.cards{
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-
-    align-items: center;
-}
-
-.titulos{
-    margin: 0
+.titulos {
+    margin: 0;
 }
 
 /* Paginação */
@@ -88,7 +77,7 @@
     overflow-y: auto;
 }
 
-/* Grid de cards do ADM - LADO A LADO */
+/* Grid de cards - LADO A LADO */
 .cardsAdm {
     display: flex;
     flex-wrap: wrap;
@@ -100,119 +89,7 @@
     width: 100%;
 }
 
-/* Card ADM */
-.cardAdm {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    width: 220px;
-    min-width: 200px;
-    flex-shrink: 0;
-}
-
-.cardAdmTopo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px 10px 0 10px;
-}
-
-.cardAdmImagem {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 6px;
-}
-
-.cardAdmNome {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 2px 0;
-    text-align: center;
-}
-
-.cardAdmStatus {
-    font-size: 12px;
-    font-weight: 700;
-    text-align: center;
-    padding: 0 10px 8px 10px;
-}
-
-.cardAdmBotoes {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 0 10px 10px 10px;
-    margin-top: auto;
-}
-
-.btnEditar, .btnInativar, .btnAtivar, .btnExcluir {
-    width: 100%;
-    padding: 6px;
-    border: none;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.2s;
-}
-
-.btnEditar { background-color: #167cbf; color: #fff; }
-.btnEditar:hover { background-color: #0c598b; }
-.btnInativar { background-color: #f65682; color: #fff; }
-.btnInativar:hover { background-color: #d4456a; }
-.btnAtivar { background-color: #4CAF50; color: #fff; }
-.btnAtivar:hover { background-color: #388E3C; }
-.btnExcluir { background-color: #333; color: #fff; }
-.btnExcluir:hover { background-color: #555; }
-
-
-
-.menulateral {
-    width: 250px;
-    background-color: #fff;
-
-    position: sticky;
-    top: 0;
-    height: 100vh;
-}
-
-.conteudo {
-    flex: 1;
-    padding: 30px;
-    overflow-y: auto;
-}
-
-.acoes {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.titulos {
-    margin: 30px 0 15px 0;
-}
-
-/* Cards lado a lado */
-.cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.cards > p {
-    width: 100%;
-}
-
-/* Card padrão (igual ADM) */
+/* Card padrão */
 .cardAdm {
     background: #fff;
     border-radius: 8px;
@@ -277,7 +154,9 @@
     color: #fff;
 }
 
-.btnEditar:hover { background-color: #0c598b; }
+.btnEditar:hover {
+    background-color: #0c598b;
+}
 
 .btnExcluir {
     width: 100%;
@@ -292,36 +171,45 @@
     color: #fff;
 }
 
-.btnExcluir:hover { background-color: #d4456a; }
+.btnExcluir:hover {
+    background-color: #d4456a;
+}
 
-/* Paginação */
-.paginacao {
+.menulateral {
+    width: 250px;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.conteudo {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.acoes {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.titulos {
+    margin: 30px 0 15px 0;
+}
+
+/* Cards lado a lado */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
     gap: 15px;
-    margin: 20px 0;
+    margin-bottom: 20px;
 }
 
-.paginacao button {
-    background-color: #167cbf;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.paginacao button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.paginacao span {
-    font-size: 14px;
-    color: #666;
+.cards > p {
+    width: 100%;
 }
 
 /* Modal */
@@ -407,23 +295,163 @@
     background: #d32f2f;
 }
 
-
-
-@media (max-width: 768px) {
-    .secao { flex-direction: column; }
-    .menulateral { width: 100%; height: auto; position: relative; }
-    .acoes { flex-direction: column; }
-    .cardAdm { width: 100%; min-width: 100%; }
+.sectionHeader {
+    margin-top: 30px;
+    margin-bottom: 15px;
 }
 
+.cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.cardOng {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border: 1px solid #eee;
+}
+
+.cardOng:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #167cbf;
+}
+
+.cardOngImagem {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f0f0f0;
+}
+
+.cardOngInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.cardOngNome {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 4px 0;
+}
+
+.cardOngDesc {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cardOngCategoria {
+    display: inline-block;
+    font-size: 11px;
+    color: #167cbf;
+    font-weight: 600;
+    background: #f0f7ff;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+/* Responsividade Tablet - 768px */
 @media (max-width: 768px) {
+    .secao {
+        flex-direction: column;
+        gap: normal;
+    }
+
+    .menulateral {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .conteudo {
+        margin-top: 2rem;
+        padding: 15px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .acoesRapidas {
+        font-size: 1.3rem;
+    }
+
+    /* Ações rápidas com scroll horizontal */
+    .acoes {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        gap: 12px;
+        padding-bottom: 12px;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+    }
+
+    .acoes::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .acoes::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .acoes::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 10px;
+    }
+
+    .acoes > * {
+        flex-shrink: 0;
+        min-width: max-content;
+    }
+
+    .cardsAdm {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
     .cardAdm {
         width: 100%;
         min-width: 100%;
+        max-width: 100%;
     }
 
-    .secao{
-        gap: normal;
+    .titulos {
+        margin: 20px 0 10px 0;
+    }
+
+    .paginacao {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .cardOng {
@@ -439,19 +467,46 @@
         font-size: 14px;
     }
 }
-@media (max-width: 426px) {
+
+/* Responsividade Mobile - 425px */
+@media (max-width: 425px) {
+    .conteudo {
+        margin-top: 1.5rem;
+        padding: 30px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .acoesRapidas {
+        font-size: 1.2rem;
+    }
+
+    .acoes {
+        gap: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+
+    .acoes > * {
+        flex-shrink: 0;
+        min-width: max-content;
+    }
+
     .cardsAdm {
         flex-direction: column;
         align-items: center;
         gap: 0;
+        width: 100%;
     }
 
     .cardAdm {
-        width: 260px !important; /* Largura fixa padrão */
-        max-width: calc(100% - 30px) !important; /* Não ultrapassa a tela */
+        width: 260px !important;
+        max-width: calc(100% - 30px) !important;
         height: 360px;
-        min-height: 360px;
-        max-height: 360px;
         padding: 22px 18px;
         margin: 0 auto 15px;
         box-sizing: border-box;
@@ -516,6 +571,8 @@
         gap: 18px;
         margin: 22px auto 32px;
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .botaoPagina {
@@ -533,5 +590,69 @@
         min-width: 85px;
         text-align: center;
         white-space: nowrap;
+    }
+}
+
+/* Mobile pequeno - 320px */
+@media (max-width: 320px) {
+    .conteudo {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .acoesRapidas {
+        font-size: 1.1rem;
+    }
+
+    .acoes {
+        gap: 8px;
+        width: 100%;
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+
+    .acoes > * {
+        flex-shrink: 0;
+        min-width: max-content;
+    }
+
+    .cardAdm {
+        width: 100% !important;
+        max-width: calc(100% - 20px) !important;
+        min-height: 1px !important;
+        max-height: 271px;
+        margin: 0 !important;
+        padding: 18px 14px !important;
+    }
+
+    .cardAdmImagem {
+        width: 65px;
+        height: 65px;
+    }
+
+    .cardAdmNome {
+        font-size: 15px;
+    }
+
+    .cardAdmStatus {
+        font-size: 14px;
+    }
+
+    .cardAdmBotoes button {
+        padding: 9px;
+        font-size: 13px;
+    }
+
+    .botaoPagina {
+        font-size: 15px;
+        padding: 11px 18px;
+        min-width: 44px;
+    }
+
+    .paginaInfo {
+        font-size: 15px;
+        min-width: 70px;
     }
 }

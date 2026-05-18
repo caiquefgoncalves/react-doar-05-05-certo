@@ -17,7 +17,7 @@ export default function CadastroDoador1({api}) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [confirmarSenha, setConfirmarSenha] = useState('')
-    const [fotoPerfil, setFotoPerfil] = useState('')
+    const [fotoPerfil, setFotoPerfil] = useState(null) // ALTERADO: de '' para null
     const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
     const navigate = useNavigate();
 
@@ -27,7 +27,13 @@ export default function CadastroDoador1({api}) {
     function alterarEmail(e) { setEmail(e.target.value.replace(/\s/g, '')) }
     function alterarSenha(e) { setSenha(e.target.value) }
     function alterarConfirmarSenha(e) { setConfirmarSenha(e.target.value) }
-    function alterarFotoPerfil(e) { if (e.target.files?.[0]) setFotoPerfil(e.target.files[0]) }
+    function alterarFotoPerfil(e) {
+        if (e.target.files?.[0]) {
+            setFotoPerfil(e.target.files[0])
+        } else {
+            setFotoPerfil(null)
+        }
+    }
 
     async function criarDoador() {
         // Validações em ordem (mesma ordem do formulário)
@@ -55,6 +61,7 @@ export default function CadastroDoador1({api}) {
             setMensagem({ texto: 'O email é obrigatório', tipo: 'erro' });
             return;
         }
+        // ALTERADO: Verificação da foto de perfil
         if (!fotoPerfil) {
             setMensagem({ texto: 'A foto de perfil é obrigatória', tipo: 'erro' });
             return;

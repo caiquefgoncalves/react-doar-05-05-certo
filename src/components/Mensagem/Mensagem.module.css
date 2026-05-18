@@ -52,6 +52,14 @@
     padding: 0 5px;
 }
 
+.sucesso button {
+    color: #00A839;
+}
+
+.erro button {
+    color: #D32F2F;
+}
+
 @media (max-width: 768px) {
     .mensagemContainer {
         margin-left: 10px;

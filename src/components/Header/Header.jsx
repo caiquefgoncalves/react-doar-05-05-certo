@@ -1,4 +1,3 @@
-// src/components/Header/Header.jsx
 import React, {useEffect, useState} from 'react';
 import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
@@ -16,6 +15,17 @@ export default function Header({ api }) {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location]);
+
+    // Função para fechar o offcanvas
+    function fecharMenuMobile() {
+        const offcanvasElement = document.getElementById('menuLateral');
+        if (offcanvasElement) {
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+            if (bsOffcanvas) {
+                bsOffcanvas.hide();
+            }
+        }
+    }
 
     function decodificarToken(token) {
         try {
@@ -97,6 +107,7 @@ export default function Header({ api }) {
     }, [location]);
 
     function irParaPerfil(){
+        fecharMenuMobile(); // Fecha o menu antes de navegar
         if (tipoUsuario === 0) {
             navigate('/dashboardAdm');
         } else if (tipoUsuario === 2) {
@@ -109,6 +120,7 @@ export default function Header({ api }) {
     }
 
     async function fazerLogout() {
+        fecharMenuMobile(); // Fecha o menu antes do logout
         try {
             const tokenLogout = localStorage.getItem('token');
 
@@ -128,6 +140,12 @@ export default function Header({ api }) {
         localStorage.removeItem('sessaoExpirada');
 
         navigate('/');
+    }
+
+    // Função para navegar e fechar menu
+    function navegarFechandoMenu(path) {
+        fecharMenuMobile();
+        navigate(path);
     }
 
     if (token) {
@@ -199,10 +217,10 @@ export default function Header({ api }) {
                         </div>
                         <div className={css.offcanvasBodyCustom}>
                             <ul className={css.navListMobile}>
-                                <li><Link to="/" className={css.linkMobile}>Home</Link></li>
-                                <li><Link to="/" className={css.linkMobile}>Benefícios</Link></li>
-                                <li><Link to="/" className={css.linkMobile}>Junte-se a nós!</Link></li>
-                                <li><Link to="/feed" className={css.linkMobile}>ONGs e projetos</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Home</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Benefícios</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Junte-se a nós!</Link></li>
+                                <li><Link to="/feed" className={css.linkMobile} onClick={fecharMenuMobile}>ONGs e projetos</Link></li>
                                 <li>
                                     <div style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
                                         <img
@@ -280,12 +298,12 @@ export default function Header({ api }) {
                         </div>
                         <div className={css.offcanvasBodyCustom}>
                             <ul className={css.navListMobile}>
-                                <li><Link to="/" className={css.linkMobile}>Home</Link></li>
-                                <li><Link to="/" className={css.linkMobile}>Benefícios</Link></li>
-                                <li><Link to="/" className={css.linkMobile}>Junte-se a nós!</Link></li>
-                                <li><Link to="/feed" className={css.linkMobile}>ONGs e projetos</Link></li>
-                                <li className="mt-4"><Link to={"/cadastroOng"} className={css.linkMobile}>Cadastro</Link></li>
-                                <li><Link to={"/login"} className={css.linkMobile}>Login</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Home</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Benefícios</Link></li>
+                                <li><Link to="/" className={css.linkMobile} onClick={fecharMenuMobile}>Junte-se a nós!</Link></li>
+                                <li><Link to="/feed" className={css.linkMobile} onClick={fecharMenuMobile}>ONGs e projetos</Link></li>
+                                <li className="mt-4"><Link to={"/cadastroOng"} className={css.linkMobile} onClick={fecharMenuMobile}>Cadastro</Link></li>
+                                <li><Link to={"/login"} className={css.linkMobile} onClick={fecharMenuMobile}>Login</Link></li>
                             </ul>
                         </div>
                     </div>

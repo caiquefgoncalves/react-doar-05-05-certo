@@ -18,7 +18,6 @@ export default function Login1({ api }) {
         // Mostra mensagem de sessão expirada
         const msg = localStorage.getItem('sessaoExpirada');
         if (msg) {
-            // Só remove depois de 3 segundos
             setMensagem({ texto: msg, tipo: 'erro' });
             setTimeout(() => {
                 localStorage.removeItem('sessaoExpirada');
@@ -66,6 +65,7 @@ export default function Login1({ api }) {
         } catch (error) { return null; }
     }
 
+    // Função separada para o login
     async function realizarLogin() {
         try {
             const cpfLimpo = cpf.replace(/\D/g, '');
@@ -81,7 +81,6 @@ export default function Login1({ api }) {
                 localStorage.setItem('nome', retorno.nome);
                 localStorage.removeItem('sessaoExpirada');
 
-                // Mostrar mensagem de sucesso antes de redirecionar
                 setMensagem({ texto: retorno.message || `Bem-vindo ${retorno.nome}!`, tipo: 'sucesso' });
 
                 const tokenData = decodificarToken(retorno.token);
@@ -90,7 +89,7 @@ export default function Login1({ api }) {
                         if (tokenData.tipo === 0) navigate('/dashboardAdm');
                         else if (tokenData.tipo === 2) navigate('/dashboardOng');
                         else if (tokenData.tipo === 1) navigate('/dashboardDoador');
-                    }, 1500); // Pequeno delay para mostrar a mensagem
+                    }, 1500);
                 }
             } else if (retorno.error === "Verifique o e-mail antes de logar!") {
                 setMensagem({ texto: 'E-mail não confirmado!', tipo: 'erro' });
@@ -103,8 +102,16 @@ export default function Login1({ api }) {
         }
     }
 
+    // Função para lidar com a tecla Enter
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            realizarLogin();
+        }
+    }
+
     return (
-        <div className={"container-fluid " + css.secao}>
+        <div className={"container-fluid " + css.secao} onKeyPress={handleKeyPress}>
             {mensagem.texto && (
                 <Mensagem
                     tipo={mensagem.tipo}

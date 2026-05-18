@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
-import css from "../DashboardDaOng1/DashboardDaOng1.module.css";
+import css from "../DashboardDoador1/DashboardDoador1.module.css";
 import Acoes from "../Acoes/Acoes.jsx";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import Mensagem from "../Mensagem/Mensagem.jsx";
@@ -120,9 +120,7 @@ export default function DashboardDoador1({ api }) {
         const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const mesesComDados = dadosGrafico.filter(d => d.qtd > 0);
         const total = mesesComDados.reduce((acc, d) => acc + d.qtd, 0);
-        if (total === 0) return <div className={css.cardsAdm}>
-            <p>Nenhuma doação realizada ainda</p>
-        </div>;
+        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma doação realizada ainda</p>;
         let gradiente = '';
         let acumulado = 0;
         mesesComDados.forEach((d, i) => {
@@ -161,43 +159,43 @@ export default function DashboardDoador1({ api }) {
                 <div className={css.acoes}><Acoes cor={'amarelo'} texto={'Editar perfil'} pagina={`/editarDoador/${idDoador}`}/></div>
 
                 {/* ONGs do coração */}
-                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
-                    Suas ONGs do <span style={{ color: '#000' }}>coração</span>
-                </h2>
-                {loadingOngs ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : ongsSeguidas.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', borderRadius: '16px' }}>
-                        <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG</p>
-                        <Link to="/ongs" style={{ color: '#fff', background: '#167cbf', padding: '12px 24px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', fontSize: '14px' }}>Encontrar ONGs</Link>
-                    </div>
-                ) : (
-                    <>
-                        <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '30px' }}>
-                            {ongsPaginadas.map(ong => (
-                                <Link to={`/ong/${ong.id}`} key={ong.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit' }}>
-                                    <div style={{ position: 'relative', display: 'inline-block' }}>
-                                        <img src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'} alt={ong.nome} style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
-                                        <SeloVoluntario idUsuario={idDoador} api={api_url} />
-                                    </div>
-                                    <span style={{ fontSize: '16px', fontWeight: '600', color: '#333', textAlign: 'center' }}>{ong.nome}</span>
-                                </Link>
-                            ))}
+                <div className={css.Titulo}><Titulo titulo={`Suas ONGs`} cor={'preto'}/></div>
+                <div className={css.cardsAdm}>
+                    {loadingOngs ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : ongsSeguidas.length === 0 ? (
+                        <div className={css.cardAdm}>
+                            <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG</p>
+                            <Link to="/ongs" style={{ color: '#fff', background: '#167cbf', padding: '12px 24px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', fontSize: '14px' }}>Encontrar ONGs</Link>
                         </div>
-                        {totalPaginasOngs > 1 && (
-                            <div className={css.paginacao}>
-                                <button onClick={() => setPaginaOngs(p => p - 1)} disabled={paginaOngs === 0} className={css.botaoPagina}>←</button>
-                                <span className={css.paginaInfo}>{paginaOngs + 1} de {totalPaginasOngs}</span>
-                                <button onClick={() => setPaginaOngs(p => p + 1)} disabled={paginaOngs === totalPaginasOngs - 1} className={css.botaoPagina}>→</button>
+                    ) : (
+                        <>
+                            <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '30px' }}>
+                                {ongsPaginadas.map(ong => (
+                                    <Link to={`/ong/${ong.id}`} key={ong.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit' }}>
+                                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                                            <img src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'} alt={ong.nome} style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                            <SeloVoluntario idUsuario={idDoador} api={api_url} />
+                                        </div>
+                                        <span style={{ fontSize: '16px', fontWeight: '600', color: '#333', textAlign: 'center' }}>{ong.nome}</span>
+                                    </Link>
+                                ))}
                             </div>
-                        )}
-                    </>
-                )}
+                            {totalPaginasOngs > 1 && (
+                                <div className={css.paginacao}>
+                                    <button onClick={() => setPaginaOngs(p => p - 1)} disabled={paginaOngs === 0} className={css.botaoPagina}>←</button>
+                                    <span className={css.paginaInfo}>{paginaOngs + 1} de {totalPaginasOngs}</span>
+                                    <button onClick={() => setPaginaOngs(p => p + 1)} disabled={paginaOngs === totalPaginasOngs - 1} className={css.botaoPagina}>→</button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
 
                 {/* Suas Doações */}
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
                     Suas <span style={{ color: '#000' }}>doações</span>
                 </h2>
                 {loadingAtividades ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : atividades.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px'}}>
+                    <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '16px' }}>
                         <p style={{ fontSize: '16px', color: '#666' }}>Você ainda não realizou nenhuma doação ou voluntariado</p>
                     </div>
                 ) : (
@@ -216,7 +214,7 @@ export default function DashboardDoador1({ api }) {
                                     </div>
                                     <p style={{ fontSize: '14px', fontWeight: '700', color: '#333', margin: '5px 10px 2px 10px', textAlign: 'center' }}>{ativ.valor}</p>
                                     <p style={{ fontSize: '10px', color: '#888', margin: '0 10px 5px 10px', textAlign: 'center', wordBreak: 'break-word' }}>{ativ.projeto}</p>
-                                    {ativ.data && <p style={{ fontSize: '9px', color: '#aaa', textAlign: 'center', marginTop: 'auto', paddingBottom: '8px' }}>{ativ.data}</p>}
+                                    {ativ.data && <p style={{ fontSize: '9px', color: '#aaa', textAlign: 'center'}}>{ativ.data}</p>}
                                 </div>
                             ))}
                         </div>
@@ -231,8 +229,10 @@ export default function DashboardDoador1({ api }) {
                 )}
 
                 {/* Gráfico */}
-                <div className={css.Titulo}><Titulo titulo={`Sua frequência de`} cor={'preto'} span={'doações'} corSpan={'laranja-span'}/></div>
-                <div style={{ background: '#fff', borderRadius: '16px', marginBottom: '30px' }}>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', margin: 'auto', marginBottom: '25px' }}>
+                    Sua frequência de <span style={{ color: '#f7b567' }}>Doações</span>
+                </h2>
+                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}
                 </div>
             </div>
