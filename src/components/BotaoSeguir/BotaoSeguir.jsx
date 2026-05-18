@@ -39,9 +39,6 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange, onMensagem 
     async function toggleSeguir(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
 
-        // ADM (tipo 0) e ONG (tipo 2) não podem seguir
-        if (usuarioTipo === 0 || usuarioTipo === 2) return;
-
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
@@ -69,13 +66,14 @@ export default function BotaoSeguir({ idOng, apiUrl, onStatusChange, onMensagem 
         finally { setLoading(false); }
     }
 
+
     return (
         <button
             id={`btn-seguir-${idOng}`}
             className={`${css.botaoSeguir} ${seguindo ? css.seguindo : ''} ${(usuarioTipo === 0 || usuarioTipo === 2) ? css.desabilitado : ''}`}
             onClick={toggleSeguir}
-            disabled={loading || usuarioTipo === 0 || usuarioTipo === 2}
-            title={usuarioTipo === 0 || usuarioTipo === 2 ? 'Apenas doadores podem seguir' : seguindo ? 'Deixar de seguir' : 'Seguir esta ONG'}
+            disabled={loading || usuarioTipo !== 1}
+            title={usuarioTipo !== 0 && usuarioTipo !== 1 && usuarioTipo !== 2 ? 'Logue como doador para seguir' : usuarioTipo === 0 || usuarioTipo === 2 ? 'Apenas doadores podem seguir' : seguindo ? 'Deixar de seguir' : 'Seguir esta ONG'}
         >
             {loading ? (
                 <span className={css.loader}></span>

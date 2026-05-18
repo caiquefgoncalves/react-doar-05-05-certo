@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import css from "./BotaoProjetos.module.css";
 
-const API_URL = "http://10.92.3.120:5000";
+const API_URL = "http://192.168.0.135:5000";
 
 export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiUrl }) {
     const navigate = useNavigate();
@@ -50,7 +50,6 @@ export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiU
         }
     }
 
-    if (usuarioTipo === 0 || usuarioTipo === 2) return null;
 
     if (loading) {
         return (
@@ -69,7 +68,14 @@ export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiU
     }
 
     return (
-        <button type="button" className={status === 0 ? css.doacao : css.voluntario} onClick={handleClick}>
+        <button type="button" className={status === 0 ? css.doacao : css.voluntario} onClick={handleClick}
+                disabled={loading || usuarioTipo !== 1}
+                title={usuarioTipo === 1
+                    ? 'Contribuir'
+                    : (usuarioTipo === 0 || usuarioTipo === 2)
+                        ? 'Apenas doadores podem contribuir'
+                        : 'Logue como doador para contribuir'}
+        >
             {status === 0 ? "Faça sua doação" : "Seja um voluntário"}
         </button>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import css from './Footer.module.css';
+import {Link} from "react-router-dom";
 
 export default function Footer() {
     return (
@@ -40,15 +41,16 @@ export default function Footer() {
                             </div>
 
                             <div className="col-6 col-md-12">
-                                <a href="#" className={`d-block mb-3 ${css.textoCinza}`} style={{fontSize: '1.1rem'}}>ONGs</a>
-                                <a href="#" className={`d-block mb-3 ${css.textoCinza}`} style={{fontSize: '1.1rem'}}>Projetos</a>
+                                <a href="/ongs" className={`d-block mb-3 ${css.textoCinza}`} style={{fontSize: '1.1rem'}}>ONGs</a>
+                                <a href="/projetos" className={`d-block mb-3 ${css.textoCinza}`} style={{fontSize: '1.1rem'}}>Projetos</a>
                             </div>
 
                         </div>
-
-                        <button className={`shadow-sm ${css.botaoDoar}`}>
-                            Doar agora
-                        </button>
+                        <Link to="/feed">
+                            <button className={`shadow-sm ${css.botaoDoar}` }>
+                                Doar agora
+                            </button>
+                        </Link>
                     </div>
                 </div>
 
