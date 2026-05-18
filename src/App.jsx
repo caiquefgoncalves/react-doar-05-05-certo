@@ -41,7 +41,7 @@ import Doacoes from "./pages/Doacoes.jsx";
 import Agradecimento from "./pages/Agradecimento.jsx";
 import MensagemVoluntario from "./pages/MensagemVoluntario.jsx";
 
-const API_URL = "http://10.92.3.120:5000"
+const API_URL = "http://10.92.3.133:5000"
 
 export default function App() {
     return (
