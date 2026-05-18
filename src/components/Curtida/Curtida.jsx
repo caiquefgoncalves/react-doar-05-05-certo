@@ -66,10 +66,13 @@ export default function Curtida({ idAtualizacao, apiUrl, onStatusChange }) {
         <button
             className={`${css.curtida} ${(usuarioTipo === 0 || usuarioTipo === 2) ? css.desabilitado : ''}`}
             onClick={toggleCurtir}
-            disabled={loading || usuarioTipo === 0 || usuarioTipo === 2}
             id={`btn-curtir-${idAtualizacao}`}
-            title={usuarioTipo === 0 || usuarioTipo === 2 ? 'Apenas doadores podem curtir' : ''}
-        >
+            disabled={loading || usuarioTipo !== 1}
+            title={usuarioTipo === 1
+                ? 'Curtida'
+                : (usuarioTipo === 0 || usuarioTipo === 2)
+                    ? 'Apenas doadores podem curtir'
+                    : 'Logue como doador para curtir'}        >
             {loading ? (
                 <span className={css.loader}></span>
             ) : curtido ? (
