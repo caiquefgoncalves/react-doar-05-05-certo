@@ -131,7 +131,7 @@ export default function CadastroDoador1({api}) {
                             </div>
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
+                            <InputArquivo tamanho={'big'} tipo={'normaledicao'} required={true} alterarInput={alterarFotoPerfil} />
                         </div>
                     </div>
                 </div>

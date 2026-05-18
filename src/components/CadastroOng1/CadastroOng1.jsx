@@ -210,7 +210,7 @@ export default function CadastroOng1({api}) {
                             <Input label={'Número da agência *'} type={'text'} placeholder={'Digite o número da sua agência'} required={true} maxLength={4} input={numAgencia} alterarInput={alterarNumAgencia} />
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <InputArquivo tamanho={'big'} required={true} alterarInput={alterarFotoPerfil} />
+                            <InputArquivo tamanho={'normal'} tipo={'normaledicao'} required={true} alterarInput={alterarFotoPerfil} />
                         </div>
                     </div>
                 </div>

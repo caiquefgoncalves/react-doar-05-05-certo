@@ -162,10 +162,9 @@ export default function DashboardDoador1({ api }) {
                 <div className={css.Titulo}><Titulo titulo={`Suas ONGs`} cor={'preto'}/></div>
                 <div className={css.cardsAdm}>
                     {loadingOngs ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : ongsSeguidas.length === 0 ? (
-                        <div className={css.cardAdm}>
+
                             <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>Você ainda não segue nenhuma ONG</p>
-                            <Link to="/ongs" style={{ color: '#fff', background: '#167cbf', padding: '12px 24px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', fontSize: '14px' }}>Encontrar ONGs</Link>
-                        </div>
+
                     ) : (
                         <>
                             <div style={{ display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '30px' }}>
@@ -173,7 +172,6 @@ export default function DashboardDoador1({ api }) {
                                     <Link to={`/ong/${ong.id}`} key={ong.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit' }}>
                                         <div style={{ position: 'relative', display: 'inline-block' }}>
                                             <img src={ong.foto ? `${api_url}/uploads/Usuarios/${ong.foto}` : '/ong-icon.png'} alt={ong.nome} style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
-                                            <SeloVoluntario idUsuario={idDoador} api={api_url} />
                                         </div>
                                         <span style={{ fontSize: '16px', fontWeight: '600', color: '#333', textAlign: 'center' }}>{ong.nome}</span>
                                     </Link>
@@ -229,7 +227,7 @@ export default function DashboardDoador1({ api }) {
                 )}
 
                 {/* Gráfico */}
-                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', margin: 'auto', marginBottom: '25px' }}>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333' }}>
                     Sua frequência de <span style={{ color: '#f7b567' }}>Doações</span>
                 </h2>
                 <div style={{ background: '#fff', borderRadius: '16px', padding: '25px' }}>
