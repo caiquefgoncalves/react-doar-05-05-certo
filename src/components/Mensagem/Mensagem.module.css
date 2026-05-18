@@ -16,11 +16,17 @@
 
 .sucesso {
     border-color: #00A839;
+}
+
+.sucesso span {
     color: #00A839;
 }
 
 .erro {
     border-color: #D32F2F;
+}
+
+.erro span {
     color: #D32F2F;
 }
 
@@ -44,4 +50,12 @@
     cursor: pointer;
     color: inherit;
     padding: 0 5px;
+}
+
+@media (max-width: 768px) {
+    .mensagemContainer {
+        margin-left: 10px;
+        margin-right: 10px;
+        right: 0;
+    }
 }

@@ -5,7 +5,7 @@
 
 .conteudo {
     flex: 1;
-    padding: 30px;
+    padding: 20px;
     max-width: 40rem;
     margin: 0 auto;
     display: flex;
@@ -170,4 +170,16 @@ span {
     .cardInfo {
         min-width: 0;
     }
+
+    .conteudo {
+        padding: 10px 20px;
+        margin: 0 !important;
+    }
+
+    .secao {
+        flex-direction: column;
+        padding-top: 15px;
+    }
+
+
 }

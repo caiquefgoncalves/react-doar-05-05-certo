@@ -29,9 +29,28 @@ export default function RelatoriosAdm({ api }) {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) { navigate('/login'); return; }
+        if (!token) {
+            localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
+            navigate('/login');
+            return;
+        }
+
         const tokenData = decodificarToken(token);
-        if (!tokenData || tokenData.tipo !== 0) { localStorage.clear(); navigate('/login'); return; }
+        if (tokenData && tokenData.exp) {
+            const agora = Math.floor(Date.now() / 1000);
+            if (tokenData.exp < agora) {
+                localStorage.clear();
+                localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
+                navigate('/login');
+                return;
+            }
+        }
+
+        if (!tokenData || tokenData.tipo !== 0) {
+            localStorage.clear();
+            navigate('/login');
+            return;
+        }
         setAutorizado(true);
 
         // Set default dates (last 30 days)
@@ -81,6 +100,7 @@ export default function RelatoriosAdm({ api }) {
 
             if (response.status === 401) {
                 localStorage.clear();
+                localStorage.setItem('sessaoExpirada', 'Sua sessão expirou. Faça login novamente.');
                 navigate('/login');
                 return;
             }
@@ -139,7 +159,6 @@ export default function RelatoriosAdm({ api }) {
                     <div className={css.itemRelatorio}>
                         <div className={css.itemInfo}>
                             <h3 className={css.itemTitulo}>Lista de Doadores</h3>
-                            <span className={css.itemTipo}>Tipo de Relatório</span>
                         </div>
                         <div className={css.itemAcao}>
                             <button
@@ -156,7 +175,6 @@ export default function RelatoriosAdm({ api }) {
                     <div className={css.itemRelatorio}>
                         <div className={css.itemInfo}>
                             <h3 className={css.itemTitulo}>Lista de ONG's</h3>
-                            <span className={css.itemTipo}>Tipo de Relatório</span>
                         </div>
                         <div className={css.itemAcao}>
                             <button
@@ -173,7 +191,6 @@ export default function RelatoriosAdm({ api }) {
                     <div className={css.itemRelatorio}>
                         <div className={css.itemInfo}>
                             <h3 className={css.itemTitulo}>Doações no Período</h3>
-                            <span className={css.itemTipo}>Tipo de Relatório</span>
                         </div>
                         <div className={css.itemPeriodo}>
                             <div className={css.campoPeriodo}>
@@ -190,6 +207,7 @@ export default function RelatoriosAdm({ api }) {
                                 <input
                                     type="date"
                                     value={dataFim}
+                                    max={new Date().toISOString().split('T')[0]}
                                     onChange={(e) => setDataFim(e.target.value)}
                                     className={css.inputData}
                                 />

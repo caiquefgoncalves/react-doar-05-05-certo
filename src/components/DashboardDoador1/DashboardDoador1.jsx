@@ -120,7 +120,9 @@ export default function DashboardDoador1({ api }) {
         const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const mesesComDados = dadosGrafico.filter(d => d.qtd > 0);
         const total = mesesComDados.reduce((acc, d) => acc + d.qtd, 0);
-        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma doação realizada ainda</p>;
+        if (total === 0) return <div className={css.cardsAdm}>
+            <p>Nenhuma doação realizada ainda</p>
+        </div>;
         let gradiente = '';
         let acumulado = 0;
         mesesComDados.forEach((d, i) => {
@@ -195,7 +197,7 @@ export default function DashboardDoador1({ api }) {
                     Suas <span style={{ color: '#000' }}>doações</span>
                 </h2>
                 {loadingAtividades ? <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Carregando...</p> : atividades.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '16px' }}>
+                    <div style={{ textAlign: 'center', padding: '40px'}}>
                         <p style={{ fontSize: '16px', color: '#666' }}>Você ainda não realizou nenhuma doação ou voluntariado</p>
                     </div>
                 ) : (
@@ -229,10 +231,8 @@ export default function DashboardDoador1({ api }) {
                 )}
 
                 {/* Gráfico */}
-                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333', marginTop: '40px', marginBottom: '25px' }}>
-                    Sua frequência de <span style={{ color: '#f7b567' }}>Doações</span>
-                </h2>
-                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px' }}>
+                <div className={css.Titulo}><Titulo titulo={`Sua frequência de`} cor={'preto'} span={'doações'} corSpan={'laranja-span'}/></div>
+                <div style={{ background: '#fff', borderRadius: '16px', marginBottom: '30px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}
                 </div>
             </div>

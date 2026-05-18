@@ -215,7 +215,10 @@ export default function DashboardDaOng1({api}) {
         const mesesComDados = dadosGrafico.filter(d => d.valor > 0);
         const total = mesesComDados.reduce((acc, d) => acc + d.valor, 0);
 
-        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma arrecadação ainda</p>;
+        if (total === 0) return <div className={css.cardsAdm}>
+            <p>Nenhuma doação ainda</p>
+        </div>;
+
 
         let gradiente = '';
         let acumulado = 0;
@@ -228,7 +231,7 @@ export default function DashboardDaOng1({api}) {
         });
 
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '45px' }}>
                 <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `conic-gradient(${gradiente})` }} />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', maxWidth: '300px' }}>
                     {mesesComDados.map((d) => {
@@ -302,7 +305,7 @@ export default function DashboardDaOng1({api}) {
                 )}
 
                 {/* Últimas Atualizações */}
-                <div className={css.titulos}><Titulo titulo={'Últimas atualizações'} cor={'preto'}/></div>
+                <div className={css.titulos}><Titulo titulo={'Atualizações'} cor={'preto'}/></div>
                 <div className={css.cardsAdm}>
                     {atualizacoesPaginadas.length === 0 ? <p>Nenhuma atualização</p> : atualizacoesPaginadas.map((atualizacao) => (
                         <div key={atualizacao.id} className={css.cardAdm}>
@@ -348,11 +351,9 @@ export default function DashboardDaOng1({api}) {
                     </div>
                 )}
 
-                {/* Gráfico de Arrecadação Mensal */}
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#333', marginTop: '30px', marginBottom: '15px' }}>
-                    Arrecadação <span style={{ color: '#f7b567' }}>Mensal</span>
-                </h2>
-                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', marginBottom: '30px' }}>
+
+                <div className={css.Titulo}><Titulo titulo={`Arrecadação`} cor={'preto'} span={' mensal'} corSpan={'laranja-span'}/></div>
+                <div style={{ background: '#fff', borderRadius: '16px', marginBottom: '30px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}
                 </div>
             </div>

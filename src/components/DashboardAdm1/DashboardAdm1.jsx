@@ -212,8 +212,9 @@ export default function DashboardAdm1({ api }) {
         const mesesComDados = dadosGrafico.filter(d => d.valor > 0);
         const total = mesesComDados.reduce((acc, d) => acc + d.valor, 0);
 
-        if (total === 0) return <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhuma arrecadação ainda</p>;
-
+        if (total === 0) return <div className={css.cardsAdm}>
+            <p>Nenhuma arrecadação ainda</p>
+        </div>;
         let gradiente = '';
         let acumulado = 0;
         mesesComDados.forEach((d, i) => {
@@ -225,7 +226,7 @@ export default function DashboardAdm1({ api }) {
         });
 
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '45px' }}>
                 <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `conic-gradient(${gradiente})` }} />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', maxWidth: '300px' }}>
                     {mesesComDados.map((d) => {
@@ -380,11 +381,9 @@ export default function DashboardAdm1({ api }) {
                     </div>
                 )}
 
-                {/* Gráfico de Arrecadação Global */}
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#333', marginTop: '30px', marginBottom: '15px' }}>
-                    Arrecadação Global
-                </h2>
-                <div style={{ background: '#fff', borderRadius: '16px', padding: '25px', marginBottom: '30px' }}>
+
+                <div className={css.Titulo}><Titulo titulo={`Arrecadação`} cor={'preto'} span={'global'} corSpan={'laranja-span'}/></div>
+                <div style={{ background: '#fff', borderRadius: '16px', marginBottom: '30px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}
                 </div>
             </div>

@@ -4,7 +4,7 @@ import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
-const API_URL = "http://192.168.0.135:5000";
+const API_URL = "http://10.92.3.120:5000";
 
 export default function Header({ api }) {
     const api_url = api || API_URL;
@@ -113,7 +113,7 @@ export default function Header({ api }) {
             const tokenLogout = localStorage.getItem('token');
 
             if (tokenLogout) {
-                await fetch(`${api_url}/logout?token=${tokenLogout}`, {
+                await fetch(`${API_URL}/logout?token=${tokenLogout}`, {
                     method: 'POST',
                     credentials: 'include',
                 });

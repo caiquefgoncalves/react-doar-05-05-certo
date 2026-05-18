@@ -1,32 +1,35 @@
 /* src/components/RelatoriosAdm/RelatoriosAdm.module.css */
+
+/* Estilos gerais - IGUAL AO DASHBOARD ADM */
 .secao {
     display: flex;
+    align-items: flex-start;
+    gap: 7rem;
     min-height: 100vh;
     background-color: white;
 }
 
 .menulateral {
-    position: fixed;
-    left: 0;
+    display: flex;
+    width: 250px;
+    background-color: #fff;
+    position: sticky;
     top: 0;
     height: 100vh;
+    overflow-y: auto;
     z-index: 100;
 }
 
 .conteudo {
     flex: 1;
-    margin-left: 250px;
+    margin-top: 4rem;
     padding: 30px;
-    overflow-x: auto;
+    overflow-y: auto;
     background-color: white;
-}
-
-@media (max-width: 768px) {
-    .conteudo {
-        margin-left: 0;
-        padding: 20px;
-        padding-bottom: 80px;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
 .tituloPrincipal {
@@ -43,6 +46,7 @@
     margin-bottom: 30px;
     padding-bottom: 15px;
     border-bottom: 2px solid #f0f0f0;
+    width: 100%;
 }
 
 .relatoriosContainer {
@@ -50,6 +54,7 @@
     flex-direction: column;
     gap: 1px;
     max-width: 900px;
+    width: 100%;
     background-color: #f5f5f5;
     border-radius: 8px;
     overflow: hidden;
@@ -82,15 +87,7 @@
     font-size: 1rem;
     font-weight: 600;
     color: #333;
-    margin: 0 0 5px 0;
-}
-
-.itemTipo {
-    font-size: 0.75rem;
-    color: #999;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    margin: 0;
 }
 
 .itemAcao {
@@ -182,7 +179,37 @@
     cursor: not-allowed;
 }
 
+/* Responsividade Tablet - IGUAL AO DASHBOARD ADM */
 @media (max-width: 768px) {
+    .secao {
+        flex-direction: column;
+        gap: normal;
+    }
+
+    .menulateral {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .conteudo {
+        margin-top: 2rem;
+        padding: 15px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .tituloPrincipal {
+        font-size: 1.5rem;
+    }
+
+    .subtitulo {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
     .itemRelatorio {
         flex-direction: column;
         align-items: flex-start;
@@ -214,5 +241,75 @@
     .btnBaixarPeriodo {
         width: 100%;
         margin-top: 5px;
+    }
+}
+
+/* Responsividade Mobile - 425px */
+@media (max-width: 425px) {
+    .conteudo {
+        margin-top: 1.5rem;
+        padding: 30px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .tituloPrincipal {
+        font-size: 1.3rem;
+    }
+
+    .subtitulo {
+        font-size: 0.9rem;
+    }
+
+    .itemRelatorio {
+        padding: 15px 20px;
+    }
+
+    .itemTitulo {
+        font-size: 0.9rem;
+    }
+
+    .btnBaixar, .btnBaixarPeriodo {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Mobile pequeno - 320px */
+@media (max-width: 320px) {
+    .conteudo {
+        padding: 20px;
+    }
+
+    .tituloPrincipal {
+        font-size: 1.2rem;
+    }
+
+    .subtitulo {
+        font-size: 0.85rem;
+    }
+
+    .itemRelatorio {
+        padding: 12px 15px;
+    }
+
+    .itemTitulo {
+        font-size: 0.85rem;
+    }
+
+    .campoPeriodo label {
+        font-size: 0.65rem;
+    }
+
+    .inputData {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btnBaixar, .btnBaixarPeriodo {
+        padding: 8px 16px;
+        font-size: 0.85rem;
     }
 }
