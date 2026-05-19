@@ -233,9 +233,10 @@ export default function PaginaProjeto1({ api }) {
 
                                 <img
                                     className={css.pix}
-                                    src={`${api_url}/uploads/Pix/${ong.pix}`}
+                                    src={ong.pix ? `${api_url}/uploads/Pix/${ong.pix}` : '/sem_imagem.webp'}
                                     alt={`Pix ${ong.nome}`}
                                 />
+
 
                                 <div className={css.dadosBancarios}>
                                     <p><strong>Instituição:</strong><br/>{ong.cod_banco || 'Não informado'}</p>
