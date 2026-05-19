@@ -89,7 +89,7 @@ export default function EditarAdm1({ api }) {
             setMsgTexto(data.message || data.error);
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
             if (response.ok) {
-                if (data.usuario && data.usuario.nome) localStorage.setItem('nome', data.usuario.nome);
+                if (data.usuario && data.usuario.nome) localStorage.setItem('nome_adm', data.usuario.nome);
                 setTimeout(() => navigate('/dashboardAdm'), 2000);
             }
         } catch (error) { setMsgTexto('Erro de conexão'); setMsgTipo('erro'); }

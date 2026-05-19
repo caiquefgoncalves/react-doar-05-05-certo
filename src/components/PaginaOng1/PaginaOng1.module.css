@@ -9,6 +9,12 @@
     width: 100%;
 }
 
+.titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .pix {
     height: 14rem;
     width: 14rem;
@@ -181,6 +187,7 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 999px;
+    margin-bottom: 10px;
 }
 
 .sobrenos {
@@ -366,10 +373,13 @@
 
     .nome { font-size: 22px; }
     .infoGrid { grid-template-columns: 1fr; }
+
+
+
 }
 
 /* Telas até 425px */
-@media (max-width: 425px) {
+@media (max-width: 426px) {
     .conteudo {
         padding: 15px 12px;
     }
@@ -491,6 +501,10 @@
 
     .texto {
         font-size: 13px;
+    }
+
+    .titulo {
+        flex-direction: column;
     }
 }
 

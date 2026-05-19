@@ -6,6 +6,7 @@ import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import css from "./PaginaOng1.module.css";
 import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
 import Mensagem from "../Mensagem/Mensagem.jsx";
+import BotaoProjetos from "../BotaoProjetos/BotaoProjetos.jsx";
 
 export default function PaginaOng1({api}) {
     const api_url = api;
@@ -109,7 +110,7 @@ export default function PaginaOng1({api}) {
 
                 <div className={css.layoutDuasColunas}>
                     <div className={css.colunaEsquerda}>
-                        <div className="d-flex justify-content-between align-items-center">
+                        <div className={css.titulo}>
                             <div className={css.headerONG}>
                                 {ong && (
                                     <img
@@ -155,7 +156,6 @@ export default function PaginaOng1({api}) {
                             <div className={css.secaoBox}>
                                 <div className={css.headerAtualizacoes}>
                                     <p className={css.sobrenos}>Projetos ativos</p>
-                                    {qtdProjetos == 0 && <p className={css.texto}>Não há projetos</p>}
                                     {qtdProjetos == 1 && <p className={css.texto}>{qtdProjetos} projeto</p>}
                                     {qtdProjetos > 1 && <p className={css.texto}>{qtdProjetos} projetos</p>}
                                 </div>
@@ -173,20 +173,7 @@ export default function PaginaOng1({api}) {
                                             <h3 className={css.attTitulo}>{proj.titulo}</h3>
                                             <p className={css.attTexto}>{proj.descricao?.substring(0, 100)}...</p>
                                             <span className={css.tipoAjuda}>{proj.tipo_ajuda}</span>
-
-                                            {(usuarioTipo === 1 || usuarioTipo === null) && (
-                                                <div style={{ marginTop: '10px' }}>
-                                                    {proj.tipo_ajuda === 'Voluntariado' ? (
-                                                        <button onClick={() => handleVoluntariar(proj.id)} style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
-                                                            🤝 Voluntariar-se
-                                                        </button>
-                                                    ) : (
-                                                        <button onClick={() => handleDoar(proj.id)} style={{ backgroundColor: '#167cbf', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
-                                                            💰 Doar
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
+                                            <BotaoProjetos status={proj.tipo_ajuda_numero} projetoId={proj.id} usuarioTipo={usuarioTipo} apiUrl={api_url}/>
                                         </div>
                                     ))}
                                 </div>
@@ -200,12 +187,15 @@ export default function PaginaOng1({api}) {
                             </div>
                         )}
 
+                        {projetos.length === 0 && (
+                            <div className={css.secaoBox}><p className={css.sobrenos}>Projetos ativos</p><p className={css.semAtualizacoes}>Nenhuma projeto disponível no momento.</p></div>
+                        )}
+
                         {/* Atualizações */}
                         {atualizacoes.length > 0 && (
                             <div className={css.secaoBox}>
                                 <div className={css.headerAtualizacoes}>
                                     <p className={css.sobrenos}>Últimas atualizações</p>
-                                    {qtdAtualizacoes == 0 && <p className={css.texto}>Não há atualizações</p>}
                                     {qtdAtualizacoes == 1 && <p className={css.texto}>{qtdAtualizacoes} atualização</p>}
                                     {qtdAtualizacoes > 1 && <p className={css.texto}>{qtdAtualizacoes} atualizações</p>}
                                 </div>

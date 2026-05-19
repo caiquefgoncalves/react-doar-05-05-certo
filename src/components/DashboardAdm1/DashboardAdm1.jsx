@@ -54,7 +54,7 @@ export default function DashboardAdm1({ api }) {
         const tokenData = decodificarToken(token);
         if (!tokenData || tokenData.tipo !== 0) { localStorage.clear(); navigate('/login'); return; }
         setAutorizado(true);
-        const nome = localStorage.getItem('nome');
+        const nome = localStorage.getItem('nome_adm');
         if (nome) setNomeADM(nome);
         setIdAdm(tokenData.id_usuarios);
         buscarOngs();

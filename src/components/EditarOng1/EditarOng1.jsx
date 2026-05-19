@@ -134,7 +134,7 @@ export default function EditarOng1({api}) {
             setMsgTexto(data.message || data.error);
             setMsgTipo(response.ok ? 'sucesso' : 'erro');
             if (response.ok) {
-                if (data.usuario && data.usuario.nome) localStorage.setItem('nome', data.usuario.nome);
+                if (data.usuario && data.usuario.nome) localStorage.setItem('nome_ong', data.usuario.nome);
                 setTimeout(() => {
                     if (tokenData && tokenData.tipo === 0) navigate('/dashboardAdm');
                     else if (tokenData && tokenData.tipo === 2) navigate('/dashboardOng');

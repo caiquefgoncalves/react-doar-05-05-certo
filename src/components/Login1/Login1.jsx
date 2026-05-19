@@ -78,7 +78,6 @@ export default function Login1({ api }) {
 
             if (retorno.token) {
                 localStorage.setItem('token', retorno.token);
-                localStorage.setItem('nome', retorno.nome);
                 localStorage.removeItem('sessaoExpirada');
 
                 setMensagem({ texto: retorno.message || `Bem-vindo ${retorno.nome}!`, tipo: 'sucesso' });
@@ -86,9 +85,18 @@ export default function Login1({ api }) {
                 const tokenData = decodificarToken(retorno.token);
                 if (tokenData) {
                     setTimeout(() => {
-                        if (tokenData.tipo === 0) navigate('/dashboardAdm');
-                        else if (tokenData.tipo === 2) navigate('/dashboardOng');
-                        else if (tokenData.tipo === 1) navigate('/dashboardDoador');
+                        if (tokenData.tipo === 0) {
+                            localStorage.setItem('nome_adm', retorno.nome);
+                            navigate('/dashboardAdm');
+                        }
+                        else if (tokenData.tipo === 2) {
+                            localStorage.setItem('nome_ong', retorno.nome);
+                            navigate('/dashboardOng');
+                        }
+                        else if (tokenData.tipo === 1) {
+                            localStorage.setItem('nome_doador', retorno.nome);
+                            navigate('/dashboardDoador');
+                        }
                     }, 1500);
                 }
             } else if (retorno.error === "Verifique o e-mail antes de logar!") {

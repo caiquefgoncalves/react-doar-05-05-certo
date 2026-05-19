@@ -48,7 +48,7 @@ export default function DashboardDoador1({ api }) {
         const id = tokenData.id_usuarios;
         setIdDoador(id);
 
-        const nome = localStorage.getItem('nome');
+        const nome = localStorage.getItem('nome_doador');
         if (nome) setNomeDoador(nome);
 
         buscarOngsSeguidas(token);

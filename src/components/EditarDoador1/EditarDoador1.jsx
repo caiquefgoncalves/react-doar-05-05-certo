@@ -116,7 +116,7 @@ export default function EditarDoador({ api }) {
 
             if (response.ok) {
                 if (data.usuario && data.usuario.nome) {
-                    localStorage.setItem('nome', data.usuario.nome);
+                    localStorage.setItem('nome_doador', data.usuario.nome);
                 }
                 setTimeout(() => {
                     if (tokenData && tokenData.tipo === 0) navigate('/dashboardAdm');

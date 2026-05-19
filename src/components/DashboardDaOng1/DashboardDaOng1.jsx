@@ -66,7 +66,7 @@ export default function DashboardDaOng1({api}) {
 
         const id = tokenData.id_usuarios;
         setIdOng(id);
-        const nome = localStorage.getItem('nome');
+        const nome = localStorage.getItem('nome_ong');
         if (nome) setNomeOng(nome);
 
         buscarProjetos();
