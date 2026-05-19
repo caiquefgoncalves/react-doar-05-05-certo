@@ -81,19 +81,31 @@ export default function EditarOng1({api}) {
     }
 
     async function salvarEdicao() {
+        // Converter possíveis números para string antes das validações
+        const codBancoStr = String(codBanco || '');
+        const numAgenciaStr = String(numAgencia || '');
+        const numContaStr = String(numConta || '');
+
         // Validações em ordem (senha é opcional)
         if (!nome?.trim()) { setMsgTexto('O nome é obrigatório'); setMsgTipo('erro'); return; }
         if (!email?.trim()) { setMsgTexto('O email é obrigatório'); setMsgTipo('erro'); return; }
         if (!descBreve?.trim()) { setMsgTexto('A descrição breve é obrigatória'); setMsgTipo('erro'); return; }
         if (!localizacao?.trim()) { setMsgTexto('A localização é obrigatória'); setMsgTipo('erro'); return; }
-        if (!codBanco?.trim()) { setMsgTexto('O código do banco é obrigatório'); setMsgTipo('erro'); return; }
-        if (!numConta?.trim()) { setMsgTexto('O número da conta é obrigatório'); setMsgTipo('erro'); return; }
-        if (!tipoConta) { setMsgTexto('Escolha um tipo de conta'); setMsgTipo('erro'); return; }
+        if (!codBancoStr.trim()) { setMsgTexto('O código do banco é obrigatório'); setMsgTipo('erro'); return; }
+        if (!numContaStr.trim()) { setMsgTexto('O número da conta é obrigatório'); setMsgTipo('erro'); return; }
+        if (!tipoConta || tipoConta === 'Escolha um tipo de conta') { setMsgTexto('Escolha um tipo de conta'); setMsgTipo('erro'); return; }
         if (!cnpj?.trim()) { setMsgTexto('O CNPJ é obrigatório'); setMsgTipo('erro'); return; }
-        if (!categoria) { setMsgTexto('Escolha uma categoria'); setMsgTipo('erro'); return; }
+        if (!categoria || categoria === 'Escolha uma categoria') { setMsgTexto('Escolha uma categoria'); setMsgTipo('erro'); return; }
         if (!descLonga?.trim()) { setMsgTexto('A descrição longa é obrigatória'); setMsgTipo('erro'); return; }
         if (!chavePix?.trim()) { setMsgTexto('A chave PIX é obrigatória'); setMsgTipo('erro'); return; }
-        if (!numAgencia?.trim()) { setMsgTexto('O número da agência é obrigatório'); setMsgTipo('erro'); return; }
+        if (!numAgenciaStr.trim()) { setMsgTexto('O número da agência é obrigatório'); setMsgTipo('erro'); return; }
+
+        // Validar se senha foi preenchida e se confere
+        if (senha && senha !== confirmarSenha) {
+            setMsgTexto('As senhas não conferem');
+            setMsgTipo('erro');
+            return;
+        }
 
         const token = localStorage.getItem('token');
         const tokenData = decodificarToken(token);
@@ -107,9 +119,9 @@ export default function EditarOng1({api}) {
         form.append('descricao_longa', descLonga || '');
         form.append('localizacao', localizacao || '');
         form.append('categoria', categoria || '');
-        form.append('cod_banco', String(codBanco || '').replace(/\D/g, ''));
-        form.append('num_agencia', String(numAgencia || '').replace(/\D/g, ''));
-        form.append('num_conta', String(numConta || '').replace(/\D/g, ''));
+        form.append('cod_banco', codBancoStr.replace(/\D/g, ''));
+        form.append('num_agencia', numAgenciaStr.replace(/\D/g, ''));
+        form.append('num_conta', numContaStr.replace(/\D/g, ''));
         form.append('tipo_conta', tipoConta || '');
         form.append('chave_pix', chavePix || '');
         if (senha) form.append('senha', senha);
@@ -167,15 +179,15 @@ export default function EditarOng1({api}) {
                             </div>
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <Input tamanho={'Big'} label={'Descrição longa *'} type={'text'} placeholder={'Descrição longa sobre sua ONG'} required={true} maxLength={254} textarea={true} alterarInput={(e) => setDescLonga(e.target.value)} />
+                            <Input tamanho={'Big'} label={'Descrição longa *'} type={'text'} placeholder={'Descrição longa sobre sua ONG'} required={true} maxLength={254} textarea={true} input={descLonga} alterarInput={(e) => setDescLonga(e.target.value)} />
                         </div>
                         {/* Linha 4: Localização | (vazio) */}
                         {/* Linha 5: Senha | Confirmar Senha */}
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Senha *'} type={'password'} placeholder={'Crie uma senha'} required={true} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
+                            <Input label={'Senha'} type={'password'} placeholder={'Digite uma nova senha (opcional)'} required={false} maxLength={254} input={senha} alterarInput={(e) => setSenha(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Confirmar senha *'} type={'password'} placeholder={'Confirme sua senha'} required={true} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
+                            <Input label={'Confirmar senha'} type={'password'} placeholder={'Confirme sua nova senha'} required={false} maxLength={254} input={confirmarSenha} alterarInput={(e) => setConfirmarSenha(e.target.value)} />
                         </div>
                         {/* Linha 6: Chave PIX | Número da Conta */}
                         <div className={"col-md-6 col-12"}>
@@ -186,7 +198,7 @@ export default function EditarOng1({api}) {
                         </div>
                         {/* Linha 7: Código do Banco | Tipo de Conta */}
                         <div className={"col-md-6 col-12"}>
-                            <Input label={'Código do banco *'} type={'text'} placeholder={'Digite o código do banco'} required={true} maxLength={3} input={(e) => setCodBanco(e.target.value)} alterarInput={(e) => setCodBanco(e.target.files[0])} />
+                            <Input label={'Código do banco *'} type={'text'} placeholder={'Digite o código do banco'} required={true} maxLength={3} input={codBanco} alterarInput={(e) => setCodBanco(e.target.value)} />
                         </div>
                         <div className={"col-md-6 col-12"}>
                             <Select label={'Tipo de conta *'} options={['Escolha um tipo de conta', 'Conta-corrente', 'Poupança', 'Conta salário', 'Conta digital', 'Conta PJ']} input={tipoConta} alterarInput={(e) => setTipoConta(e.target.value)} />

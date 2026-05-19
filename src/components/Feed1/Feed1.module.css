@@ -168,7 +168,7 @@
 
 .fotoAtualizacao {
     width: 220px;
-    height: 150px;
+    height: 100%;
     object-fit: cover;
     border-radius: 8px;
     flex-shrink: 0;
