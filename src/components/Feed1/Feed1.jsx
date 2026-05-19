@@ -17,6 +17,8 @@ export default function Feed({ api }) {
     const [busca, setBusca] = useState('');
     const [filtro, setFiltro] = useState('recentes');
     const [tipoFeed, setTipoFeed] = useState('todas');
+    const [textoAberto, setTextoAberto] = useState(false);
+    const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth <= 768);
 
     const [pagina, setPagina] = useState(0);
     const [temMais, setTemMais] = useState(true);
@@ -36,6 +38,17 @@ export default function Feed({ api }) {
     const [modalPostagem, setModalPostagem] = useState(null);
 
     const api_url = api;
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 
     function decodificarToken(token) {
         try {
@@ -394,7 +407,22 @@ export default function Feed({ api }) {
                             </div>
                             <div className={css.modalConteudo}>
                                 <h1>{modalPostagem.titulo}</h1>
-                                <p>{modalPostagem.texto}</p>
+                                {/* Exibição do Texto */}
+                                <p>
+                                    {isMobile && modalPostagem.texto.length > 100 && !textoAberto
+                                        ? `${modalPostagem.texto.substring(0, 100)}...`
+                                        : modalPostagem.texto}
+                                </p>
+
+                                {/* Exibição do Botão (Apenas no Mobile) */}
+                                {isMobile && modalPostagem.texto.length > 100 && (
+                                    <button
+                                        onClick={() => setTextoAberto(!textoAberto)}
+                                        style={{ backgroundColor: '#167cbf', color: 'white', border: 'none', padding: '4px 10px', borderRadius: '10px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', marginLeft: '5px' }}
+                                    >
+                                        {textoAberto ? "Ler menos" : "Ler mais"}
+                                    </button>
+                                )}
                                 <div className={css.modalInfo}><span>{modalPostagem.qtd_curtidas || 0} curtidas</span><span> • </span><span>{modalPostagem.qtd_comentarios || 0} comentários</span></div>
                             </div>
                             <div className={css.modalComentarios}>

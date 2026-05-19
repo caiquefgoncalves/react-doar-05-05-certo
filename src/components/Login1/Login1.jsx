@@ -136,7 +136,7 @@ export default function Login1({ api }) {
                                 <Input label={"CPF/CNPJ"} type={"text"} input={cpf} alterarInput={alterarCPF} placeholder={"Digite seu CPF ou CNPJ"} required={true} />
                             </div>
                             <div className={css.campo}>
-                                <Input alterarInput={alterarSenha} input={senha} label={"Senha"} type={"password"} placeholder={"Digite sua senha"} required={true} />
+                                <Input alterarInput={alterarSenha} input={senha} label={"Senha"} type={"password"} placeholder={"Digite sua senha"}  required={true} senha={true}  />
                                 <Link to="/esqueciSenha" className={css.link}>Esqueci minha senha</Link>
                             </div>
                             <div className={css.areaBotao}>

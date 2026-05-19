@@ -11,6 +11,26 @@
     margin-bottom: 0.5rem;
 }
 
+.inputSenha {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.olho {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.olho img {
+    height: 1rem;
+    width: 1rem;
+}
+
 .normal {
     border-radius: 2rem;
     border: 1px solid #CCCCCC;

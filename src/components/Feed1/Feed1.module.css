@@ -14,6 +14,10 @@
     gap: 20px;
 }
 
+.botao-ler-mais {
+    display: none;
+}
+
 .barraTopo {
     display: flex;
     align-items: center;
@@ -509,10 +513,10 @@
 }
 
 .modalConteudo p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-bottom: 0.5rem;
     color: #555;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .modalInfo {
@@ -522,8 +526,6 @@
 }
 
 .modalComentarios {
-    flex: 1;
-    overflow-y: auto;
     padding: 20px 0;
 }
 
@@ -545,7 +547,8 @@
 }
 
 .modalComentario p {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
     font-weight: 400;
     color: #555;
     margin: 3px 0 0 0;
@@ -647,16 +650,21 @@
         flex-direction: column;
         width: 95%;
         height: 90vh;
+        overflow: hidden;
     }
 
     .modalEsquerda {
-        flex: none;
-        height: 66%;
+        height: 40%;
+        min-height: 220px;
     }
 
     .modalDireita {
         flex: 1;
-        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+        overflow-y: auto;
+        max-height: 100%;
     }
 
     .modalHeader {
@@ -682,6 +690,19 @@
 }
 
 @media (max-width: 425px) {
+    .botao-ler-mais {
+        display: inline-block;
+        background-color: #167cbf;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
     .conteudo {
         padding: 10px 8px;
     }
@@ -695,6 +716,7 @@
         height: 96vh;
         border-radius: 12px;
     }
+
 
     .modalEsquerda {
         height: 45%;
