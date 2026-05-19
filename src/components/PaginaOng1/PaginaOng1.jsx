@@ -7,6 +7,7 @@ import css from "./PaginaOng1.module.css";
 import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
 import Mensagem from "../Mensagem/Mensagem.jsx";
 import BotaoProjetos from "../BotaoProjetos/BotaoProjetos.jsx";
+import Botao from "../Botao/Botao.jsx";
 
 export default function PaginaOng1({api}) {
     const api_url = api;
@@ -31,6 +32,17 @@ export default function PaginaOng1({api}) {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 425);
     const projetosPorPagina = isMobile ? 1 : 2;
     const atualizacoesPorPagina = isMobile ? 1 : 2;
+
+    let [copiado, setCopiado] = useState("Copiar"); // Estado para o botão de copiar
+
+    function copiarPix() {
+        navigator.clipboard.writeText(ong.chave_pix).then(() => {
+            setCopiado("Copiado!");
+            setTimeout(() => setCopiado("Copiar"), 2000);
+        }).catch(err => {
+            console.error("Erro ao copiar: ", err);
+        });
+    }
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -235,6 +247,12 @@ export default function PaginaOng1({api}) {
                         <div className={css.cardApoie}>
                             <Titulo titulo={`Apoie o ${ong.nome} diretamente!`} cor={'preto'}/>
                             <img className={css.pix} src={ong.pix ? `${api_url}/uploads/Pix/${ong.pix}` : '/sem_imagem.webp'} alt={`Pix ${ong.nome}`} onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }} />
+                            <div className={css.pixContainer}>
+                                <p className={css.pixCode}>
+                                    {ong.chave_pix}
+                                </p>
+                                <Botao cor={'rosa'} acao={copiarPix} texto={copiado}/>
+                            </div>
                             <div className={css.dadosBancarios}>
                                 <p><strong>Instituição:</strong><br/>{ong.cod_banco || 'Não informado'}</p>
                                 <p><strong>Agência:</strong><br/>{ong.num_agencia || 'Não informada'}</p>

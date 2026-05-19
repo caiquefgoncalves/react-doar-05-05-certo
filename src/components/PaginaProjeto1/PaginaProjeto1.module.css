@@ -16,6 +16,36 @@
     border-radius: 8px;
 }
 
+.pixContainer {
+    width: 100%;
+    max-width: 400px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.pixCode {
+    padding: 12px;
+    font-size: 13px;
+    font-family: monospace;
+    color: #333;
+    text-align: left;
+    margin-bottom: 10px;
+
+    display: block;
+    width: 100%;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+
+
 
 /* Menu Lateral Fixo */
 .menulateral {

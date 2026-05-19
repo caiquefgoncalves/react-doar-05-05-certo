@@ -3,29 +3,35 @@ import Titulo from "../Titulo/Titulo.jsx";
 import Input from "../Input/Input.jsx";
 import Botao from "../Botao/Botao.jsx";
 import css from "./FazerDoacao.module.css"
-import {useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Mensagem from "../Mensagem/Mensagem.jsx";
 
-export default function FazerDoacao({api}) {
+export default function FazerDoacao({ api }) {
     const api_url = api
     const token = localStorage.getItem("token")
     const { id } = useParams();
     const navigate = useNavigate();
     let [valor, setValor] = useState("");
     let [pix, setPix] = useState("");
+    let [chavePix, setChavePix] = useState("");
     const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
+    let [copiado, setCopiado] = useState("Copiar"); // Estado para o botão de copiar
+
+    function copiarPix() {
+        navigator.clipboard.writeText(chavePix).then(() => {
+            setCopiado("Copiado!");
+            setTimeout(() => setCopiado("Copiar"), 2000);
+        }).catch(err => {
+            console.error("Erro ao copiar: ", err);
+        });
+    }
 
     function alterarValor(e) {
         let valorDigitado = e.target.value;
-
-        // Remove tudo que não for número
         valorDigitado = valorDigitado.replace(/\D/g, '');
-
-        // Converte para número e divide por 100 (centavos)
         const valorNumerico = parseFloat(valorDigitado) / 100;
 
-        // Formata como moeda brasileira
         if (valorDigitado === '') {
             setValor('');
         } else {
@@ -38,17 +44,14 @@ export default function FazerDoacao({api}) {
     }
 
     async function gerarQrCode() {
-        // Remove a formatação (R$, pontos, vírgulas) e converte para número
         let valorNumerico = valor.replace(/\D/g, '');
         valorNumerico = parseFloat(valorNumerico) / 100;
-        valorNumerico = Math.round(valorNumerico); // Garantir inteiro
+        valorNumerico = Math.round(valorNumerico);
 
         if (!valorNumerico || valorNumerico <= 0) {
             setMensagem({ texto: 'Digite um valor válido', tipo: 'erro' });
             return;
         }
-
-        console.log('Enviando valor:', valorNumerico, typeof valorNumerico);
 
         let retorno = await fetch(`${api_url}/doar_projeto/${id}`, {
             method: 'POST',
@@ -60,13 +63,14 @@ export default function FazerDoacao({api}) {
 
         if (retorno.message) {
             setPix(retorno.pix);
+            setChavePix(retorno.chave_pix)
             setMensagem({ texto: retorno.message || 'QR code gerado com sucesso', tipo: 'sucesso' });
         } else {
             setMensagem({ texto: retorno.error || 'Erro ao gerar QR code', tipo: 'erro' });
         }
     }
 
-    return(
+    return (
         <section className={css.geral}>
             <Mensagem tipo={mensagem.tipo} texto={mensagem.texto} onClose={() => setMensagem({ texto: '', tipo: '' })} />
             <div className={css.titulo}>
@@ -83,20 +87,18 @@ export default function FazerDoacao({api}) {
                         />
 
                         {pix ? (
-                            <>
-                                <div className={css.botoes}>
-                                    <div className={css.botaoQr}>
-                                        <Botao
-                                            cor={'vazadorosa2'}
-                                            texto={'Gerar o QR Code novamente'}
-                                            acao={gerarQrCode}
-                                        />
-                                    </div>
-                                    <div className={css.botao}>
-                                        <Botao cor={'rosa'} texto={'Concluído'} acao={() => navigate('/agradecimento')} />
-                                    </div>
+                            <div className={css.botoes}>
+                                <div className={css.botaoQr}>
+                                    <Botao
+                                        cor={'vazadorosa2'}
+                                        texto={'Gerar o QR Code novamente'}
+                                        acao={gerarQrCode}
+                                    />
                                 </div>
-                            </>
+                                <div className={css.botao}>
+                                    <Botao cor={'rosa'} texto={'Concluído'} acao={() => navigate('/agradecimento')} />
+                                </div>
+                            </div>
                         ) : (
                             <div className={css.botaoQr}>
                                 <Botao
@@ -106,19 +108,26 @@ export default function FazerDoacao({api}) {
                                 />
                             </div>
                         )}
-
                     </div>
+
                     {pix && (
                         <div className={css.qrCode}>
                             <img
                                 src={`${api_url}/uploads/Pix/${pix}`}
                                 alt="QR Code PIX"
-                                onError={(e) => { e.target.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }}
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/sem_imagem.webp'; }}
                             />
+                            {/* Classes integradas ao seu CSS Module */}
+                            <div className={css.pixContainer}>
+                                <p className={css.pixCode}>
+                                    {chavePix}
+                                </p>
+                                <Botao cor={'rosa'} acao={copiarPix} texto={copiado}/>
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
         </section>
-    )
+    );
 }

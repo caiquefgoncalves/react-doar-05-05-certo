@@ -15,9 +15,13 @@
     justify-content: space-between;
     gap: 7rem;
 }
-.qrCode{
+.qrCode {
     display: flex;
-
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 100%; /* Impede que o bloco force a largura para fora */
+    min-width: 0;    /* CRÍTICO PARA FLEXBOX: permite que elementos filhos quebrem texto */
 }
 
 .qrCode img{
@@ -28,7 +32,8 @@
 .botoes{
     display: flex;
     flex-direction: column;
-    max-width: 20rem;
+    width: 20rem;
+    align-items: center;
 }
 .botaoQr{
     margin-top: 1rem;
@@ -41,6 +46,37 @@
     align-items: center;
     margin-bottom: 5rem;
 }
+
+
+.pixContainer {
+    width: 100%;
+    max-width: 400px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.pixCode {
+    padding: 12px;
+    font-size: 13px;
+    font-family: monospace;
+    color: #333;
+    text-align: left;
+    margin-bottom: 10px;
+
+    display: block;
+    width: 100%;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+
 
 @media (max-width: 426px) {
     .informacoes{

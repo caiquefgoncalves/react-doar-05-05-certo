@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import Titulo from "../Titulo/Titulo.jsx";
 import MenuLateral from "../MenuLateral/MenuLateral.jsx";
 import css from "./PaginaProjeto1.module.css";
+import Botao from "../Botao/Botao.jsx";
 
 export default function PaginaProjeto1({ api }) {
     const { id } = useParams();
@@ -23,6 +24,18 @@ export default function PaginaProjeto1({ api }) {
 
     // Quantidade de itens por página (dinâmico)
     const atualizacoesPorPaginaResponsivo = isMobile ? 1 : 2;
+
+    let [copiado, setCopiado] = useState("Copiar"); // Estado para o botão de copiar
+
+    function copiarPix() {
+        navigator.clipboard.writeText(ong.chave_pix).then(() => {
+            setCopiado("Copiado!");
+            setTimeout(() => setCopiado("Copiar"), 2000);
+        }).catch(err => {
+            console.error("Erro ao copiar: ", err);
+        });
+    }
+
 
     useEffect(() => {
         buscarDados();
@@ -237,6 +250,12 @@ export default function PaginaProjeto1({ api }) {
                                     alt={`Pix ${ong.nome}`}
                                 />
 
+                                <div className={css.pixContainer}>
+                                    <p className={css.pixCode}>
+                                        {ong.chave_pix}
+                                    </p>
+                                    <Botao cor={'rosa'} acao={copiarPix} texto={copiado}/>
+                                </div>
 
                                 <div className={css.dadosBancarios}>
                                     <p><strong>Instituição:</strong><br/>{ong.cod_banco || 'Não informado'}</p>
