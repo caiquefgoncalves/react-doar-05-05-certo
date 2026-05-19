@@ -100,7 +100,7 @@ export default function Projetos({api}) {
                                         <span style={{ fontSize: '11px', color: '#999' }}>{projeto.ong_nome}</span>
                                     </div>
                                     <div className={css.botao}>
-                                        <BotaoProjetos status={projeto.tipo_ajuda} projetoId={projeto.id} usuarioTipo={usuarioTipo} />
+                                        <BotaoProjetos status={projeto.tipo_ajuda} projetoId={projeto.id} usuarioTipo={usuarioTipo} apiUrl={api_url}/>
                                     </div>
                                 </div>
 

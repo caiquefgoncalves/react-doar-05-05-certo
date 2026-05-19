@@ -578,6 +578,14 @@
     border-color: #167cbf;
 }
 
+.fim {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: lighter;
+    font-size: 1rem;
+}
+
 
 
 /* ============================================ */

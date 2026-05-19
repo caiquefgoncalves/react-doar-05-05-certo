@@ -6,6 +6,8 @@ import css from "./Feed1.module.css";
 import Curtida from "../Curtida/Curtida.jsx";
 import Mensagem from "../Mensagem/Mensagem.jsx";
 import Recomendacoes from "../Recomendacoes/Recomendacoes.jsx";
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 
 export default function Feed({ api }) {
     const navigate = useNavigate();
@@ -78,14 +80,15 @@ export default function Feed({ api }) {
             return;
         }
         verificarUsuario();
-        setPagina(0);
         setTemMais(true);
+        setPagina(0)
         buscarAtualizacoes(0, false);
-    }, [tipoFeed]);
+
+    }, [tipoFeed, filtro]);
 
     async function buscarAtualizacoes(novaPagina = 0, append = false) {
         try {
-            if (!append) setLoading(true);
+            setLoading(true);
             const token = localStorage.getItem('token');
             let url;
             if (tipoFeed === 'seguindo') {
@@ -242,7 +245,7 @@ export default function Feed({ api }) {
 
                     {/* MUDANÇA 1: Recomendações acima da barra de busca apenas no Celular (d-block d-lg-none) */}
                     <div className="d-block d-lg-none mb-4">
-                        <Recomendacoes />
+                        <Recomendacoes api={api_url}/>
                     </div>
 
                     <div className={css.barraTopo}>
@@ -263,7 +266,6 @@ export default function Feed({ api }) {
                         <div className={"col-12 col-lg-8 d-flex flex-column gap-4"}>
                             {atualizacoes.length === 0 ? (
                                 <div className={css.vazio}>
-
                                     {tipoFeed === 'seguindo' ? (
                                         <>
                                             <p>Nenhuma postagem das ONGs que você segue.</p>
@@ -273,72 +275,87 @@ export default function Feed({ api }) {
                                     ) : <p>Nenhuma atualização encontrada.</p>}
                                 </div>
                             ) : (
-                                atualizacoes.map(item => (
-                                    <div key={`att-${item.id}`} className={css.cardAtualizacao}>
-                                        <Link to={`/ong/${item.ong_id}`} className={css.header} onClick={(e) => e.stopPropagation()}>
-                                            <img src={item.ong_foto ? `${api_url}/uploads/Usuarios/${item.ong_foto}` : '/ong-icon.png'} alt={item.ong_nome} className={css.fotoOng} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
-                                            <div className={css.headerInfo}>
-                                                <h3 className={css.nomeOng}>{item.ong_nome}</h3>
-                                                <span className={css.data}>{item.data}</span>
-                                            </div>
-                                            {/* Coração só aparece para doadores ou não logados */}
-                                            {(usuarioTipo === 1 || usuarioTipo === null) && (
-                                                <div onClick={(e) => e.stopPropagation()}>
-                                                    <Curtida idAtualizacao={item.id} apiUrl={api_url} onStatusChange={(status) => handleCurtidaChange(item.id, status)} />
-                                                </div>
-                                            )}
-                                        </Link>
-                                        <div className={css.corpo} onClick={() => abrirPostagem(item)} style={{ cursor: 'pointer' }}>
-                                            {item.foto && <img src={`${api_url}/uploads/Atualizacoes/${item.foto}`} alt={item.titulo} className={css.fotoAtualizacao} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />}
-                                            <div className={css.textoContainer}>
-                                                <h2 className={css.tituloAtualizacao}>{item.titulo}</h2>
-                                                <p className={css.infoPost}>{item.qtd_curtidas || 0} curtidas • {item.qtd_comentarios || 0} comentários</p>
-                                                {item.texto && <p className={css.textoAtualizacao}>{item.texto}</p>}
-                                            </div>
+                                <InfiniteScroll
+                                    dataLength={todasAtualizacoes.length}
+                                    next={() => {
+                                        setTimeout(() => {
+                                            const proximaPagina = pagina + 1;
+                                            setPagina(proximaPagina);
+                                            buscarAtualizacoes(proximaPagina, true);
+                                        }, 1500); // 1500 milissegundos = 1.5 segundos de espera
+                                    }}
+                                    hasMore={temMais} // Bloqueia chamadas se a API retornar menos de 4 posts
+
+                                    loader={
+                                        <div className={css.fim}>
+                                            <p>Carregando próximos posts...</p>
                                         </div>
-                                        <div className={css.comentariosSecao}>
-                                            <button className={css.btnComentarios} onClick={() => toggleComentarios(item.id)}>💬 Comentários ({item.qtd_comentarios || 0})</button>
-                                            {mostrarComentarios[item.id] && (
-                                                <div className={css.comentariosContainer}>
-                                                    {comentarios[item.id]?.length > 0 ? (
-                                                        comentarios[item.id].map(comentario => (
-                                                            <div key={comentario.id} className={css.comentario}>
-                                                                <div className={css.comentarioHeader}>
-                                                                    <img src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : '/user-icon.png'} alt={comentario.usuario_nome} className={css.comentarioFoto} onError={(e) => { e.currentTarget.src = '/user-icon.png'; }} />
-                                                                    <div className={css.comentarioInfo}>
-                                                                        <span className={css.comentarioNome}>{comentario.usuario_nome}</span>
-                                                                        <span className={css.comentarioData}>{comentario.data_criacao}</span>
+                                    }
+                                    endMessage={<div className={css.fim}><p>Você chegou ao fim das atualizações!</p></div>}
+                                    className="d-flex flex-column gap-4"
+                                    style={{ overflow: 'visible' }}
+                                >
+                                    {atualizacoes.map(item => (
+                                        <div key={`att-${item.id}`} className={css.cardAtualizacao}>
+                                            <Link to={`/ong/${item.ong_id}`} className={css.header} onClick={(e) => e.stopPropagation()}>
+                                                <img src={item.ong_foto ? `${api_url}/uploads/Usuarios/${item.ong_foto}` : '/ong-icon.png'} alt={item.ong_nome} className={css.fotoOng} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />
+                                                <div className={css.headerInfo}>
+                                                    <h3 className={css.nomeOng}>{item.ong_nome}</h3>
+                                                    <span className={css.data}>{item.data}</span>
+                                                </div>
+                                                {/* Coração só aparece para doadores ou não logados */}
+                                                {(usuarioTipo === 1 || usuarioTipo === null) && (
+                                                    <div onClick={(e) => e.stopPropagation()}>
+                                                        <Curtida idAtualizacao={item.id} apiUrl={api_url} onStatusChange={(status) => handleCurtidaChange(item.id, status)} />
+                                                    </div>
+                                                )}
+                                            </Link>
+                                            <div className={css.corpo} onClick={() => abrirPostagem(item)} style={{ cursor: 'pointer' }}>
+                                                {item.foto && <img src={`${api_url}/uploads/Atualizacoes/${item.foto}`} alt={item.titulo} className={css.fotoAtualizacao} onError={(e) => { e.currentTarget.src = '/sem_imagem.webp'; }} />}
+                                                <div className={css.textoContainer}>
+                                                    <h2 className={css.tituloAtualizacao}>{item.titulo}</h2>
+                                                    <p className={css.infoPost}>{item.qtd_curtidas || 0} curtidas • {item.qtd_comentarios || 0} comentários</p>
+                                                    {item.texto && <p className={css.textoAtualizacao}>{item.texto}</p>}
+                                                </div>
+                                            </div>
+                                            <div className={css.comentariosSecao}>
+                                                <button className={css.btnComentarios} onClick={() => toggleComentarios(item.id)}>💬 Comentários ({item.qtd_comentarios || 0})</button>
+                                                {mostrarComentarios[item.id] && (
+                                                    <div className={css.comentariosContainer}>
+                                                        {comentarios[item.id]?.length > 0 ? (
+                                                            comentarios[item.id].map(comentario => (
+                                                                <div key={comentario.id} className={css.comentario}>
+                                                                    <div className={css.comentarioHeader}>
+                                                                        <img src={comentario.usuario_foto ? `${api_url}/uploads/Usuarios/${comentario.usuario_foto}` : '/user-icon.png'} alt={comentario.usuario_nome} className={css.comentarioFoto} onError={(e) => { e.currentTarget.src = '/user-icon.png'; }} />
+                                                                        <div className={css.comentarioInfo}>
+                                                                            <span className={css.comentarioNome}>{comentario.usuario_nome}</span>
+                                                                            <span className={css.comentarioData}>{comentario.data_criacao}</span>
+                                                                        </div>
                                                                     </div>
+                                                                    <p className={css.comentarioTexto}>{comentario.texto}</p>
                                                                 </div>
-                                                                <p className={css.comentarioTexto}>{comentario.texto}</p>
+                                                            ))
+                                                        ) : <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '10px' }}>Nenhum comentário ainda. Seja o primeiro!</p>}
+
+                                                        {/* Input de comentário - apenas doadores */}
+                                                        {usuarioTipo === 1 ? (
+                                                            <div className={css.novoComentario}>
+                                                                <input type="text" placeholder="Escreva um comentário..." value={novoComentario[item.id] || ''} onChange={(e) => setNovoComentario(prev => ({ ...prev, [item.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === 'Enter') { enviarComentario(item.id); } }} className={css.inputComentario} />
+                                                                <button onClick={() => enviarComentario(item.id)} className={css.btnEnviarComentario}>Enviar</button>
                                                             </div>
-                                                        ))
-                                                    ) : <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '10px' }}>Nenhum comentário ainda. Seja o primeiro!</p>}
-
-                                                    {/* Input de comentário - apenas doadores */}
-                                                    {usuarioTipo === 1 ? (
-                                                        <div className={css.novoComentario}>
-                                                            <input type="text" placeholder="Escreva um comentário..." value={novoComentario[item.id] || ''} onChange={(e) => setNovoComentario(prev => ({ ...prev, [item.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === 'Enter') { enviarComentario(item.id); } }} className={css.inputComentario} />
-                                                            <button onClick={() => enviarComentario(item.id)} className={css.btnEnviarComentario}>Enviar</button>
-                                                        </div>
-                                                    ) : usuarioTipo === 2 ? (
-                                                        <p className={css.msgDoador}>ONGs não podem comentar.</p>
-                                                    ) : usuarioTipo === 0 ? (
-                                                        <p className={css.msgDoador}>Administradores não podem comentar.</p>
-                                                    ) : (
-                                                        <p className={css.msgLogin}><Link to="/login">Faça login</Link> como doador para comentar.</p>
-                                                    )}
-                                                </div>
-                                            )}
+                                                        ) : usuarioTipo === 2 ? (
+                                                            <p className={css.msgDoador}>ONGs não podem comentar.</p>
+                                                        ) : usuarioTipo === 0 ? (
+                                                            <p className={css.msgDoador}>Administradores não podem comentar.</p>
+                                                        ) : (
+                                                            <p className={css.msgLogin}><Link to="/login">Faça login</Link> como doador para comentar.</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
-                            )}
-
-                            {temMais && (
-                                <div className={'d-flex align-items-center justify-content-center'}>
-                                    <button onClick={() => { const proximaPagina = pagina + 1; setPagina(proximaPagina); buscarAtualizacoes(proximaPagina, true); }} className={css.filtro}>{loading ? "Carregando..." : "Carregar mais"}</button>
-                                </div>
+                                    ))}
+                                </InfiniteScroll>
                             )}
                         </div>
                         {/* MUDANÇA 2: Barra lateral oculta no Celular com STICKY ADICIONADO */}

@@ -3,8 +3,6 @@ import css from './Header.module.css';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import SeloVoluntario from "../SeloVoluntario/SeloVoluntario.jsx";
 
-const API_URL = "http://192.168.0.126:5000";
-
 export default function Header({ api }) {
     const api_url = api ;
     const [token, setToken] = useState(false);

@@ -3,14 +3,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import css from "./BotaoProjetos.module.css";
 
-const API_URL = "http://192.168.0.126:5000";
-
 export default function BotaoProjetos({ status = 1, projetoId, usuarioTipo, apiUrl }) {
     const navigate = useNavigate();
     const [jaVoluntariou, setJaVoluntariou] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const api = apiUrl || API_URL;
+    const api = apiUrl
 
     useEffect(() => {
         if (status === 1 && usuarioTipo === 1 && projetoId) {

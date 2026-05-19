@@ -228,7 +228,7 @@ export default function DashboardDoador1({ api }) {
 
                 {/* Gráfico */}
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#333' }}>
-                    Sua frequência de <span style={{ color: '#f7b567' }}>Doações</span>
+                    Sua frequência de <span style={{ color: '#f7b567' }}>doações</span>
                 </h2>
                 <div style={{ background: '#fff', borderRadius: '16px', padding: '25px' }}>
                     {isMobile ? renderGraficoPizza() : renderGrafico()}

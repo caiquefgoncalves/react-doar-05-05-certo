@@ -1,23 +1,22 @@
 import { useState, useEffect } from 'react';
-// Importamos o Link do react-router-dom para fazer a navegação
-import { Link } from 'react-router-dom';
 import css from './Recomendacoes.module.css';
 import BotaoSeguir from "../BotaoSeguir/BotaoSeguir.jsx";
 
 export default function Recomendacoes() {
 
-    const api_url = "http://192.168.0.126:5000";
+    const api_url = "http://10.92.3.120:5000";
 
     const [ongs, setOngs] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(false);
 
-
-
     const buscarRecomendacoes = async () => {
         try {
             setCarregando(true);
             setErro(false);
+
+            // 1. Pegar o token do localStorage
+            const token = localStorage.getItem('token');
 
             let url = `${api_url}/ongs_recomendacoes`;
 
@@ -26,25 +25,29 @@ export default function Recomendacoes() {
                 credentials: 'include',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    // 2. Enviar o token puro no cabeçalho
+                    'Authorization': token || ''
                 }
             });
 
-            if (!response.ok) {
-                throw new Error('Erro na resposta do servidor');
-            }
+            // Verificar se a resposta é JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
 
-            const data = await response.json();
-
-            if (data.ongs && data.ongs.length > 0) {
-                setOngs(data.ongs);
+                if (response.ok && data.ongs) {
+                    setOngs(data.ongs);
+                } else {
+                    setOngs([]);
+                }
             } else {
-                setOngs(ongsMock);
+                setOngs([]);
             }
         } catch (error) {
-            console.error("Erro ao buscar recomendações:", error);
+            console.error('Erro ao buscar recomendações:', error);
             setErro(true);
-            setOngs(ongsMock);
+            setOngs([]);
         } finally {
             setCarregando(false);
         }
@@ -72,6 +75,20 @@ export default function Recomendacoes() {
         );
     }
 
+    // Se não houver nenhuma ONG recomendada (ou se o usuário já seguir todas)
+    if (ongs.length === 0) {
+        return (
+            <div className={css.card}>
+                <div>
+                    <h2>Recomendações</h2>
+                </div>
+                <p style={{ fontSize: '13px', color: '#999', textAlign: 'center', padding: '15px 0' }}>
+                    Nenhuma nova recomendação no momento.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div className={css.card}>
             <div>
@@ -79,9 +96,7 @@ export default function Recomendacoes() {
             </div>
             {ongs.map((ong) => (
                 <div key={ong.id} className={css.ongs}>
-
-
-                    <Link to={`/ong/${ong.id}`} className={css.info} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div className={css.info}>
                         <img
                             src={getImagemUrl(ong.id)}
                             alt={ong.nome}
@@ -91,8 +106,7 @@ export default function Recomendacoes() {
                             }}
                         />
                         <p>{ong.nome}</p>
-                    </Link>
-
+                    </div>
                     <div className={css.botaoseguir}>
                         <BotaoSeguir
                             idOng={ong.id}
